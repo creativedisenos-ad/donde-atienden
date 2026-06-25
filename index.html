@@ -3,343 +3,287 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f4f5f9">
-<meta name="description" content="Ayuda tras el sismo en Venezuela: centros de salud operativos y registro voluntario de personas ingresadas para reencontrar a tus familiares.">
+<meta name="theme-color" content="#f3f5f8">
+<meta name="description" content="Encuentra a familiares ingresados en hospitales de Venezuela. Registro voluntario y comunitario tras el sismo.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Salud VE · ¿Dónde atienden?</title>
+<link rel="preconnect" href="https://ozuxfepfkvnxkywdsqxy.supabase.co" crossorigin>
+<title>¿Dónde está? · Buscar familiares · Venezuela</title>
 <style>
   :root{
-    /* superficies */
-    --bg:#f4f5f9; --surface:#ffffff; --surface-2:#f6f7fa;
-    --ink:#11181f; --ink-2:#3a4654; --muted:#7a8794;
-    --line:rgba(60,66,82,.12); --line-2:rgba(60,66,82,.08);
-    /* marca */
-    --brand:#0ea5a6; --brand-deep:#0b8587; --brand-soft:#e3f6f6;
-    --blue:#0a84ff;
-    /* estados */
-    --ok:#1aa251; --ok-bg:#e7f7ec;
-    --warn:#d97a06; --warn-bg:#fdf1e1;
-    --bad:#e0352b; --bad-bg:#fdecea;
-    --unk:#7a8794; --unk-bg:#eef0f4;
-    --shadow-s:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.05);
-    --shadow-m:0 2px 6px rgba(16,24,40,.05),0 12px 28px rgba(16,24,40,.07);
-    --shadow-l:0 -2px 10px rgba(16,24,40,.04),0 -16px 50px rgba(16,24,40,.16);
-    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --bg:#f3f5f8; --surface:#ffffff; --surface-2:#eef1f5;
+    --ink:#0e1620; --ink-2:#33414e; --muted:#566472;
+    --line:rgba(30,41,59,.14); --line-2:rgba(30,41,59,.08);
+    --brand:#0a8d8f; --brand-deep:#076d6f; --brand-soft:#dff4f3;
+    --blue:#0a6cff; --blue-soft:#e6f0ff;
+    --ok:#0f8a45; --ok-bg:#e4f6ea; --ok-dot:#16a34a;
+    --warn:#b5630a; --warn-bg:#fcecd6; --warn-dot:#e08a16;
+    --bad:#cc2a20; --bad-bg:#fce7e5; --bad-dot:#dc2626;
+    --unk:#566472; --unk-bg:#e9edf2; --unk-dot:#7a8794;
+    --shadow-s:0 1px 2px rgba(15,23,42,.06),0 1px 3px rgba(15,23,42,.05);
+    --shadow-m:0 4px 10px rgba(15,23,42,.06),0 14px 30px rgba(15,23,42,.08);
+    --shadow-l:0 -2px 12px rgba(15,23,42,.05),0 -18px 50px rgba(15,23,42,.18);
     --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --r-card:20px; --r-fld:14px; --r-pill:999px;
+    --r-card:1.1rem; --r-fld:.85rem; --r-pill:999px;
     --ease:cubic-bezier(.32,.72,0,1);
   }
+  /* tipografía accesible: el tamaño base lo controla A− / A+ */
+  html{font-size:18px}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
     font-family:var(--sans); color:var(--ink); background:var(--bg);
-    line-height:1.45; -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
+    line-height:1.5; -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+    font-size:1rem;
   }
-  .wrap{max-width:560px;margin:0 auto;padding:0 16px 96px}
+  .wrap{max-width:600px;margin:0 auto;padding:0 1rem 6rem}
   button{font-family:inherit}
+  a{color:var(--brand-deep)}
 
-  /* ===================== Header translúcido ===================== */
+  /* ===================== Header ===================== */
   header.app{
     position:sticky; top:0; z-index:30;
-    background:rgba(244,245,249,.72);
-    -webkit-backdrop-filter:saturate(180%) blur(20px);
-    backdrop-filter:saturate(180%) blur(20px);
-    border-bottom:1px solid var(--line-2);
-    padding-top:env(safe-area-inset-top,0);
+    background:rgba(243,245,248,.82);
+    -webkit-backdrop-filter:saturate(180%) blur(18px); backdrop-filter:saturate(180%) blur(18px);
+    border-bottom:1px solid var(--line-2); padding-top:env(safe-area-inset-top,0);
   }
-  .bar-in{max-width:560px;margin:0 auto;padding:11px 16px 10px;
-    display:flex;align-items:center;gap:12px}
-  .brand{display:flex;align-items:center;gap:10px;min-width:0}
-  .mark{flex:none;width:38px;height:38px;border-radius:12px;
-    background:linear-gradient(145deg,#13b6b7,#0b8587);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 12px rgba(14,165,166,.35)}
-  .mark svg{width:21px;height:21px;display:block}
+  .bar-in{max-width:600px;margin:0 auto;padding:.6rem 1rem .5rem;display:flex;align-items:center;gap:.6rem}
+  .brand{display:flex;align-items:center;gap:.55rem;min-width:0}
+  .mark{flex:none;width:2.3rem;height:2.3rem;border-radius:.7rem;
+    background:linear-gradient(150deg,#13b6b7,#086e70);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 12px rgba(10,141,143,.4)}
+  .mark svg{width:1.35rem;height:1.35rem}
   .brand-tt{min-width:0}
-  .brand-tt h1{margin:0;font-size:18px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
-  .brand-tt p{margin:1px 0 0;font-size:11.5px;color:var(--muted);font-weight:500;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .bar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
-  .icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);
-    background:var(--surface);color:var(--ink-2);cursor:pointer;
-    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-s);
-    transition:transform .15s var(--ease),background .15s}
-  .icon-btn:active{transform:scale(.92)}
-  .icon-btn svg{width:19px;height:19px}
-  .pill-primary{border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
-    background:var(--ink);color:#fff;font-weight:700;font-size:14px;
-    padding:9px 15px;border-radius:var(--r-pill);box-shadow:var(--shadow-s);
-    transition:transform .15s var(--ease),opacity .15s}
-  .pill-primary:active{transform:scale(.96)}
-  .pill-primary svg{width:16px;height:16px}
+  .brand-tt h1{margin:0;font-size:1.18rem;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .brand-tt p{margin:.05rem 0 0;font-size:.72rem;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-actions{margin-left:auto;display:flex;align-items:center;gap:.4rem;flex:none}
+  .az{display:flex;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);
+    overflow:hidden;box-shadow:var(--shadow-s)}
+  .az button{border:none;background:none;cursor:pointer;color:var(--ink-2);font-weight:800;padding:.5rem .6rem;line-height:1}
+  .az button:active{background:var(--surface-2)}
+  .az .a-sm{font-size:.78rem}.az .a-lg{font-size:1.05rem}
+  .az span.div{width:1px;align-self:stretch;background:var(--line-2)}
+  .icon-btn{width:2.5rem;height:2.5rem;border-radius:.7rem;border:1px solid var(--line);background:var(--surface);
+    color:var(--ink-2);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-s)}
+  .icon-btn:active{transform:scale(.94)}.icon-btn svg{width:1.2rem;height:1.2rem}
 
-  /* ===================== Segmented control ===================== */
-  .segwrap{max-width:560px;margin:0 auto;padding:0 16px 11px}
-  .segmented{display:flex;gap:3px;background:#e6e8ee;border-radius:13px;padding:3px;
-    position:relative}
-  .seg{flex:1;border:none;background:none;cursor:pointer;font-size:14px;font-weight:600;
-    color:var(--ink-2);padding:9px 6px;border-radius:10px;letter-spacing:-.01em;
-    display:flex;align-items:center;justify-content:center;gap:6px;
-    transition:color .2s var(--ease);position:relative;z-index:2}
-  .seg svg{width:16px;height:16px;opacity:.85}
-  .seg.on{color:var(--ink)}
-  .seg-thumb{position:absolute;top:3px;left:3px;height:calc(100% - 6px);
-    width:calc(50% - 3px);background:var(--surface);border-radius:10px;
-    box-shadow:0 1px 3px rgba(16,24,40,.16),0 1px 1px rgba(16,24,40,.06);
+  .segwrap{max-width:600px;margin:0 auto;padding:0 1rem .6rem}
+  .segmented{display:flex;gap:.2rem;background:#e3e7ee;border-radius:.85rem;padding:.25rem;position:relative}
+  .seg{flex:1;border:none;background:none;cursor:pointer;font-size:1rem;font-weight:700;color:var(--ink-2);
+    padding:.7rem .4rem;border-radius:.65rem;display:flex;align-items:center;justify-content:center;gap:.4rem;
+    position:relative;z-index:2;transition:color .2s var(--ease);min-height:2.9rem}
+  .seg svg{width:1.15rem;height:1.15rem}
+  .seg.on{color:var(--brand-deep)}
+  .seg-thumb{position:absolute;top:.25rem;left:.25rem;height:calc(100% - .5rem);width:calc(50% - .25rem);
+    background:var(--surface);border-radius:.65rem;box-shadow:0 1px 4px rgba(15,23,42,.16);
     transition:transform .28s var(--ease);z-index:1}
-  .segmented[data-i="1"] .seg-thumb{transform:translateX(calc(100% + 3px))}
+  .segmented[data-i="1"] .seg-thumb{transform:translateX(calc(100% + .25rem))}
 
-  /* ===================== Avisos ===================== */
-  .alert{display:flex;gap:10px;align-items:flex-start;
-    background:linear-gradient(180deg,#fff8ef,#fff4e6);border:1px solid #f6e2c4;
-    color:#7a4d12;font-size:12.5px;padding:11px 13px;border-radius:14px;margin:14px 0 2px}
-  .alert svg{flex:none;width:17px;height:17px;margin-top:1px;color:var(--warn)}
-  .alert b{color:#6a3d0a}
-  .alert a{color:var(--bad);font-weight:800;text-decoration:none;white-space:nowrap}
-  .banner{display:none;font-size:13px;padding:11px 13px;border-radius:14px;margin:12px 0}
+  /* ===================== bloques ===================== */
+  .alert{display:flex;gap:.6rem;align-items:flex-start;background:#fff7ec;border:1px solid #f4dcb6;color:#7a4d12;
+    font-size:.86rem;padding:.7rem .8rem;border-radius:var(--r-card);margin:.9rem 0 .2rem;line-height:1.45}
+  .alert svg{flex:none;width:1.2rem;height:1.2rem;margin-top:.05rem;color:var(--warn)}
+  .alert b{color:#6a3d0a}.alert a{color:var(--bad);font-weight:800;text-decoration:none;white-space:nowrap}
+  .banner{display:none;font-size:.9rem;padding:.7rem .85rem;border-radius:var(--r-card);margin:.8rem 0}
   .banner.show{display:block}
-  .banner.offline{background:var(--bad-bg);border:1px solid #f6cdc9;color:#8a241c}
-  .banner.setup{background:#eaf1ff;border:1px solid #cfe0ff;color:#1c3a66}
-  .banner.setup code{background:#fff;padding:1px 6px;border-radius:6px;font-family:var(--mono);font-size:12px}
+  .banner.offline{background:var(--bad-bg);border:1px solid #f3cdc9;color:#8a241c}
 
-  /* ===================== Tarjeta intro ===================== */
-  .intro{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);
-    padding:15px 16px;margin:14px 0 2px;box-shadow:var(--shadow-s)}
-  .intro h2{margin:0 0 4px;font-size:15.5px;letter-spacing:-.01em}
-  .intro p{margin:0;font-size:13px;color:var(--ink-2)}
-  .intro .more{margin-top:9px;border:none;background:var(--brand-soft);color:var(--brand-deep);
-    font-weight:700;font-size:12.5px;padding:8px 13px;border-radius:var(--r-pill);cursor:pointer}
+  .hero{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);
+    padding:1.15rem 1.15rem;margin:.9rem 0 0;box-shadow:var(--shadow-s)}
+  .hero h2{margin:0 0 .3rem;font-size:1.32rem;letter-spacing:-.02em;line-height:1.15}
+  .hero p{margin:0;font-size:.95rem;color:var(--ink-2);line-height:1.5}
 
-  /* ===================== Controles ===================== */
-  .controls{margin-top:14px}
-  .searchbox{position:relative}
-  .searchbox svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);
-    width:18px;height:18px;color:var(--muted);pointer-events:none}
-  .search{width:100%;font-size:16px;font-family:var(--sans);padding:13px 14px 13px 42px;
-    border:1px solid var(--line);border-radius:var(--r-fld);background:var(--surface);
-    color:var(--ink);box-shadow:var(--shadow-s);transition:border-color .15s,box-shadow .15s}
+  .searchbox{position:relative;margin-top:.85rem}
+  .searchbox svg{position:absolute;left:1rem;top:50%;transform:translateY(-50%);width:1.3rem;height:1.3rem;color:var(--muted);pointer-events:none}
+  .search{width:100%;font-size:1.1rem;font-family:var(--sans);padding:1rem 1rem 1rem 2.9rem;border:1.5px solid var(--line);
+    border-radius:var(--r-fld);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-s);min-height:3.4rem}
   .search::placeholder{color:var(--muted)}
   .search:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
-  .selrow{display:flex;gap:9px;margin-top:9px}
-  .selrow select{flex:1;min-width:0;font-size:15px;font-family:var(--sans);padding:11px 12px;
-    border:1px solid var(--line);border-radius:var(--r-fld);background:var(--surface);
-    color:var(--ink);box-shadow:var(--shadow-s);-webkit-appearance:none;appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a8794' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+  .privacy{display:flex;gap:.6rem;align-items:flex-start;background:var(--blue-soft);border:1px solid #cfe0ff;color:#143b73;
+    font-size:.86rem;padding:.75rem .85rem;border-radius:var(--r-card);margin-top:.8rem;line-height:1.45}
+  .privacy svg{flex:none;width:1.25rem;height:1.25rem;margin-top:.05rem;color:var(--blue)}
+  .privacy b{color:#0a2a57}
+
+  .result{margin-top:.95rem}
+  .found{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);padding:1.1rem;
+    box-shadow:var(--shadow-m);margin-bottom:.7rem}
+  .found .hd{display:flex;align-items:center;gap:.7rem;margin-bottom:.4rem}
+  .found .ico{flex:none;width:2.6rem;height:2.6rem;border-radius:.8rem;background:var(--ok-bg);color:var(--ok);
+    display:flex;align-items:center;justify-content:center}.found .ico svg{width:1.5rem;height:1.5rem}
+  .found h3{margin:0;font-size:1.08rem;letter-spacing:-.01em}
+  .found .where{font-size:1.12rem;font-weight:800;margin:.5rem 0 .1rem}
+  .found .city{font-size:.92rem;color:var(--muted);font-weight:600}
+  .found .pnote{font-size:.85rem;color:var(--ink-2);background:var(--surface-2);border-radius:.7rem;padding:.65rem .75rem;margin-top:.7rem;line-height:1.45}
+
+  /* botones grandes */
+  .btn-xl{width:100%;border:none;background:var(--brand);color:#fff;font-weight:800;font-size:1.1rem;padding:1rem;
+    border-radius:var(--r-fld);cursor:pointer;box-shadow:0 6px 16px rgba(10,141,143,.3);min-height:3.4rem;
+    display:flex;align-items:center;justify-content:center;gap:.5rem;transition:transform .12s var(--ease)}
+  .btn-xl:active{transform:scale(.985)}.btn-xl:disabled{opacity:.5;box-shadow:none}
+  .btn-xl svg{width:1.3rem;height:1.3rem}
+  .btn-xl.dark{background:var(--ink);box-shadow:var(--shadow-s)}
+  .cta{width:100%;margin-top:1rem;border:1.5px dashed var(--brand);color:var(--brand-deep);background:var(--surface);
+    font-weight:800;font-size:1.02rem;padding:1.05rem;border-radius:var(--r-card);cursor:pointer;min-height:3.4rem;
+    display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:var(--shadow-s)}
+  .cta:active{transform:scale(.985)}.cta svg{width:1.3rem;height:1.3rem}
+  .cta.solid{border-style:solid;background:var(--brand-soft)}
+
+  .empty{text-align:center;color:var(--muted);padding:2.4rem 1rem;font-size:.98rem;line-height:1.5}
+  .empty svg{width:2.6rem;height:2.6rem;color:#b9c2cd;margin-bottom:.6rem}
+  .empty b{color:var(--ink-2)}
+  .skel{height:6rem;border-radius:var(--r-card);background:linear-gradient(90deg,#e7ebf0,#f1f4f7,#e7ebf0);
+    background-size:200% 100%;animation:sh 1.3s infinite;list-style:none}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* ===================== Centros: controles ===================== */
+  .ctrls{margin-top:.9rem;display:flex;gap:.5rem;align-items:center}
+  .viewtoggle{display:flex;background:#e3e7ee;border-radius:.7rem;padding:.2rem}
+  .viewtoggle button{border:none;background:none;cursor:pointer;font-size:.9rem;font-weight:700;color:var(--ink-2);
+    padding:.5rem .9rem;border-radius:.55rem;display:flex;align-items:center;gap:.35rem;min-height:2.5rem}
+  .viewtoggle button svg{width:1rem;height:1rem}
+  .viewtoggle button.on{background:var(--surface);color:var(--brand-deep);box-shadow:0 1px 3px rgba(15,23,42,.15)}
+  .nearbtn{margin-left:auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);
+    font-size:.85rem;font-weight:700;color:var(--brand-deep);padding:.55rem .85rem;cursor:pointer;display:flex;
+    align-items:center;gap:.35rem;box-shadow:var(--shadow-s);min-height:2.5rem}
+  .nearbtn svg{width:1rem;height:1rem}
+  .geoline{font-size:.82rem;color:var(--muted);font-weight:600;margin:.7rem .2rem 0;display:flex;align-items:center;gap:.4rem}
+  .geoline svg{width:.95rem;height:.95rem;color:var(--brand)}
+  .selrow{display:flex;gap:.5rem;margin-top:.7rem}
+  .selrow select{flex:1;min-width:0;font-size:.98rem;font-family:var(--sans);padding:.75rem .8rem;border:1.5px solid var(--line);
+    border-radius:var(--r-fld);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-s);-webkit-appearance:none;appearance:none;min-height:3rem;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23566472' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right .8rem center;padding-right:2.1rem}
   .selrow select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
-  .chips{display:flex;gap:8px;align-items:center;margin-top:11px;flex-wrap:wrap}
-  .chip{font-size:13px;font-weight:600;padding:8px 14px;border-radius:var(--r-pill);
-    border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;
-    box-shadow:var(--shadow-s);transition:transform .12s var(--ease)}
-  .chip:active{transform:scale(.95)}
-  .chip.on{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(14,165,166,.3)}
-  .refresh{margin-left:auto;display:flex;align-items:center;gap:9px}
-  .updated{font-family:var(--mono);font-size:11px;color:var(--muted)}
-  .btn-refresh{border:none;background:none;color:var(--brand-deep);font-weight:700;font-size:13px;
-    cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:6px}
-  .count{font-size:11.5px;color:var(--muted);margin:13px 3px 3px;font-weight:600;letter-spacing:.01em}
+  .chips{display:flex;gap:.45rem;align-items:center;margin-top:.7rem;flex-wrap:wrap}
+  .chip{font-size:.9rem;font-weight:700;padding:.55rem 1rem;border-radius:var(--r-pill);border:1.5px solid var(--line);
+    background:var(--surface);color:var(--ink-2);cursor:pointer;box-shadow:var(--shadow-s);min-height:2.4rem}
+  .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .count{font-size:.82rem;color:var(--muted);margin:.85rem .2rem .2rem;font-weight:700}
 
-  /* ===================== Tarjetas de centro ===================== */
-  ul.list{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:11px}
-  .card{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);
-    padding:15px 16px;box-shadow:var(--shadow-s);transition:box-shadow .2s}
-  .card-top{display:flex;justify-content:space-between;gap:11px;align-items:flex-start}
-  .name{font-size:16px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.25}
-  .sub{font-size:12.5px;color:var(--muted);margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
-  .tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
-    background:var(--surface-2);color:var(--ink-2);padding:2px 7px;border-radius:6px;border:1px solid var(--line-2)}
-  .verif{color:var(--brand-deep);font-weight:700;display:inline-flex;align-items:center;gap:3px}
-  .verif svg{width:12px;height:12px}
-  .badge{flex:none;font-size:11.5px;font-weight:800;padding:6px 11px;border-radius:var(--r-pill);
-    white-space:nowrap;display:inline-flex;align-items:center;gap:5px;letter-spacing:.01em}
-  .badge .d{width:7px;height:7px;border-radius:50%;background:currentColor}
-  .b-ok{background:var(--ok-bg);color:var(--ok)}
-  .b-warn{background:var(--warn-bg);color:var(--warn)}
-  .b-bad{background:var(--bad-bg);color:var(--bad)}
-  .b-unk{background:var(--unk-bg);color:var(--unk)}
-  .meta{font-size:11.5px;color:var(--muted);margin-top:11px;display:flex;align-items:center;gap:7px}
-  .meta .pro{display:inline-flex;align-items:center;gap:4px;color:var(--brand-deep);font-weight:700}
-  .meta .pro svg{width:13px;height:13px}
-  .note{font-size:13px;color:var(--ink-2);background:var(--surface-2);border-radius:11px;
-    padding:9px 11px;margin-top:9px}
-  .row-actions{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
-  .act{font-size:13px;font-weight:600;padding:9px 14px;border-radius:var(--r-pill);cursor:pointer;
-    border:1px solid var(--line);background:var(--surface);color:var(--brand-deep);
-    display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-s);
-    transition:transform .12s var(--ease)}
-  .act:active{transform:scale(.96)}
-  .act svg{width:15px;height:15px}
-  .act.tel{color:var(--ink);text-decoration:none}
+  /* map */
+  #map{height:62vh;min-height:340px;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line-2);
+    margin-top:.85rem;box-shadow:var(--shadow-s);background:var(--surface-2)}
+  .leaflet-popup-content{font-family:var(--sans);font-size:.9rem;margin:.7rem .8rem}
+  .leaflet-popup-content b{font-size:.98rem}
+  .map-legend{display:flex;gap:.8rem;flex-wrap:wrap;margin:.7rem .2rem 0;font-size:.8rem;color:var(--muted);font-weight:600}
+  .map-legend span{display:inline-flex;align-items:center;gap:.3rem}
+  .map-legend i{width:.7rem;height:.7rem;border-radius:50%}
 
-  /* caja de reporte inline */
-  .reportbox{margin-top:13px;border-top:1px solid var(--line-2);padding-top:13px;display:none}
+  /* tarjetas centro */
+  ul.list{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  .card{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);padding:1rem 1.05rem;box-shadow:var(--shadow-s)}
+  .card-top{display:flex;justify-content:space-between;gap:.7rem;align-items:flex-start}
+  .name{font-size:1.08rem;font-weight:800;letter-spacing:-.01em;margin:0;line-height:1.25}
+  .sub{font-size:.86rem;color:var(--muted);margin:.3rem 0 0;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;font-weight:600}
+  .tag{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;background:var(--surface-2);color:var(--ink-2);padding:.12rem .5rem;border-radius:.4rem}
+  .dist{color:var(--brand-deep);font-weight:800}
+  .badge{flex:none;font-size:.8rem;font-weight:800;padding:.4rem .75rem;border-radius:var(--r-pill);white-space:nowrap;display:inline-flex;align-items:center;gap:.35rem}
+  .badge .d{width:.5rem;height:.5rem;border-radius:50%;background:currentColor}
+  .b-ok{background:var(--ok-bg);color:var(--ok)}.b-warn{background:var(--warn-bg);color:var(--warn)}
+  .b-bad{background:var(--bad-bg);color:var(--bad)}.b-unk{background:var(--unk-bg);color:var(--unk)}
+  .meta{font-size:.8rem;color:var(--muted);margin-top:.7rem;font-weight:600}
+  .meta .pro{color:var(--brand-deep);font-weight:800}
+  .note{font-size:.9rem;color:var(--ink-2);background:var(--surface-2);border-radius:.7rem;padding:.6rem .75rem;margin-top:.6rem}
+  .row-actions{display:flex;gap:.5rem;margin-top:.85rem;flex-wrap:wrap}
+  .act{font-size:.9rem;font-weight:700;padding:.65rem 1rem;border-radius:var(--r-pill);cursor:pointer;border:1.5px solid var(--line);
+    background:var(--surface);color:var(--brand-deep);display:inline-flex;align-items:center;gap:.4rem;box-shadow:var(--shadow-s);min-height:2.6rem}
+  .act svg{width:1.05rem;height:1.05rem}.act.tel{color:var(--ink);text-decoration:none}
+  .act.go{color:var(--blue)}
+
+  .reportbox{margin-top:.85rem;border-top:1px solid var(--line-2);padding-top:.85rem;display:none}
   .reportbox.open{display:block}
-  .qlabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-    color:var(--muted);margin:0 0 8px}
-  .opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-  .opt{flex:1;min-width:88px;text-align:center;font-size:13px;font-weight:700;padding:11px 6px;
-    border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
-    cursor:pointer;transition:transform .12s var(--ease)}
-  .opt:active{transform:scale(.96)}
+  .qlabel{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 .5rem}
+  .opts{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
+  .opt{flex:1;min-width:5.2rem;text-align:center;font-size:.92rem;font-weight:800;padding:.75rem .4rem;border-radius:.7rem;
+    border:1.5px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;min-height:2.9rem}
   .opt.sel.s-ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
   .opt.sel.s-warn{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
   .opt.sel.s-bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
   .opt.sel.s-cap{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-deep)}
-  .fld{width:100%;font-size:16px;font-family:var(--sans);padding:12px 13px;border:1px solid var(--line);
-    border-radius:var(--r-fld);background:var(--surface);color:var(--ink);margin-bottom:10px}
+  .fld{width:100%;font-size:1.05rem;font-family:var(--sans);padding:.85rem .85rem;border:1.5px solid var(--line);
+    border-radius:var(--r-fld);background:var(--surface);color:var(--ink);margin-bottom:.7rem;min-height:3.1rem}
   .fld::placeholder{color:var(--muted)}
   .fld:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
-  textarea.fld{resize:vertical;min-height:64px;line-height:1.4}
-  .send{width:100%;border:none;background:var(--brand);color:#fff;font-weight:800;font-size:15px;
-    padding:14px;border-radius:var(--r-fld);cursor:pointer;box-shadow:0 6px 16px rgba(14,165,166,.32);
-    transition:transform .12s var(--ease),opacity .15s}
-  .send:active{transform:scale(.985)}
-  .send:disabled{opacity:.5;box-shadow:none}
-  .send.dark{background:var(--ink);box-shadow:var(--shadow-s)}
-  .cancel{width:100%;border:none;background:none;color:var(--muted);font-size:13.5px;font-weight:600;
-    padding:11px;cursor:pointer;margin-top:2px}
+  .send{width:100%;border:none;background:var(--brand);color:#fff;font-weight:800;font-size:1.08rem;padding:.95rem;
+    border-radius:var(--r-fld);cursor:pointer;box-shadow:0 6px 16px rgba(10,141,143,.3);min-height:3.3rem}
+  .send:disabled{opacity:.5;box-shadow:none}.send.dark{background:var(--ink);box-shadow:var(--shadow-s)}
+  .cancel{width:100%;border:none;background:none;color:var(--muted);font-size:.95rem;font-weight:700;padding:.8rem;cursor:pointer;margin-top:.1rem;min-height:2.8rem}
 
-  .empty{text-align:center;color:var(--muted);padding:40px 18px;font-size:14px}
-  .empty svg{width:38px;height:38px;color:#c3cad4;margin-bottom:10px}
-  .skel{height:104px;border-radius:var(--r-card);
-    background:linear-gradient(90deg,#ebeef2,#f4f6f9,#ebeef2);background-size:200% 100%;
-    animation:sh 1.3s infinite}
-  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-  .cta{width:100%;margin-top:16px;border:1px dashed var(--brand);color:var(--brand-deep);
-    background:var(--surface);font-weight:700;font-size:14px;padding:15px;border-radius:var(--r-card);
-    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--shadow-s);
-    transition:transform .12s var(--ease)}
-  .cta:active{transform:scale(.985)}
-  .cta svg{width:18px;height:18px}
-
-  /* ===================== Vista Personas ===================== */
-  .privacy{display:flex;gap:10px;align-items:flex-start;background:#eef6ff;border:1px solid #d4e6ff;
-    color:#1c3a66;font-size:12.5px;padding:11px 13px;border-radius:14px;margin-top:12px}
-  .privacy svg{flex:none;width:17px;height:17px;margin-top:1px;color:var(--blue)}
-  .result{margin-top:14px}
-  .found{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);
-    padding:16px;box-shadow:var(--shadow-m);margin-bottom:11px}
-  .found .hd{display:flex;align-items:center;gap:9px;margin-bottom:6px}
-  .found .ico{flex:none;width:34px;height:34px;border-radius:10px;background:var(--ok-bg);
-    color:var(--ok);display:flex;align-items:center;justify-content:center}
-  .found .ico svg{width:19px;height:19px}
-  .found h3{margin:0;font-size:15.5px;letter-spacing:-.01em}
-  .found .where{font-size:14px;font-weight:700;margin:8px 0 2px}
-  .found .city{font-size:12.5px;color:var(--muted)}
-  .found .pnote{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:11px;
-    padding:9px 11px;margin-top:11px}
-
-  /* ===================== Modales / Sheets ===================== */
-  .scrim{position:fixed;inset:0;background:rgba(17,24,31,.42);
-    -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
-    display:none;z-index:50;align-items:flex-end;justify-content:center;
-    opacity:0;transition:opacity .25s var(--ease)}
-  .scrim.open{display:flex;opacity:1}
-  .sheet{background:var(--surface);width:100%;max-width:560px;border-radius:26px 26px 0 0;
-    padding:10px 18px calc(26px + env(safe-area-inset-bottom,0));max-height:93vh;overflow:auto;
-    box-shadow:var(--shadow-l);transform:translateY(100%);transition:transform .34s var(--ease)}
-  .scrim.open .sheet{transform:translateY(0)}
-  .grip{width:38px;height:5px;border-radius:99px;background:#d7dbe2;margin:0 auto 12px}
-  .sheet h2{margin:2px 0 3px;font-size:21px;letter-spacing:-.02em}
-  .sheet p.hint{margin:0 0 16px;font-size:13.5px;color:var(--muted);line-height:1.45}
-  .sheet label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-2);margin:0 0 6px}
-  .sheet .opt-lbl{margin-top:2px}
-
-  /* menú de roles */
-  .rolemenu{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
-  .role{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
-    background:var(--surface-2);border:1px solid var(--line-2);border-radius:16px;padding:14px 15px;
-    transition:transform .12s var(--ease),background .15s}
-  .role:active{transform:scale(.985)}
-  .role .ri{flex:none;width:44px;height:44px;border-radius:13px;display:flex;align-items:center;
-    justify-content:center;color:#fff}
-  .role .ri svg{width:22px;height:22px}
-  .role .rt{flex:1;min-width:0}
-  .role .rt b{display:block;font-size:15px;letter-spacing:-.01em}
-  .role .rt span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
-  .role .rc{flex:none;color:var(--muted)}
-  .role .rc svg{width:18px;height:18px}
-  .ri.c-person{background:linear-gradient(145deg,#0a84ff,#0768d6)}
-  .ri.c-medic{background:linear-gradient(145deg,#13b6b7,#0b8587)}
-  .ri.c-center{background:linear-gradient(145deg,#7c5cff,#5b3fd6)}
-
-  .seccard{background:var(--surface-2);border:1px solid var(--line-2);border-radius:18px;
-    padding:15px;margin-bottom:14px}
-  .seccard h3{margin:0 0 3px;font-size:15px;letter-spacing:-.01em;display:flex;align-items:center;gap:7px}
-  .seccard h3 svg{width:17px;height:17px;color:var(--brand-deep)}
-  .seccard p.sh{margin:0 0 13px;font-size:12.5px;color:var(--muted)}
-  .check{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--ink-2);
-    margin:2px 0 14px;cursor:pointer}
-  .check input{margin-top:2px;width:18px;height:18px;accent-color:var(--brand);flex:none}
-
-  /* guía */
-  .guide-step{display:flex;gap:13px;margin-bottom:16px}
-  .guide-step .gn{flex:none;width:34px;height:34px;border-radius:11px;background:var(--brand-soft);
-    color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
-  .guide-step .gt b{display:block;font-size:14.5px;letter-spacing:-.01em;margin-bottom:2px}
-  .guide-step .gt span{display:block;font-size:13px;color:var(--ink-2);line-height:1.45}
-  .guide-foot{font-size:12px;color:var(--muted);border-top:1px solid var(--line-2);
-    padding-top:13px;margin-top:4px}
-
-  footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line-2);font-size:12px;color:var(--muted)}
+  footer{margin-top:2rem;padding-top:1.1rem;border-top:1px solid var(--line-2);font-size:.84rem;color:var(--muted);line-height:1.5}
   footer b{color:var(--ink-2)}
-  footer .nums{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-  footer .num{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line-2);
-    border-radius:var(--r-pill);padding:7px 13px;font-weight:700;color:var(--ink);text-decoration:none;box-shadow:var(--shadow-s)}
-  footer .num svg{width:14px;height:14px;color:var(--bad)}
+  .nums{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap}
+  .num{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-pill);
+    padding:.55rem .9rem;font-weight:800;color:var(--ink);text-decoration:none;box-shadow:var(--shadow-s)}
+  .num svg{width:1rem;height:1rem;color:var(--bad)}
 
-  /* toast */
-  #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:26px;
-    background:var(--ink);color:#fff;font-size:14px;font-weight:600;padding:13px 19px;border-radius:14px;
-    z-index:80;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease);
-    max-width:90%;text-align:center;box-shadow:0 12px 32px rgba(16,24,40,.3)}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  #toast.err{background:var(--bad)}
-  #toast.ok{background:var(--ok)}
+  /* sheets */
+  .scrim{position:fixed;inset:0;background:rgba(14,22,32,.46);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+    display:none;z-index:50;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .25s var(--ease)}
+  .scrim.open{display:flex;opacity:1}
+  .sheet{background:var(--surface);width:100%;max-width:600px;border-radius:1.5rem 1.5rem 0 0;
+    padding:.6rem 1.15rem calc(1.6rem + env(safe-area-inset-bottom,0));max-height:94vh;overflow:auto;box-shadow:var(--shadow-l);
+    transform:translateY(100%);transition:transform .34s var(--ease)}
+  .scrim.open .sheet{transform:translateY(0)}
+  .grip{width:2.4rem;height:.3rem;border-radius:99px;background:#d4dae2;margin:0 auto .8rem}
+  .sheet h2{margin:.1rem 0 .2rem;font-size:1.4rem;letter-spacing:-.02em}
+  .sheet p.hint{margin:0 0 1rem;font-size:.92rem;color:var(--muted);line-height:1.5}
+  .sheet label{display:block;font-size:.88rem;font-weight:800;color:var(--ink-2);margin:0 0 .4rem}
+  .sheet .help{font-size:.8rem;color:var(--muted);margin:-.4rem 0 .7rem;font-weight:600}
+  .check{display:flex;gap:.6rem;align-items:flex-start;font-size:.88rem;color:var(--ink-2);margin:.2rem 0 1rem;cursor:pointer;line-height:1.45}
+  .check input{margin-top:.15rem;width:1.3rem;height:1.3rem;accent-color:var(--brand);flex:none}
+
+  .rolemenu{display:flex;flex-direction:column;gap:.7rem;margin-bottom:.3rem}
+  .role{display:flex;align-items:center;gap:.85rem;width:100%;text-align:left;cursor:pointer;background:var(--surface-2);
+    border:1px solid var(--line-2);border-radius:1rem;padding:1rem;min-height:4rem}
+  .role.primary{background:var(--brand-soft);border-color:#bfe7e5}
+  .role .ri{flex:none;width:3rem;height:3rem;border-radius:.85rem;display:flex;align-items:center;justify-content:center;color:#fff}
+  .role .ri svg{width:1.5rem;height:1.5rem}
+  .role .rt{flex:1;min-width:0}.role .rt b{display:block;font-size:1.05rem;letter-spacing:-.01em}
+  .role .rt span{display:block;font-size:.85rem;color:var(--muted);margin-top:.1rem;font-weight:600}
+  .role .rc svg{width:1.2rem;height:1.2rem;color:var(--muted)}
+  .ri.c-person{background:linear-gradient(150deg,#13b6b7,#086e70)}
+  .ri.c-center{background:linear-gradient(150deg,#7c5cff,#5b3fd6)}
 
   .hide{display:none !important}
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none !important;transition:none !important}
-  }
+  #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(.5rem);bottom:1.6rem;background:var(--ink);color:#fff;
+    font-size:.95rem;font-weight:700;padding:.85rem 1.2rem;border-radius:.9rem;z-index:80;opacity:0;pointer-events:none;
+    transition:opacity .25s,transform .25s var(--ease);max-width:90%;text-align:center;box-shadow:0 12px 32px rgba(15,23,42,.32)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.err{background:var(--bad)}#toast.ok{background:var(--ok)}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
 <body>
 
-<!-- ============ HEADER ============ -->
 <header class="app">
   <div class="bar-in">
-    <div class="brand">
-      <span class="mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>
-      </span>
-      <div class="brand-tt">
-        <h1>¿Dónde atienden?</h1>
-        <p>Ayuda tras el sismo · Venezuela</p>
-      </div>
+    <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg></span>
+    <div class="brand-tt">
+      <h1>¿Dónde está?</h1>
+      <p>Encuentra a tu familiar · Venezuela</p>
     </div>
     <div class="bar-actions">
+      <div class="az" role="group" aria-label="Tamaño de letra">
+        <button id="a-minus" class="a-sm" aria-label="Reducir letra">A−</button>
+        <span class="div"></span>
+        <button id="a-plus" class="a-lg" aria-label="Aumentar letra">A+</button>
+      </div>
       <button id="btn-guia" class="icon-btn" aria-label="Cómo funciona">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r="0.4" fill="currentColor"/></svg>
-      </button>
-      <button id="btn-registrar" class="pill-primary" aria-label="Registrar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        Registrar
       </button>
     </div>
   </div>
   <div class="segwrap">
     <div class="segmented" id="segmented" data-i="0" role="tablist">
       <span class="seg-thumb"></span>
-      <button class="seg on" data-view="centros" role="tab">
+      <button class="seg on" data-view="personas" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="8" r="3.4"/><path d="M5 20a6 6 0 0 1 12 0"/><path d="M19 8v6M22 11h-6"/></svg>
+        Buscar persona
+      </button>
+      <button class="seg" data-view="centros" role="tab">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/><path d="M12 9.5v3M10.5 11h3"/></svg>
         Centros
-      </button>
-      <button class="seg" data-view="personas" role="tab">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>
-        Personas
       </button>
     </div>
   </div>
@@ -347,28 +291,58 @@
 
 <div class="wrap">
 
-  <!-- ===================== VISTA CENTROS ===================== -->
-  <section id="view-centros">
-    <div class="alert">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-      <div><b>Información reportada por la comunidad.</b> Llama antes de trasladarte; el estado de cada centro puede cambiar minuto a minuto. Emergencias: <a href="tel:171">171</a>.</div>
-    </div>
-
-    <div id="setup" class="banner setup">
-      Falta conectar la base de datos. Abre <code>index.html</code> y reemplaza <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code>. (Mira la guía de despliegue.)
-    </div>
-    <div id="offline" class="banner offline">Sin conexión. Mostrando los últimos datos guardados en este teléfono.</div>
-
-    <div class="intro">
-      <h2>Encuentra un centro de salud operativo</h2>
-      <p>Busca por nombre o ciudad y mira si está abierto. ¿Conoces el estado real de uno? Repórtalo y ayuda a los demás.</p>
-      <button class="more" id="intro-guia">Ver cómo funciona</button>
-    </div>
-
-    <div class="controls">
+  <!-- ===================== PERSONAS (principal) ===================== -->
+  <section id="view-personas">
+    <div class="hero">
+      <h2>Busca a un familiar ingresado</h2>
+      <p>Escribe su <b>nombre completo</b> o su <b>cédula</b>. Aparecen las personas que la comunidad ha registrado en la app.</p>
       <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="q" class="search" type="search" inputmode="search" placeholder="Buscar hospital o ciudad…" autocomplete="off" aria-label="Buscar centro de salud">
+        <input id="qp" class="search" type="search" inputmode="search" placeholder="Nombre completo o cédula…" autocomplete="off" aria-label="Buscar persona ingresada">
+      </div>
+    </div>
+
+    <div class="privacy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 7.7 8 9 4.6-1.3 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+      <div>Por privacidad la app <b>solo confirma</b> si la persona está registrada y en qué centro. No mostramos su estado de salud: llama al centro para confirmar su identidad.</div>
+    </div>
+
+    <div id="result-p" class="result"></div>
+
+    <button id="cta-persona" class="cta solid">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Registrar a una persona ingresada
+    </button>
+
+    <footer>
+      <p><b>Esta lista la construye la gente.</b> Nadie aparece aquí sin que alguien lo registre. Si sabes dónde está un familiar, regístralo para que otros parientes puedan reencontrarlo. Información voluntaria y comunitaria, no oficial.</p>
+      <div class="nums">
+        <a class="num" href="tel:171"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Emergencias 171</a>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ===================== CENTROS (secundario) ===================== -->
+  <section id="view-centros" class="hide">
+    <div class="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <div><b>Estado reportado por la comunidad.</b> Llama antes de trasladarte. Emergencias: <a href="tel:171">171</a>.</div>
+    </div>
+    <div id="offline" class="banner offline">Sin conexión. Mostrando lo último guardado en este teléfono.</div>
+
+    <div class="ctrls">
+      <div class="viewtoggle" id="viewtoggle">
+        <button data-mode="lista" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Lista</button>
+        <button data-mode="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4 6 2 6-2v15l-6 2-6-2-6 2V6z"/><path d="M9 4v15M15 6v15"/></svg>Mapa</button>
+      </div>
+      <button id="near" class="nearbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Cerca de mí</button>
+    </div>
+    <div id="geoline" class="geoline hide"></div>
+
+    <div id="pane-lista">
+      <div class="searchbox" style="margin-top:.85rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" class="search" type="search" inputmode="search" placeholder="Buscar hospital o ciudad…" autocomplete="off" aria-label="Buscar centro">
       </div>
       <div class="selrow">
         <select id="f-estado" aria-label="Filtrar por estado"><option value="">Todos los estados</option></select>
@@ -378,86 +352,44 @@
         <button class="chip on" data-fil="todos">Todos</button>
         <button class="chip" data-fil="abierto">Abiertos</button>
         <button class="chip" data-fil="sin">Sin reporte</button>
-        <div class="refresh">
-          <span id="updated" class="updated"></span>
-          <button id="btn-refresh" class="btn-refresh" aria-label="Actualizar">↻ Actualizar</button>
-        </div>
       </div>
       <div id="count" class="count"></div>
+      <ul id="list" class="list" aria-live="polite"><li class="skel"></li><li class="skel"></li><li class="skel"></li></ul>
+      <div id="empty" class="empty hide"></div>
     </div>
 
-    <ul id="list" class="list" aria-live="polite">
-      <li class="skel"></li><li class="skel"></li><li class="skel"></li>
-    </ul>
-    <div id="empty" class="empty hide"></div>
+    <div id="pane-mapa" class="hide">
+      <div id="map"></div>
+      <div class="map-legend">
+        <span><i style="background:#16a34a"></i>Abierto</span>
+        <span><i style="background:#e08a16"></i>Saturado</span>
+        <span><i style="background:#dc2626"></i>Cerrado</span>
+        <span><i style="background:#7a8794"></i>Sin reporte</span>
+      </div>
+    </div>
 
     <button id="cta-centro" class="cta">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      Registrar un centro que no está en la lista
+      Agregar un centro que no está en la lista
     </button>
-
-    <footer>
-      <p><b>Sobre esta herramienta.</b> Es un directorio abierto y gratuito. El estado de cada centro lo reporta la gente que está ahí; por eso siempre verás cuándo se actualizó y cuántas personas lo confirmaron. No es información oficial.</p>
-      <div class="nums">
-        <a class="num" href="tel:171"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Emergencias 171</a>
-      </div>
-    </footer>
   </section>
-
-  <!-- ===================== VISTA PERSONAS ===================== -->
-  <section id="view-personas" class="hide">
-    <div class="intro">
-      <h2>Busca a un familiar ingresado</h2>
-      <p>Escribe su nombre completo o su cédula. Solo aparecen las personas que fueron registradas voluntariamente —por ellas mismas, su familia o el personal del centro— dentro de esta app.</p>
-      <button class="more" id="intro-guia2">Ver cómo funciona</button>
-    </div>
-
-    <div class="controls">
-      <div class="searchbox">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="qp" class="search" type="search" inputmode="search" placeholder="Nombre completo o cédula…" autocomplete="off" aria-label="Buscar persona ingresada">
-      </div>
-    </div>
-
-    <div class="privacy">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 7.7 8 9 4.6-1.3 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
-      <div>Por privacidad, la app <b>solo confirma</b> si la persona fue registrada y en qué centro. No mostramos su estado de salud: llama al centro para confirmar su identidad y recibir información.</div>
-    </div>
-
-    <div id="result-p" class="result"></div>
-
-    <button id="cta-persona" class="cta">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      Registrar a una persona ingresada
-    </button>
-
-    <footer>
-      <p><b>Registro voluntario.</b> Esta lista la construye la gente: nadie aparece aquí sin que alguien lo registre. Si sabes dónde está un familiar, regístralo para que otros parientes puedan reencontrarlo.</p>
-    </footer>
-  </section>
-
 </div>
 
-<!-- ============ SHEET: menú registrar ============ -->
+<!-- ===================== SHEETS ===================== -->
 <div id="sheet-menu" class="scrim" role="dialog" aria-modal="true" aria-label="Registrar">
   <div class="sheet">
     <div class="grip"></div>
-    <h2>¿Qué quieres registrar?</h2>
+    <h2>¿Qué quieres hacer?</h2>
     <p class="hint">Toda la información es voluntaria y la aporta la comunidad para ayudar tras el sismo.</p>
     <div class="rolemenu">
-      <button class="role" data-open="sheet-persona">
+      <button class="role primary" data-open="sheet-persona">
         <span class="ri c-person"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg></span>
-        <span class="rt"><b>Una persona ingresada</b><span>Soy familiar o la propia persona</span></span>
-        <span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></span>
-      </button>
-      <button class="role" data-open="sheet-medico">
-        <span class="ri c-medic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M6 3H4.5M14 3h1.5M10 17v1a3 3 0 0 0 6 0v-2"/><circle cx="18.5" cy="14" r="2"/></svg></span>
-        <span class="rt"><b>Soy médico o centro de salud</b><span>Reporta tu clínica y registra pacientes</span></span>
+        <span class="rt"><b>Registrar una persona ingresada</b><span>Soy familiar, la propia persona o trabajo en el centro</span></span>
         <span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></span>
       </button>
       <button class="role" data-open="sheet-centro">
-        <span class="ri c-center"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/><path d="M12 9.5v3M10.5 11h3"/></svg></span>
-        <span class="rt"><b>Un centro que falta</b><span>Hospital, clínica o ambulatorio nuevo</span></span>
+        <span class="ri c-center"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg></span>
+        <span class="rt"><b>Agregar un centro de salud</b><span>Hospital, clínica o ambulatorio que falta</span></span>
         <span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></span>
       </button>
     </div>
@@ -465,49 +397,11 @@
   </div>
 </div>
 
-<!-- ============ SHEET: registrar centro ============ -->
-<div id="sheet-centro" class="scrim" role="dialog" aria-modal="true" aria-label="Registrar centro">
-  <div class="sheet">
-    <div class="grip"></div>
-    <h2>Registrar un centro</h2>
-    <p class="hint">Agrega un hospital, clínica o ambulatorio que no esté en la lista.</p>
-    <label for="r-nombre">Nombre del centro *</label>
-    <input id="r-nombre" class="fld" maxlength="160" placeholder="Ej: Ambulatorio Urbano La Pastora">
-    <label for="r-tipo">Tipo *</label>
-    <select id="r-tipo" class="fld">
-      <option value="hospital">Hospital</option>
-      <option value="clinica">Clínica</option>
-      <option value="ambulatorio">Ambulatorio</option>
-      <option value="cdi">CDI</option>
-      <option value="maternidad">Maternidad</option>
-      <option value="otro">Otro</option>
-    </select>
-    <label for="r-estado">Estado *</label>
-    <input id="r-estado" class="fld" list="estados-dl" maxlength="40" placeholder="Ej: Carabobo">
-    <datalist id="estados-dl"></datalist>
-    <label for="r-ciudad">Ciudad *</label>
-    <input id="r-ciudad" class="fld" maxlength="80" placeholder="Ej: Valencia">
-    <label for="r-dir">Dirección (opcional)</label>
-    <input id="r-dir" class="fld" maxlength="240" placeholder="Sector, avenida, referencia">
-    <label for="r-tel">Teléfono (opcional)</label>
-    <input id="r-tel" class="fld" inputmode="tel" maxlength="40" placeholder="0241-…">
-    <p class="qlabel opt-lbl">¿Está operativo ahora? (opcional)</p>
-    <div class="opts" id="r-estado-op">
-      <div class="opt s-ok"   data-op="abierto">Abierto</div>
-      <div class="opt s-warn" data-op="saturado">Saturado</div>
-      <div class="opt s-bad"  data-op="cerrado">Cerrado</div>
-    </div>
-    <button id="r-send" class="send">Registrar centro</button>
-    <button class="cancel" data-close>Cancelar</button>
-  </div>
-</div>
-
-<!-- ============ SHEET: registrar persona ============ -->
-<div id="sheet-persona" class="scrim" role="dialog" aria-modal="true" aria-label="Registrar persona ingresada">
+<div id="sheet-persona" class="scrim" role="dialog" aria-modal="true" aria-label="Registrar persona">
   <div class="sheet">
     <div class="grip"></div>
     <h2>Registrar a una persona</h2>
-    <p class="hint">Deja constancia de que un familiar está ingresado, para que otros parientes puedan encontrarlo. Datos mínimos y voluntarios.</p>
+    <p class="hint">Para que su familia pueda ubicarla. Solo nombre y centro son obligatorios.</p>
     <label for="p-nombre">Nombre y apellido *</label>
     <input id="p-nombre" class="fld" maxlength="120" placeholder="Ej: José Antonio Pérez">
     <label for="p-cedula">Cédula (recomendada)</label>
@@ -515,81 +409,65 @@
     <label for="p-centro">¿En qué centro está? *</label>
     <input id="p-centro" class="fld" list="centros-dl" maxlength="160" placeholder="Escribe o elige el centro">
     <datalist id="centros-dl"></datalist>
+    <p class="help">¿No aparece? Escríbelo igual y lo agregamos a la lista de centros.</p>
     <label for="p-quien">¿Quién registra? *</label>
     <select id="p-quien" class="fld">
-      <option value="familiar">Soy familiar / allegado</option>
+      <option value="familiar">Soy familiar o allegado</option>
       <option value="paciente">Soy la propia persona</option>
     </select>
+    <label for="p-cargo">¿Trabajas en este centro? (opcional)</label>
+    <select id="p-cargo" class="fld">
+      <option value="">No trabajo aquí</option>
+      <option value="Médico/a">Médico/a</option>
+      <option value="Enfermero/a">Enfermero/a</option>
+      <option value="Camillero/a">Camillero/a</option>
+      <option value="Administrativo/a">Administrativo/a</option>
+      <option value="Otro cargo">Otro cargo</option>
+    </select>
+    <p class="help">Si trabajas en el centro, tu registro se marca como verificado por personal.</p>
     <label for="p-contacto">Teléfono de contacto familiar (opcional)</label>
     <input id="p-contacto" class="fld" inputmode="tel" maxlength="40" placeholder="Para que el centro pueda ubicarte">
-    <label class="check"><input type="checkbox" id="p-consent"><span>Autorizo registrar estos datos en esta app con el único fin de ayudar a reencontrar a la persona con su familia.</span></label>
+    <label class="check"><input type="checkbox" id="p-consent"><span>Autorizo registrar estos datos en la app con el único fin de ayudar a reencontrar a la persona con su familia.</span></label>
     <button id="p-send" class="send">Registrar persona</button>
     <button class="cancel" data-close>Cancelar</button>
   </div>
 </div>
 
-<!-- ============ SHEET: médico / centro ============ -->
-<div id="sheet-medico" class="scrim" role="dialog" aria-modal="true" aria-label="Soy médico o centro de salud">
+<div id="sheet-centro" class="scrim" role="dialog" aria-modal="true" aria-label="Agregar centro">
   <div class="sheet">
     <div class="grip"></div>
-    <h2>Soy médico o centro</h2>
-    <p class="hint">Reporta el estado real de tu centro y registra a las personas ingresadas. Tus reportes se marcan como <b>verificados por personal de salud</b>.</p>
-
-    <label for="m-centro">Tu centro de salud *</label>
-    <input id="m-centro" class="fld" list="centros-dl2" maxlength="160" placeholder="Escribe o elige tu centro">
-    <datalist id="centros-dl2"></datalist>
-
-    <div class="seccard">
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>Estado operativo de mi centro</h3>
-      <p class="sh">¿Cómo está ahora mismo?</p>
-      <div class="opts" id="m-estado-op">
-        <div class="opt s-ok"   data-op="abierto">Abierto</div>
-        <div class="opt s-warn" data-op="saturado">Saturado</div>
-        <div class="opt s-bad"  data-op="cerrado">Cerrado</div>
-      </div>
-      <p class="qlabel">Capacidad (opcional)</p>
-      <div class="opts" id="m-cap-op">
-        <div class="opt s-cap" data-v="disponible">Disponible</div>
-        <div class="opt s-cap" data-v="limitada">Limitada</div>
-        <div class="opt s-cap" data-v="llena">Sin cupo</div>
-      </div>
-      <input id="m-nota" class="fld" maxlength="280" placeholder="Nota: ej. solo emergencias, sin agua…">
-      <button id="m-send-estado" class="send dark">Actualizar estado del centro</button>
-    </div>
-
-    <div class="seccard">
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>Registrar paciente ingresado</h3>
-      <p class="sh">Para que su familia pueda ubicarlo.</p>
-      <label for="m-pnombre">Nombre y apellido *</label>
-      <input id="m-pnombre" class="fld" maxlength="120" placeholder="Ej: María Fernanda González">
-      <label for="m-pcedula">Cédula (recomendada)</label>
-      <input id="m-pcedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Ej: V-20111222">
-      <button id="m-send-pac" class="send">Registrar paciente</button>
-    </div>
-
-    <button class="cancel" data-close>Cerrar</button>
+    <h2>Agregar un centro</h2>
+    <p class="hint">Suma un hospital, clínica o ambulatorio que no esté en la lista.</p>
+    <label for="r-nombre">Nombre del centro *</label>
+    <input id="r-nombre" class="fld" maxlength="160" placeholder="Ej: Ambulatorio Urbano La Pastora">
+    <label for="r-tipo">Tipo *</label>
+    <select id="r-tipo" class="fld">
+      <option value="hospital">Hospital</option><option value="clinica">Clínica</option>
+      <option value="ambulatorio">Ambulatorio</option><option value="cdi">CDI</option>
+      <option value="maternidad">Maternidad</option><option value="otro">Otro</option>
+    </select>
+    <label for="r-estado">Estado *</label>
+    <input id="r-estado" class="fld" list="estados-dl" maxlength="40" placeholder="Ej: Carabobo">
+    <datalist id="estados-dl"></datalist>
+    <label for="r-ciudad">Ciudad *</label>
+    <input id="r-ciudad" class="fld" maxlength="80" placeholder="Ej: Valencia">
+    <label for="r-tel">Teléfono (opcional)</label>
+    <input id="r-tel" class="fld" inputmode="tel" maxlength="40" placeholder="0241-…">
+    <label class="check"><input type="checkbox" id="r-geo"><span>Usar mi ubicación actual para colocarlo en el mapa (opcional).</span></label>
+    <button id="r-send" class="send dark">Agregar centro</button>
+    <button class="cancel" data-close>Cancelar</button>
   </div>
 </div>
 
-<!-- ============ SHEET: guía ============ -->
 <div id="sheet-guia" class="scrim" role="dialog" aria-modal="true" aria-label="Cómo funciona">
   <div class="sheet">
     <div class="grip"></div>
     <h2>Cómo funciona</h2>
-    <p class="hint">Esta app es una herramienta gratuita de ayuda tras el sismo. Conecta a tres tipos de personas:</p>
-    <div class="guide-step">
-      <span class="gn">1</span>
-      <span class="gt"><b>Familiares que buscan</b><span>En la pestaña <b>Personas</b>, busca por nombre o cédula. La app te confirma si tu familiar fue registrado y en qué centro, sin exponer datos sensibles.</span></span>
-    </div>
-    <div class="guide-step">
-      <span class="gn">2</span>
-      <span class="gt"><b>Comunidad que reporta</b><span>En <b>Centros</b>, cualquiera marca si un hospital está abierto, saturado o cerrado. Cada reporte queda con fecha y suma confirmaciones.</span></span>
-    </div>
-    <div class="guide-step">
-      <span class="gn">3</span>
-      <span class="gt"><b>Médicos y centros</b><span>Con <b>Registrar → Soy médico</b>, el personal reporta el estado real de su centro y registra a los pacientes ingresados. Esos reportes se marcan como verificados.</span></span>
-    </div>
-    <p class="guide-foot">Todo es información voluntaria y comunitaria, no oficial. Siempre llama antes de trasladar a un paciente. Emergencias: <b>171</b>.</p>
+    <p class="hint">App gratuita para reencontrar familiares tras el sismo. Tres cosas que puedes hacer:</p>
+    <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">1</span><div><b style="font-size:1rem">Buscar a tu familiar</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Buscar persona</b>, escribe nombre o cédula. La app confirma si está registrado y en qué centro, sin exponer datos sensibles.</div></div></div>
+    <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">2</span><div><b style="font-size:1rem">Registrar a alguien</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">Cualquiera puede registrar a una persona ingresada. Si trabajas en el centro, indícalo y tu reporte queda verificado.</div></div></div>
+    <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">3</span><div><b style="font-size:1rem">Ver centros cerca</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Centros</b> ves hospitales en lista o mapa, ordenados por cercanía a tu ubicación, con su estado.</div></div></div>
+    <p style="font-size:.84rem;color:var(--muted);border-top:1px solid var(--line-2);padding-top:.9rem">Información voluntaria y comunitaria, no oficial. Siempre llama antes de trasladar a un paciente. Emergencias: <b>171</b>.</p>
     <button id="guia-ok" class="send">Entendido</button>
   </div>
 </div>
@@ -597,418 +475,260 @@
 <div id="toast"></div>
 
 <script>
-/* ====================================================================
-   CONFIGURACIÓN — reemplaza con los de tu proyecto Supabase
-   Supabase → Project Settings → API
-   ==================================================================== */
 const SUPABASE_URL      = "https://ozuxfepfkvnxkywdsqxy.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96dXhmZXBma3ZueGt5d2RzcXh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MjI5NTEsImV4cCI6MjA5Nzk5ODk1MX0.YhW0GalGkQZdO2NJTg_01C5XhdMmJ6RbNSNXXC0xG4o";
-const DEMO              = false;  /* true = datos de ejemplo en memoria (sin backend) */
-/* ==================================================================== */
+const DEMO              = false;
 
-const CACHE_KEY = "ve_salud_cache_v2";
+const CACHE_KEY = "ve_salud_cache_v3";
 const SEEN_KEY  = "ve_salud_seen_guia";
+const FS_KEY    = "ve_salud_fontscale";
 
-let DATA = [];        // centros
-let PAC  = [];        // personas registradas (solo se usa en DEMO; con backend van por RPC)
+let DATA = [];      // centros
+let PAC  = [];      // demo patients
 let filtro = "todos";
-let lastUpdate = null;
-let view = "centros";
+let view = "personas";
+let mapMode = "lista";
+let userPos = null; // {lat,lng}
+let mapObj = null, mapLayer = null, leafletLoading = false;
 
-/* ---------- utilidades ---------- */
+/* ---------- utils ---------- */
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 function $(id){return document.getElementById(id);}
-function toast(msg,kind){const t=$("toast");t.textContent=msg;t.className="show"+(kind?(" "+kind):"");clearTimeout(t._t);t._t=setTimeout(()=>t.className="",2800);}
+function toast(msg,kind){const t=$("toast");t.textContent=msg;t.className="show"+(kind?(" "+kind):"");clearTimeout(t._t);t._t=setTimeout(()=>t.className="",3000);}
 function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
 function soloDig(s){return String(s||"").replace(/\D/g,"");}
 function tipoLabel(t){return {hospital:"Hospital",clinica:"Clínica",ambulatorio:"Ambulatorio",cdi:"CDI",maternidad:"Maternidad",otro:"Centro"}[t]||"Centro";}
 function capLabel(c){return {disponible:"Camas disponibles",limitada:"Capacidad limitada",llena:"Sin cupo"}[c]||"";}
-function badge(op){
-  if(op==="abierto") return ['b-ok','Abierto'];
-  if(op==="saturado")return ['b-warn','Saturado'];
-  if(op==="cerrado") return ['b-bad','Cerrado'];
-  return ['b-unk','Sin reporte'];
-}
-function hace(ts){
-  if(!ts) return "Sin reporte aún";
-  const d=(Date.now()-new Date(ts).getTime())/1000;
-  if(d<60) return "Actualizado hace segundos";
-  if(d<3600) return "Actualizado hace "+Math.floor(d/60)+" min";
-  if(d<86400) return "Actualizado hace "+Math.floor(d/3600)+" h";
-  const dias=Math.floor(d/86400);
-  return "Actualizado hace "+dias+(dias===1?" día":" días");
-}
+function badge(op){if(op==="abierto")return['b-ok','Abierto'];if(op==="saturado")return['b-warn','Saturado'];if(op==="cerrado")return['b-bad','Cerrado'];return['b-unk','Sin reporte'];}
+function colorOp(op){return op==="abierto"?"#16a34a":op==="saturado"?"#e08a16":op==="cerrado"?"#dc2626":"#7a8794";}
+function hace(ts){if(!ts)return"Sin reporte aún";const d=(Date.now()-new Date(ts).getTime())/1000;if(d<60)return"hace segundos";if(d<3600)return"hace "+Math.floor(d/60)+" min";if(d<86400)return"hace "+Math.floor(d/3600)+" h";const dd=Math.floor(d/86400);return"hace "+dd+(dd===1?" día":" días");}
+function haversine(a,b,c,d){const R=6371,r=Math.PI/180;const dLat=(c-a)*r,dLon=(d-b)*r;const s=Math.sin(dLat/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+function distLabel(km){if(km==null)return"";if(km<1)return"a "+Math.round(km*1000)+" m";if(km<20)return"a "+km.toFixed(1)+" km";return"a "+Math.round(km)+" km";}
 
-/* ---------- API REST (Supabase) ---------- */
-function api(path, opts){
-  opts=opts||{};
-  return fetch(SUPABASE_URL+"/rest/v1/"+path,Object.assign({},opts,{
-    headers:Object.assign({
-      "apikey":SUPABASE_ANON_KEY,
-      "Authorization":"Bearer "+SUPABASE_ANON_KEY,
-      "Content-Type":"application/json"
-    },opts.headers||{})
-  }));
-}
+/* ---------- API ---------- */
+function api(path,opts){opts=opts||{};return fetch(SUPABASE_URL+"/rest/v1/"+path,Object.assign({},opts,{headers:Object.assign({"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},opts.headers||{})}));}
 
-/* ---------- datos demo ---------- */
-function demoCentros(){
-  const now=Date.now(), iso=(min)=>new Date(now-min*60000).toISOString();
-  return [
-    {id:"1",nombre:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",tipo:"hospital",estado:"Carabobo",ciudad:"Valencia",telefono:"0241-8675000",estado_operativo:"abierto",capacidad:"limitada",nota:"Atendiendo emergencias y traumatología",confirmaciones:7,personal_salud:true,ultima_actualizacion:iso(8),verificado:true},
-    {id:"2",nombre:"Hospital Central de Maracay",tipo:"hospital",estado:"Aragua",ciudad:"Maracay",telefono:null,estado_operativo:"saturado",capacidad:"llena",nota:"Alta demanda, esperas largas",confirmaciones:5,personal_salud:false,ultima_actualizacion:iso(14),verificado:true},
-    {id:"3",nombre:"Hospital Dr. José María Vargas",tipo:"hospital",estado:"La Guaira",ciudad:"La Guaira",telefono:null,estado_operativo:"cerrado",capacidad:null,nota:"Daños estructurales, derivando pacientes",confirmaciones:9,personal_salud:true,ultima_actualizacion:iso(22),verificado:true},
-    {id:"4",nombre:"Hospital Central Dr. Plácido D. Rodríguez Rivero",tipo:"hospital",estado:"Yaracuy",ciudad:"San Felipe",telefono:null,estado_operativo:"abierto",capacidad:"disponible",nota:null,confirmaciones:3,personal_salud:false,ultima_actualizacion:iso(5),verificado:true},
-    {id:"5",nombre:"Clínica El Ávila",tipo:"clinica",estado:"Distrito Capital",ciudad:"Caracas",telefono:"0212-2766222",estado_operativo:"abierto",capacidad:"limitada",nota:null,confirmaciones:4,personal_salud:false,ultima_actualizacion:iso(11),verificado:true},
-    {id:"6",nombre:"Hospital Universitario de Caracas",tipo:"hospital",estado:"Distrito Capital",ciudad:"Caracas",telefono:null,estado_operativo:"saturado",capacidad:"limitada",nota:"Recibiendo heridos de zonas cercanas",confirmaciones:6,personal_salud:true,ultima_actualizacion:iso(17),verificado:true},
-    {id:"7",nombre:"Hospital Dr. Ángel Larralde",tipo:"hospital",estado:"Carabobo",ciudad:"Naguanagua",telefono:null,estado_operativo:"desconocido",capacidad:null,nota:null,confirmaciones:0,personal_salud:false,ultima_actualizacion:null,verificado:true},
-    {id:"8",nombre:"Hospital Universitario de Los Andes (IAHULA)",tipo:"hospital",estado:"Mérida",ciudad:"Mérida",telefono:null,estado_operativo:"abierto",capacidad:"disponible",nota:null,confirmaciones:2,personal_salud:false,ultima_actualizacion:iso(40),verificado:true},
-    {id:"9",nombre:"Hospital Naval de La Guaira",tipo:"hospital",estado:"La Guaira",ciudad:"Catia La Mar",telefono:null,estado_operativo:"desconocido",capacidad:null,nota:null,confirmaciones:0,personal_salud:false,ultima_actualizacion:null,verificado:true},
-    {id:"10",nombre:"Policlínica Metropolitana",tipo:"clinica",estado:"Distrito Capital",ciudad:"Caracas",telefono:"0212-9085555",estado_operativo:"abierto",capacidad:"limitada",nota:null,confirmaciones:5,personal_salud:false,ultima_actualizacion:iso(9),verificado:true}
-  ];
-}
-function demoPacientes(){
-  return [
-    {nombre:"José Antonio Pérez",  cedula:"V-12345678", hospital:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)", ciudad:"Valencia", telefono:"0241-8675000"},
-    {nombre:"María Fernanda González", cedula:"V-20111222", hospital:"Hospital Universitario de Caracas", ciudad:"Caracas", telefono:null},
-    {nombre:"Carlos Rodríguez",   cedula:"V-9876543",  hospital:"Hospital Central de Maracay", ciudad:"Maracay", telefono:null},
-    {nombre:"Ana Lucía Martínez", cedula:"V-25678901", hospital:"Hospital Universitario de Los Andes (IAHULA)", ciudad:"Mérida", telefono:null}
-  ];
-}
+function demoCentros(){const now=Date.now(),iso=m=>new Date(now-m*60000).toISOString();return [
+ {id:"1",nombre:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",tipo:"hospital",estado:"Carabobo",ciudad:"Valencia",telefono:"0241-8675000",lat:10.162,lng:-68.0078,estado_operativo:"abierto",capacidad:"limitada",nota:"Atendiendo emergencias",confirmaciones:7,personal_salud:true,ultima_actualizacion:iso(8),verificado:true},
+ {id:"2",nombre:"Hospital Central de Maracay",tipo:"hospital",estado:"Aragua",ciudad:"Maracay",telefono:null,lat:10.2469,lng:-67.5958,estado_operativo:"saturado",capacidad:"llena",nota:"Esperas largas",confirmaciones:5,personal_salud:false,ultima_actualizacion:iso(14),verificado:true},
+ {id:"3",nombre:"Hospital Dr. José María Vargas",tipo:"hospital",estado:"La Guaira",ciudad:"La Guaira",telefono:null,lat:10.6,lng:-66.9333,estado_operativo:"cerrado",capacidad:null,nota:"Daños estructurales",confirmaciones:9,personal_salud:true,ultima_actualizacion:iso(22),verificado:true},
+ {id:"5",nombre:"Clínica El Ávila",tipo:"clinica",estado:"Distrito Capital",ciudad:"Caracas",telefono:"0212-2766222",lat:10.4806,lng:-66.9036,estado_operativo:"abierto",capacidad:"limitada",nota:null,confirmaciones:4,personal_salud:false,ultima_actualizacion:iso(11),verificado:true},
+ {id:"6",nombre:"Hospital Universitario de Caracas",tipo:"hospital",estado:"Distrito Capital",ciudad:"Caracas",telefono:null,lat:10.49,lng:-66.89,estado_operativo:"saturado",capacidad:"limitada",nota:"Recibiendo heridos",confirmaciones:6,personal_salud:true,ultima_actualizacion:iso(17),verificado:true},
+ {id:"8",nombre:"Hospital Universitario de Los Andes (IAHULA)",tipo:"hospital",estado:"Mérida",ciudad:"Mérida",telefono:null,lat:8.5897,lng:-71.1561,estado_operativo:"abierto",capacidad:"disponible",nota:null,confirmaciones:2,personal_salud:false,ultima_actualizacion:iso(40),verificado:true}
+];}
+function demoPacientes(){return [
+ {nombre:"José Antonio Pérez",cedula:"V-12345678",hospital:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",ciudad:"Valencia",telefono:"0241-8675000"},
+ {nombre:"María Fernanda González",cedula:"V-20111222",hospital:"Hospital Universitario de Caracas",ciudad:"Caracas",telefono:null}
+];}
 
-/* ---------- capa de datos (demo o backend) ---------- */
 async function cargarCentros(){
   if(DEMO){await new Promise(r=>setTimeout(r,300));return demoCentros();}
-  const r=await api("hospitales?select=id,nombre,tipo,estado,ciudad,direccion,telefono,estado_operativo,capacidad,nota,confirmaciones,ultima_actualizacion,verificado,personal_salud&activo=eq.true&order=estado_operativo.asc");
-  if(!r.ok) throw new Error("load");
-  return await r.json();
+  const r=await api("hospitales?select=id,nombre,tipo,estado,ciudad,telefono,lat,lng,estado_operativo,capacidad,nota,confirmaciones,ultima_actualizacion,verificado,personal_salud&activo=eq.true");
+  if(!r.ok)throw new Error("load");return await r.json();
 }
-async function enviarReporte(id,p){
-  if(DEMO){await new Promise(r=>setTimeout(r,200));return;}
-  const r=await api("reportes",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify(Object.assign({hospital_id:id},p))});
-  if(!r.ok) throw new Error("report");
-}
+async function enviarReporte(id,p){if(DEMO){await new Promise(r=>setTimeout(r,200));return;}const r=await api("reportes",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify(Object.assign({hospital_id:id},p))});if(!r.ok)throw new Error("rep");}
 async function registrarCentro(d){
-  if(DEMO){await new Promise(r=>setTimeout(r,200));
-    const nuevo=Object.assign({id:"demo-"+Date.now(),confirmaciones:0,ultima_actualizacion:null,verificado:false,personal_salud:false},d);
-    DATA.push(nuevo);return nuevo;}
-  const r=await api("hospitales",{method:"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify(Object.assign({verificado:false,activo:true},d))});
-  if(!r.ok) throw new Error("center");
-  return (await r.json())[0];
+  if(DEMO){await new Promise(r=>setTimeout(r,200));const n=Object.assign({id:"demo-"+Date.now(),confirmaciones:0,ultima_actualizacion:null,verificado:false,personal_salud:false},d);DATA.push(n);return n;}
+  const r=await api("hospitales?select=id,nombre,tipo,estado,ciudad,telefono,lat,lng,estado_operativo,capacidad,nota,confirmaciones,ultima_actualizacion,verificado,personal_salud",{method:"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify(Object.assign({verificado:false,activo:true},d))});
+  if(!r.ok)throw new Error("center");return (await r.json())[0];
 }
-/* Búsqueda confirm-only: devuelve solo {centro, ciudad, telefono} de las coincidencias */
 async function buscarPaciente(term){
-  const t=norm(term), dig=soloDig(term);
-  if(t.length<3 && dig.length<5) return null; // término muy corto
-  if(DEMO){
-    await new Promise(r=>setTimeout(r,260));
-    return PAC.filter(p=>{
-      const nom = t.length>=3 && norm(p.nombre).includes(t);
-      const ced = dig.length>=5 && soloDig(p.cedula)===dig;
-      return nom||ced;
-    }).map(p=>({centro:p.hospital,ciudad:p.ciudad,telefono:p.telefono}));
-  }
-  // backend: función RPC que NO expone la tabla completa
-  const r=await api("rpc/buscar_paciente",{method:"POST",body:JSON.stringify({p_term:term})});
-  if(!r.ok) throw new Error("search");
-  return await r.json();
+  const t=norm(term),dig=soloDig(term);if(t.length<3&&dig.length<5)return null;
+  if(DEMO){await new Promise(r=>setTimeout(r,260));return PAC.filter(p=>{const nom=t.length>=3&&norm(p.nombre).includes(t);const ced=dig.length>=5&&soloDig(p.cedula)===dig;return nom||ced;}).map(p=>({centro:p.hospital,ciudad:p.ciudad,telefono:p.telefono}));}
+  const r=await api("rpc/buscar_paciente",{method:"POST",body:JSON.stringify({p_term:term})});if(!r.ok)throw new Error("search");return await r.json();
 }
 async function registrarPaciente(d){
-  if(DEMO){await new Promise(r=>setTimeout(r,220));
-    const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));
-    PAC.push({nombre:d.nombre,cedula:d.cedula||"",hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});
-    return;}
-  const r=await api("rpc/registrar_paciente",{method:"POST",body:JSON.stringify({
-    p_nombre:d.nombre, p_centro:d.centro, p_cedula:d.cedula||null,
-    p_registrado_por:d.registrado_por||"familiar", p_contacto:d.contacto||null
-  })});
-  if(!r.ok) throw new Error("regpac");
+  if(DEMO){await new Promise(r=>setTimeout(r,220));const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return;}
+  const r=await api("rpc/registrar_paciente",{method:"POST",body:JSON.stringify({p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null})});
+  if(!r.ok)throw new Error("regpac");
 }
 
-/* ---------- caché local ---------- */
+/* ---------- cache ---------- */
 function guardarCache(){try{localStorage.setItem(CACHE_KEY,JSON.stringify({t:Date.now(),d:DATA}));}catch(e){}}
 function leerCache(){try{const r=localStorage.getItem(CACHE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 
-/* ---------- selects / datalists ---------- */
-function poblarEstados(){
-  const sel=$("f-estado"), dl=$("estados-dl");
-  const estados=[...new Set(DATA.map(h=>h.estado))].sort((a,b)=>a.localeCompare(b,'es'));
-  const cur=sel.value;
-  sel.innerHTML='<option value="">Todos los estados</option>'+estados.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join("");
-  if(estados.includes(cur)) sel.value=cur;
-  dl.innerHTML=estados.map(e=>`<option value="${esc(e)}">`).join("");
-}
-function poblarCiudades(){
-  const est=$("f-estado").value, sel=$("f-ciudad");
-  const ciudades=[...new Set(DATA.filter(h=>!est||h.estado===est).map(h=>h.ciudad))].sort((a,b)=>a.localeCompare(b,'es'));
-  const cur=sel.value;
-  sel.innerHTML='<option value="">Todas las ciudades</option>'+ciudades.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
-  if(ciudades.includes(cur)) sel.value=cur; else sel.value="";
-}
-function poblarCentrosDL(){
-  const opts=[...new Set(DATA.map(h=>h.nombre))].sort((a,b)=>a.localeCompare(b,'es')).map(n=>`<option value="${esc(n)}">`).join("");
-  $("centros-dl").innerHTML=opts; $("centros-dl2").innerHTML=opts;
-}
+/* ---------- selects ---------- */
+function poblarEstados(){const sel=$("f-estado"),dl=$("estados-dl");const es=[...new Set(DATA.map(h=>h.estado))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todos los estados</option>'+es.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join("");if(es.includes(cur))sel.value=cur;dl.innerHTML=es.map(e=>`<option value="${esc(e)}">`).join("");}
+function poblarCiudades(){const est=$("f-estado").value,sel=$("f-ciudad");const c=[...new Set(DATA.filter(h=>!est||h.estado===est).map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todas las ciudades</option>'+c.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");if(c.includes(cur))sel.value=cur;else sel.value="";}
+function poblarCentrosDL(){$("centros-dl").innerHTML=[...new Set(DATA.map(h=>h.nombre))].sort((a,b)=>a.localeCompare(b,'es')).map(n=>`<option value="${esc(n)}">`).join("");}
+
+/* ---------- distancias ---------- */
+function aplicarDistancias(){DATA.forEach(h=>{h._d=(userPos&&h.lat!=null&&h.lng!=null)?haversine(userPos.lat,userPos.lng,h.lat,h.lng):null;});}
 
 /* ---------- render centros ---------- */
 const PRIO={abierto:0,saturado:1,desconocido:2,cerrado:3};
 function aplicarFiltros(){
-  const q=norm($("q").value);
-  const est=$("f-estado").value, ciu=$("f-ciudad").value;
-  let rows=DATA.filter(h=>{
-    if(est && h.estado!==est) return false;
-    if(ciu && h.ciudad!==ciu) return false;
-    if(filtro==="abierto" && h.estado_operativo!=="abierto") return false;
-    if(filtro==="sin" && h.estado_operativo!=="desconocido") return false;
-    if(q){const blob=norm(h.nombre+" "+h.ciudad+" "+h.estado);if(!blob.includes(q))return false;}
-    return true;
-  });
-  rows.sort((a,b)=>{
-    const pa=PRIO[a.estado_operativo]??2, pb=PRIO[b.estado_operativo]??2;
-    if(pa!==pb) return pa-pb;
-    return a.ciudad.localeCompare(b.ciudad,'es')||a.nombre.localeCompare(b.nombre,'es');
-  });
+  const q=norm($("q").value),est=$("f-estado").value,ciu=$("f-ciudad").value;
+  let rows=DATA.filter(h=>{if(est&&h.estado!==est)return false;if(ciu&&h.ciudad!==ciu)return false;if(filtro==="abierto"&&h.estado_operativo!=="abierto")return false;if(filtro==="sin"&&h.estado_operativo!=="desconocido")return false;if(q){if(!norm(h.nombre+" "+h.ciudad+" "+h.estado).includes(q))return false;}return true;});
+  if(userPos){rows.sort((a,b)=>{const da=a._d==null?1e9:a._d,db=b._d==null?1e9:b._d;if(da!==db)return da-db;return (PRIO[a.estado_operativo]??2)-(PRIO[b.estado_operativo]??2);});}
+  else{rows.sort((a,b)=>{const pa=PRIO[a.estado_operativo]??2,pb=PRIO[b.estado_operativo]??2;if(pa!==pb)return pa-pb;return a.ciudad.localeCompare(b.ciudad,'es')||a.nombre.localeCompare(b.nombre,'es');});}
   return rows;
 }
 function render(){
-  const rows=aplicarFiltros();
-  const list=$("list"), empty=$("empty");
-  $("count").textContent=rows.length+(rows.length===1?" centro":" centros")+" · de "+DATA.length+" en el directorio";
-  if(!rows.length){
-    list.innerHTML=""; empty.classList.remove("hide");
-    empty.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div>'+(DATA.length?"No hay centros con ese filtro. Prueba con otro estado o registra uno nuevo.":"Aún no hay centros cargados.")+'</div>';
-    return;
-  }
-  empty.classList.add("hide");
-  list.innerHTML=rows.map(cardHTML).join("");
+  const rows=aplicarFiltros(),list=$("list"),empty=$("empty");
+  $("count").textContent=rows.length+(rows.length===1?" centro":" centros")+(userPos?" · ordenados por cercanía":"");
+  if(!rows.length){list.innerHTML="";empty.classList.remove("hide");empty.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div>'+(DATA.length?"No hay centros con ese filtro. Prueba con otro o agrégalo.":"Aún no hay centros cargados.")+'</div>';return;}
+  empty.classList.add("hide");list.innerHTML=rows.map(cardHTML).join("");
+  if(mapMode==="mapa")pintarMapa(rows);
 }
 function cardHTML(h){
   const [bc,bl]=badge(h.estado_operativo);
   const conf=h.confirmaciones>0?(" · "+h.confirmaciones+(h.confirmaciones===1?" confirmación":" confirmaciones")):"";
-  const pro=h.personal_salud?'<span class="pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>verificado por personal</span>':"";
-  const cap=h.capacidad?`<div class="note">${esc(capLabel(h.capacidad))}${h.nota?" — "+esc(h.nota):""}</div>`
-            : (h.nota?`<div class="note">${esc(h.nota)}</div>`:"");
+  const pro=h.personal_salud?' · <span class="pro">✓ verificado por personal</span>':"";
+  const dist=h._d!=null?`<span class="dist">${esc(distLabel(h._d))}</span> · `:"";
+  const cap=h.capacidad?`<div class="note">${esc(capLabel(h.capacidad))}${h.nota?" — "+esc(h.nota):""}</div>`:(h.nota?`<div class="note">${esc(h.nota)}</div>`:"");
   const tel=h.telefono?`<a class="act tel" href="tel:${esc(h.telefono)}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Llamar</a>`:"";
-  const ver=h.verificado?' · <span class="verif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>en directorio</span>':"";
+  const go=(h.lat!=null&&h.lng!=null)?`<a class="act go" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Cómo llegar</a>`:"";
   return `<li class="card" data-id="${esc(h.id)}">
-    <div class="card-top">
-      <div>
-        <p class="name">${esc(h.nombre)}</p>
-        <p class="sub"><span class="tag">${esc(tipoLabel(h.tipo))}</span>${esc(h.ciudad)}, ${esc(h.estado)}${ver}</p>
-      </div>
-      <span class="badge ${bc}"><span class="d"></span>${bl}</span>
-    </div>
-    <div class="meta">${esc(hace(h.ultima_actualizacion))}${conf}${pro?" · "+pro:""}</div>
+    <div class="card-top"><div>
+      <p class="name">${esc(h.nombre)}</p>
+      <p class="sub">${dist}<span class="tag">${esc(tipoLabel(h.tipo))}</span>${esc(h.ciudad)}, ${esc(h.estado)}</p>
+    </div><span class="badge ${bc}"><span class="d"></span>${bl}</span></div>
+    <div class="meta">${esc(hace(h.ultima_actualizacion))}${conf}${pro}</div>
     ${cap}
-    <div class="row-actions">
-      <button class="act" data-toggle="${esc(h.id)}">Reportar estado</button>
-      ${tel}
-    </div>
+    <div class="row-actions"><button class="act" data-toggle="${esc(h.id)}">Reportar estado</button>${tel}${go}</div>
     <div class="reportbox" id="rb-${esc(h.id)}">
       <p class="qlabel">¿Cómo está ahora?</p>
-      <div class="opts op-estado">
-        <div class="opt s-ok"   data-v="abierto">Abierto</div>
-        <div class="opt s-warn" data-v="saturado">Saturado</div>
-        <div class="opt s-bad"  data-v="cerrado">Cerrado</div>
-      </div>
+      <div class="opts op-estado"><div class="opt s-ok" data-v="abierto">Abierto</div><div class="opt s-warn" data-v="saturado">Saturado</div><div class="opt s-bad" data-v="cerrado">Cerrado</div></div>
       <p class="qlabel">Capacidad (opcional)</p>
-      <div class="opts op-cap">
-        <div class="opt s-cap" data-v="disponible">Disponible</div>
-        <div class="opt s-cap" data-v="limitada">Limitada</div>
-        <div class="opt s-cap" data-v="llena">Sin cupo</div>
-      </div>
-      <input class="fld f-nota" maxlength="280" placeholder="Nota (opcional): ej. solo emergencias, sin luz…">
-      <input class="fld f-nom" maxlength="60" placeholder="Tu nombre (opcional)">
+      <div class="opts op-cap"><div class="opt s-cap" data-v="disponible">Disponible</div><div class="opt s-cap" data-v="limitada">Limitada</div><div class="opt s-cap" data-v="llena">Sin cupo</div></div>
+      <input class="fld f-nota" maxlength="280" placeholder="Nota (opcional)">
       <button class="send btn-enviar">Enviar reporte</button>
       <button class="cancel btn-cerrar">Cancelar</button>
-    </div>
-  </li>`;
+    </div></li>`;
 }
-
-/* ---------- interacciones lista centros ---------- */
 $("list").addEventListener("click",async (e)=>{
   const t=e.target.closest("[data-toggle],.btn-cerrar,.opt,.btn-enviar")||e.target;
   const tg=t.getAttribute&&t.getAttribute("data-toggle");
   if(tg){const box=$("rb-"+tg);document.querySelectorAll(".reportbox.open").forEach(b=>{if(b!==box)b.classList.remove("open");});box.classList.toggle("open");if(box.classList.contains("open"))box.scrollIntoView({block:"nearest",behavior:"smooth"});return;}
   if(t.classList&&t.classList.contains("btn-cerrar")){t.closest(".reportbox").classList.remove("open");return;}
-  if(t.classList&&t.classList.contains("opt")){
-    const grp=t.parentElement; grp.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel")); t.classList.add("sel"); return;
-  }
+  if(t.classList&&t.classList.contains("opt")){const g=t.parentElement;g.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));t.classList.add("sel");return;}
   if(t.classList&&t.classList.contains("btn-enviar")){
-    const li=t.closest(".card"), id=li.getAttribute("data-id"), box=t.closest(".reportbox");
-    const opEstado=box.querySelector(".op-estado .opt.sel");
-    if(!opEstado){toast("Elige si está abierto, saturado o cerrado","err");return;}
-    const op=opEstado.getAttribute("data-v");
-    const opCap=box.querySelector(".op-cap .opt.sel");
-    const payload={estado_operativo:op};
-    if(opCap) payload.capacidad=opCap.getAttribute("data-v");
-    const nota=box.querySelector(".f-nota").value.trim(); if(nota)payload.nota=nota;
-    const nom=box.querySelector(".f-nom").value.trim(); if(nom)payload.reportado_por=nom;
-    t.disabled=true; t.textContent="Enviando…";
-    try{
-      await enviarReporte(id,payload);
-      const h=DATA.find(x=>x.id===id);
-      if(h){h.estado_operativo=op;h.ultima_actualizacion=new Date().toISOString();h.confirmaciones=(h.confirmaciones||0)+1;if(payload.capacidad)h.capacidad=payload.capacidad;h.nota=payload.nota||null;}
-      guardarCache(); box.classList.remove("open"); render();
-      toast("¡Gracias! Estado actualizado","ok");
-    }catch(err){
-      toast("No se pudo enviar. Revisa tu conexión","err");
-      t.disabled=false; t.textContent="Enviar reporte";
-    }
+    const li=t.closest(".card"),id=li.getAttribute("data-id"),box=t.closest(".reportbox");
+    const opE=box.querySelector(".op-estado .opt.sel");if(!opE){toast("Elige abierto, saturado o cerrado","err");return;}
+    const op=opE.getAttribute("data-v"),opC=box.querySelector(".op-cap .opt.sel"),payload={estado_operativo:op};
+    if(opC)payload.capacidad=opC.getAttribute("data-v");const nt=box.querySelector(".f-nota").value.trim();if(nt)payload.nota=nt;
+    t.disabled=true;t.textContent="Enviando…";
+    try{await enviarReporte(id,payload);const h=DATA.find(x=>x.id===id);if(h){h.estado_operativo=op;h.ultima_actualizacion=new Date().toISOString();h.confirmaciones=(h.confirmaciones||0)+1;if(payload.capacidad)h.capacidad=payload.capacidad;h.nota=payload.nota||null;}guardarCache();box.classList.remove("open");render();toast("¡Gracias! Estado actualizado","ok");}
+    catch(err){toast("No se pudo enviar","err");t.disabled=false;t.textContent="Enviar reporte";}
   }
 });
 
-/* ---------- render personas ---------- */
+/* ---------- mapa (Leaflet diferido) ---------- */
+function ensureLeaflet(cb){
+  if(window.L){cb();return;}
+  if(leafletLoading){setTimeout(()=>ensureLeaflet(cb),200);return;}
+  leafletLoading=true;
+  const css=document.createElement("link");css.rel="stylesheet";css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.appendChild(css);
+  const js=document.createElement("script");js.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";js.onload=cb;js.onerror=()=>{toast("No se pudo cargar el mapa","err");};document.head.appendChild(js);
+}
+function pintarMapa(rows){
+  ensureLeaflet(()=>{
+    if(!mapObj){
+      mapObj=L.map("map",{zoomControl:true,attributionControl:false});
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(mapObj);
+      mapLayer=L.layerGroup().addTo(mapObj);
+    }
+    mapLayer.clearLayers();
+    const pts=[];
+    rows.forEach(h=>{if(h.lat==null||h.lng==null)return;
+      const m=L.circleMarker([h.lat,h.lng],{radius:9,color:"#fff",weight:2,fillColor:colorOp(h.estado_operativo),fillOpacity:1});
+      const [,bl]=badge(h.estado_operativo);
+      m.bindPopup(`<b>${esc(h.nombre)}</b><br>${esc(h.ciudad)}, ${esc(h.estado)}<br><span style="color:${colorOp(h.estado_operativo)};font-weight:700">${bl}</span>`+(h.lat!=null?`<br><a href="https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}" target="_blank" rel="noopener">Cómo llegar →</a>`:""));
+      mapLayer.addLayer(m);pts.push([h.lat,h.lng]);
+    });
+    if(userPos){L.circleMarker([userPos.lat,userPos.lng],{radius:8,color:"#fff",weight:3,fillColor:"#0a6cff",fillOpacity:1}).addTo(mapLayer).bindPopup("Tu ubicación aproximada");pts.push([userPos.lat,userPos.lng]);}
+    setTimeout(()=>{mapObj.invalidateSize();if(userPos){mapObj.setView([userPos.lat,userPos.lng],11);}else if(pts.length){mapObj.fitBounds(pts,{padding:[30,30],maxZoom:12});}else{mapObj.setView([8.0,-66.0],6);}},60);
+  });
+}
+function setMapMode(m){
+  mapMode=m;
+  document.querySelectorAll("#viewtoggle button").forEach(b=>b.classList.toggle("on",b.getAttribute("data-mode")===m));
+  $("pane-lista").classList.toggle("hide",m!=="lista");
+  $("pane-mapa").classList.toggle("hide",m!=="mapa");
+  if(m==="mapa")pintarMapa(aplicarFiltros());
+}
+
+/* ---------- geolocalización ---------- */
+function pedirUbicacion(manual){
+  if(!navigator.geolocation){if(manual)toast("Tu equipo no permite ubicación","err");return;}
+  if(manual)toast("Buscando tu ubicación…");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
+    aplicarDistancias();
+    $("geoline").classList.remove("hide");
+    $("geoline").innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Mostrando los centros más cercanos a ti';
+    render();if(mapMode==="mapa")pintarMapa(aplicarFiltros());
+    if(manual)toast("Listo, ordené por cercanía","ok");
+  },err=>{if(manual)toast("No pudimos obtener tu ubicación","err");},{enableHighAccuracy:false,timeout:8000,maximumAge:300000});
+}
+
+/* ---------- personas ---------- */
 let qpTimer=null;
 function onBuscarPersona(){
   clearTimeout(qpTimer);
   qpTimer=setTimeout(async ()=>{
-    const term=$("qp").value.trim();
-    const box=$("result-p");
+    const term=$("qp").value.trim(),box=$("result-p");
     if(!term){box.innerHTML="";return;}
-    if(norm(term).length<3 && soloDig(term).length<5){
-      box.innerHTML='<div class="empty" style="padding:24px 10px"><div>Escribe al menos 3 letras del nombre o 5 dígitos de la cédula.</div></div>';
-      return;
-    }
-    box.innerHTML='<li class="skel" style="display:block;list-style:none"></li>';
-    try{
-      const res=await buscarPaciente(term);
-      pintarResultadoPersona(res);
-    }catch(err){ box.innerHTML='<div class="empty" style="padding:24px 10px"><div>No se pudo buscar. Revisa tu conexión.</div></div>'; }
+    if(norm(term).length<3&&soloDig(term).length<5){box.innerHTML='<div class="empty" style="padding:1.5rem 1rem"><div>Escribe al menos 3 letras del nombre o 5 dígitos de la cédula.</div></div>';return;}
+    box.innerHTML='<div class="skel"></div>';
+    try{pintarResultadoPersona(await buscarPaciente(term));}catch(e){box.innerHTML='<div class="empty" style="padding:1.5rem 1rem"><div>No se pudo buscar. Revisa tu conexión.</div></div>';}
   },280);
 }
 function pintarResultadoPersona(res){
   const box=$("result-p");
-  if(!res || !res.length){
-    box.innerHTML='<div class="empty" style="padding:30px 14px">'+
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>'+
-      '<div><b style="color:var(--ink-2)">No hay ningún registro que coincida.</b><br>Puede que aún no lo hayan registrado en la app. Si sabes dónde está, regístralo abajo.</div></div>';
-    return;
-  }
-  const n=res.length;
-  box.innerHTML='<div style="font-size:12.5px;color:var(--muted);font-weight:600;margin:0 3px 10px">'+
-    (n===1?"1 registro coincide":(n+" registros coinciden"))+'</div>'+
-    res.map(r=>{
-      const tel=r.telefono?`<a class="act tel" href="tel:${esc(r.telefono)}" style="margin-top:11px"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Llamar al centro</a>`:"";
-      return `<div class="found">
-        <div class="hd">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-          <h3>Sí, hay un registro que coincide</h3>
-        </div>
-        <div class="where">${esc(r.centro||"Centro de salud")}</div>
-        <div class="city">${esc(r.ciudad||"")}</div>
-        ${tel}
-        <div class="pnote">Por privacidad no mostramos su estado de salud aquí. Llama al centro para confirmar su identidad y recibir información.</div>
-      </div>`;
-    }).join("");
+  if(!res||!res.length){box.innerHTML='<div class="empty" style="padding:1.8rem 1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div><b>No hay ningún registro que coincida.</b><br>Puede que aún no lo hayan registrado. Si sabes dónde está, regístralo abajo.</div></div>';return;}
+  box.innerHTML='<div style="font-size:.86rem;color:var(--muted);font-weight:700;margin:0 .2rem .6rem">'+(res.length===1?"1 registro coincide":res.length+" registros coinciden")+'</div>'+res.map(r=>{
+    const tel=r.telefono?`<a class="act tel" href="tel:${esc(r.telefono)}" style="margin-top:.7rem"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Llamar al centro</a>`:"";
+    return `<div class="found"><div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Sí, hay un registro que coincide</h3></div><div class="where">${esc(r.centro||"Centro de salud")}</div><div class="city">${esc(r.ciudad||"")}</div>${tel}<div class="pnote">Por privacidad no mostramos su estado de salud. Llama al centro para confirmar su identidad y recibir información.</div></div>`;
+  }).join("");
 }
-
-/* ---------- registrar centro ---------- */
-let regOp=null;
-$("r-estado-op").addEventListener("click",e=>{const o=e.target.closest(".opt");if(!o)return;$("r-estado-op").querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));o.classList.add("sel");regOp=o.getAttribute("data-op");});
-$("r-send").addEventListener("click",async ()=>{
-  const nombre=$("r-nombre").value.trim(), estado=$("r-estado").value.trim(), ciudad=$("r-ciudad").value.trim();
-  if(nombre.length<2||!estado||!ciudad){toast("Completa nombre, estado y ciudad","err");return;}
-  const d={nombre,tipo:$("r-tipo").value,estado,ciudad,
-    direccion:$("r-dir").value.trim()||null,telefono:$("r-tel").value.trim()||null,
-    estado_operativo:regOp||"desconocido"};
-  const btn=$("r-send"); btn.disabled=true; btn.textContent="Registrando…";
-  try{
-    const nuevo=await registrarCentro(d);
-    if(regOp){try{await enviarReporte(nuevo.id,{estado_operativo:regOp});}catch(e){}}
-    toast("Centro registrado. ¡Gracias!","ok");
-    cerrarSheets();
-    ["r-nombre","r-estado","r-ciudad","r-dir","r-tel"].forEach(i=>$(i).value="");
-    $("r-estado-op").querySelectorAll(".opt").forEach(o=>o.classList.remove("sel")); regOp=null;
-    poblarEstados();poblarCiudades();poblarCentrosDL();render();
-  }catch(err){ toast("No se pudo registrar. Revisa tu conexión","err"); }
-  finally{ btn.disabled=false; btn.textContent="Registrar centro"; }
-});
 
 /* ---------- registrar persona ---------- */
 $("p-send").addEventListener("click",async ()=>{
-  const nombre=$("p-nombre").value.trim(), centro=$("p-centro").value.trim();
+  const nombre=$("p-nombre").value.trim(),centro=$("p-centro").value.trim();
   if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
   if(!centro){toast("Indica en qué centro está","err");return;}
   if(!$("p-consent").checked){toast("Marca la autorización para continuar","err");return;}
-  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,
-    registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null};
-  const btn=$("p-send"); btn.disabled=true; btn.textContent="Registrando…";
+  const cargo=$("p-cargo").value;
+  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null};
+  const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
+    const existe=DATA.some(h=>norm(h.nombre)===norm(centro));
+    if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     await registrarPaciente(d);
-    toast("Persona registrada. ¡Gracias!","ok");
-    cerrarSheets();
-    ["p-nombre","p-cedula","p-centro","p-contacto"].forEach(i=>$(i).value=""); $("p-consent").checked=false;
-  }catch(err){ toast("No se pudo registrar. Revisa tu conexión","err"); }
-  finally{ btn.disabled=false; btn.textContent="Registrar persona"; }
+    toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
+    cerrarSheets();["p-nombre","p-cedula","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;
+    if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
+  }catch(err){toast("No se pudo registrar. Revisa tu conexión","err");}
+  finally{btn.disabled=false;btn.textContent="Registrar persona";}
 });
 
-/* ---------- médico: estado del centro ---------- */
-let mOp=null, mCap=null;
-$("m-estado-op").addEventListener("click",e=>{const o=e.target.closest(".opt");if(!o)return;$("m-estado-op").querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));o.classList.add("sel");mOp=o.getAttribute("data-op");});
-$("m-cap-op").addEventListener("click",e=>{const o=e.target.closest(".opt");if(!o)return;const sel=o.classList.contains("sel");$("m-cap-op").querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));if(!sel){o.classList.add("sel");mCap=o.getAttribute("data-v");}else{mCap=null;}});
-$("m-send-estado").addEventListener("click",async ()=>{
-  const centro=$("m-centro").value.trim();
-  if(!centro){toast("Indica tu centro de salud","err");return;}
-  if(!mOp){toast("Elige el estado de tu centro","err");return;}
-  const h=DATA.find(x=>norm(x.nombre)===norm(centro));
-  const payload={estado_operativo:mOp,personal_salud:true};
-  if(mCap)payload.capacidad=mCap;
-  const nota=$("m-nota").value.trim(); if(nota)payload.nota=nota;
-  const btn=$("m-send-estado"); btn.disabled=true; btn.textContent="Actualizando…";
-  try{
-    let id;
-    if(h){id=h.id;}
-    else{const nuevo=await registrarCentro({nombre:centro,tipo:"hospital",estado:"—",ciudad:"—",estado_operativo:mOp});id=nuevo.id;}
-    await enviarReporte(id,payload);
-    const c=DATA.find(x=>x.id===id);
-    if(c){c.estado_operativo=mOp;c.ultima_actualizacion=new Date().toISOString();c.confirmaciones=(c.confirmaciones||0)+1;c.personal_salud=true;if(mCap)c.capacidad=mCap;if(nota)c.nota=nota;}
-    guardarCache(); poblarCentrosDL(); render();
-    toast("Estado actualizado. ¡Gracias!","ok");
-    $("m-nota").value=""; $("m-estado-op").querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));$("m-cap-op").querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));mOp=null;mCap=null;
-  }catch(err){ toast("No se pudo actualizar. Revisa tu conexión","err"); }
-  finally{ btn.disabled=false; btn.textContent="Actualizar estado del centro"; }
-});
-$("m-send-pac").addEventListener("click",async ()=>{
-  const centro=$("m-centro").value.trim(), nombre=$("m-pnombre").value.trim();
-  if(!centro){toast("Indica tu centro de salud","err");return;}
-  if(nombre.length<3){toast("Escribe el nombre del paciente","err");return;}
-  const d={nombre,cedula:$("m-pcedula").value.trim()||null,centro,registrado_por:"personal_salud",contacto:null};
-  const btn=$("m-send-pac"); btn.disabled=true; btn.textContent="Registrando…";
-  try{
-    await registrarPaciente(d);
-    toast("Paciente registrado. ¡Gracias!","ok");
-    $("m-pnombre").value=""; $("m-pcedula").value="";
-  }catch(err){ toast("No se pudo registrar. Revisa tu conexión","err"); }
-  finally{ btn.disabled=false; btn.textContent="Registrar paciente"; }
+/* ---------- agregar centro ---------- */
+$("r-send").addEventListener("click",async ()=>{
+  const nombre=$("r-nombre").value.trim(),estado=$("r-estado").value.trim(),ciudad=$("r-ciudad").value.trim();
+  if(nombre.length<2||!estado||!ciudad){toast("Completa nombre, estado y ciudad","err");return;}
+  const d={nombre,tipo:$("r-tipo").value,estado,ciudad,telefono:$("r-tel").value.trim()||null,estado_operativo:"desconocido"};
+  if($("r-geo").checked&&userPos){d.lat=userPos.lat;d.lng=userPos.lng;}
+  const btn=$("r-send");btn.disabled=true;btn.textContent="Agregando…";
+  try{await registrarCentro(d);toast("Centro agregado. ¡Gracias!","ok");cerrarSheets();["r-nombre","r-estado","r-ciudad","r-tel"].forEach(i=>$(i).value="");$("r-geo").checked=false;poblarEstados();poblarCiudades();poblarCentrosDL();render();}
+  catch(err){toast("No se pudo agregar. Revisa tu conexión","err");}
+  finally{btn.disabled=false;btn.textContent="Agregar centro";}
 });
 
 /* ---------- refrescar ---------- */
 async function refrescar(silencioso){
-  if(!silencioso){$("btn-refresh").textContent="↻ Actualizando…";}
-  try{
-    DATA=await cargarCentros(); lastUpdate=Date.now(); guardarCache();
-    $("offline").classList.remove("show");
-    poblarEstados(); poblarCiudades(); poblarCentrosDL(); render(); pintarUpdated();
-  }catch(err){
-    if(!DATA.length){const c=leerCache();if(c&&c.d){DATA=c.d;poblarEstados();poblarCiudades();poblarCentrosDL();render();}}
-    $("offline").classList.add("show");
-  }finally{ if(!silencioso)$("btn-refresh").textContent="↻ Actualizar"; }
-}
-function pintarUpdated(){
-  if(!lastUpdate){$("updated").textContent="";return;}
-  const m=Math.floor((Date.now()-lastUpdate)/60000);
-  $("updated").textContent = m<1?"al día":("hace "+m+" min");
+  try{DATA=await cargarCentros();guardarCache();aplicarDistancias();$("offline").classList.remove("show");poblarEstados();poblarCiudades();poblarCentrosDL();render();}
+  catch(err){if(!DATA.length){const c=leerCache();if(c&&c.d){DATA=c.d;aplicarDistancias();poblarEstados();poblarCiudades();poblarCentrosDL();render();}}$("offline").classList.add("show");}
 }
 
-/* ---------- navegación de vistas ---------- */
+/* ---------- navegación ---------- */
 function setView(v){
-  view=v;
-  const i=v==="personas"?1:0;
-  $("segmented").setAttribute("data-i",i);
+  view=v;$("segmented").setAttribute("data-i",v==="centros"?1:0);
   document.querySelectorAll(".seg").forEach(s=>s.classList.toggle("on",s.getAttribute("data-view")===v));
-  $("view-centros").classList.toggle("hide",v!=="centros");
   $("view-personas").classList.toggle("hide",v!=="personas");
+  $("view-centros").classList.toggle("hide",v!=="centros");
+  if(v==="centros"&&mapMode==="mapa")setTimeout(()=>pintarMapa(aplicarFiltros()),50);
   window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".seg").forEach(s=>s.addEventListener("click",()=>setView(s.getAttribute("data-view"))));
@@ -1016,49 +736,43 @@ document.querySelectorAll(".seg").forEach(s=>s.addEventListener("click",()=>setV
 /* ---------- sheets ---------- */
 function abrir(id){$(id).classList.add("open");document.body.style.overflow="hidden";}
 function cerrarSheets(){document.querySelectorAll(".scrim.open").forEach(s=>s.classList.remove("open"));document.body.style.overflow="";}
-$("btn-registrar").addEventListener("click",()=>abrir("sheet-menu"));
-$("cta-centro").addEventListener("click",()=>abrir("sheet-centro"));
 $("cta-persona").addEventListener("click",()=>abrir("sheet-persona"));
+$("cta-centro").addEventListener("click",()=>abrir("sheet-centro"));
 $("btn-guia").addEventListener("click",()=>abrir("sheet-guia"));
-$("intro-guia").addEventListener("click",()=>abrir("sheet-guia"));
-$("intro-guia2").addEventListener("click",()=>abrir("sheet-guia"));
 $("guia-ok").addEventListener("click",()=>{try{localStorage.setItem(SEEN_KEY,"1");}catch(e){}cerrarSheets();});
 document.querySelectorAll(".role").forEach(r=>r.addEventListener("click",()=>{cerrarSheets();setTimeout(()=>abrir(r.getAttribute("data-open")),120);}));
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",cerrarSheets));
 document.querySelectorAll(".scrim").forEach(s=>s.addEventListener("click",e=>{if(e.target===s)cerrarSheets();}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrarSheets();});
 
-/* ---------- listeners filtros ---------- */
+/* ---------- filtros / mapa / geo ---------- */
 $("q").addEventListener("input",render);
 $("f-estado").addEventListener("change",()=>{poblarCiudades();render();});
 $("f-ciudad").addEventListener("change",render);
 $("qp").addEventListener("input",onBuscarPersona);
-document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
-  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
-  c.classList.add("on"); filtro=c.getAttribute("data-fil"); render();
-}));
-$("btn-refresh").addEventListener("click",()=>refrescar(false));
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");filtro=c.getAttribute("data-fil");render();}));
+document.querySelectorAll("#viewtoggle button").forEach(b=>b.addEventListener("click",()=>setMapMode(b.getAttribute("data-mode"))));
+$("near").addEventListener("click",()=>pedirUbicacion(true));
 window.addEventListener("online",()=>refrescar(true));
 window.addEventListener("offline",()=>$("offline").classList.add("show"));
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refrescar(true);});
+
+/* ---------- tamaño de letra ---------- */
+const FS=[16,18,20,22];let fsi=1;
+function aplicarFS(){document.documentElement.style.fontSize=FS[fsi]+"px";try{localStorage.setItem(FS_KEY,fsi);}catch(e){}}
+$("a-minus").addEventListener("click",()=>{fsi=Math.max(0,fsi-1);aplicarFS();});
+$("a-plus").addEventListener("click",()=>{fsi=Math.min(FS.length-1,fsi+1);aplicarFS();});
 
 /* ---------- arranque ---------- */
 (function init(){
-  if(DEMO){ PAC=demoPacientes(); }
-  else if(SUPABASE_URL.indexOf("TU-PROYECTO")!==-1){ $("setup").classList.add("show"); }
-  const c=leerCache();
-  if(c&&c.d&&c.d.length){DATA=c.d;poblarEstados();poblarCiudades();poblarCentrosDL();render();}
+  try{const s=localStorage.getItem(FS_KEY);if(s!=null){fsi=Math.min(FS.length-1,Math.max(0,parseInt(s,10)||1));}}catch(e){}
+  aplicarFS();
+  if(DEMO){PAC=demoPacientes();}
+  const c=leerCache();if(c&&c.d&&c.d.length){DATA=c.d;aplicarDistancias();poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   refrescar(false);
-  setInterval(()=>{if(document.visibilityState==="visible"&&navigator.onLine)refrescar(true);},60000);
-  setInterval(pintarUpdated,30000);
-  // mostrar guía la primera vez
-  try{ if(!localStorage.getItem(SEEN_KEY)) setTimeout(()=>abrir("sheet-guia"),500); }catch(e){}
+  pedirUbicacion(false); // intenta ubicar al entrar (best-effort)
+  try{if(!localStorage.getItem(SEEN_KEY))setTimeout(()=>abrir("sheet-guia"),500);}catch(e){}
 })();
-
-/* ---------- service worker ---------- */
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{});});
-}
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{});});}
 </script>
 </body>
 </html>

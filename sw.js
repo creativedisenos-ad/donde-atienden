@@ -1,7 +1,7 @@
 /* Service worker mínimo — cachea la app para que abra sin señal.
    Los datos (API de Supabase) NO se cachean aquí: la app los guarda
    en localStorage y siempre intenta traer lo más reciente. */
-const CACHE = "salud-ve-v2";
+const CACHE = "salud-ve-v3";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
