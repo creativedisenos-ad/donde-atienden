@@ -395,7 +395,8 @@
     <div id="pane-lista">
       <div class="searchbox" style="margin-top:.85rem">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="q" class="search" type="search" inputmode="search" placeholder="Buscar hospital o ciudad…" autocomplete="off" aria-label="Buscar centro">
+        <input id="q" class="search" type="search" inputmode="search" placeholder="Buscar hospital o ciudad…" autocomplete="off" list="q-dl" aria-label="Buscar centro">
+        <datalist id="q-dl"></datalist>
       </div>
       <div class="selrow">
         <select id="f-estado" aria-label="Filtrar por estado"><option value="">Todos los estados</option></select>
@@ -590,7 +591,7 @@ let mapObj = null, mapLayer = null, leafletLoading = false;
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 function $(id){return document.getElementById(id);}
 function toast(msg,kind){const t=$("toast");t.textContent=msg;t.className="show"+(kind?(" "+kind):"");clearTimeout(t._t);t._t=setTimeout(()=>t.className="",3000);}
-function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
+function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();}
 function soloDig(s){return String(s||"").replace(/\D/g,"");}
 function tipoLabel(t){return {hospital:"Hospital",clinica:"Clínica",ambulatorio:"Ambulatorio",cdi:"CDI",maternidad:"Maternidad",otro:"Centro"}[t]||"Centro";}
 function capLabel(c){return {disponible:"Camas disponibles",limitada:"Capacidad limitada",llena:"Sin cupo"}[c]||"";}
@@ -669,7 +670,13 @@ function leerCache(){try{const r=localStorage.getItem(CACHE_KEY);return r?JSON.p
 /* ---------- selects ---------- */
 function poblarEstados(){const sel=$("f-estado"),dl=$("estados-dl");const es=[...new Set(DATA.map(h=>h.estado))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todos los estados</option>'+es.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join("");if(es.includes(cur))sel.value=cur;dl.innerHTML=es.map(e=>`<option value="${esc(e)}">`).join("");}
 function poblarCiudades(){const est=$("f-estado").value,sel=$("f-ciudad");const c=[...new Set(DATA.filter(h=>!est||h.estado===est).map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todas las ciudades</option>'+c.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");if(c.includes(cur))sel.value=cur;else sel.value="";}
-function poblarCentrosDL(){$("centros-dl").innerHTML=[...new Set(DATA.map(h=>h.nombre))].sort((a,b)=>a.localeCompare(b,'es')).map(n=>`<option value="${esc(n)}">`).join("");}
+function poblarCentrosDL(){
+  const nombres=[...new Set(DATA.map(h=>h.nombre))].sort((a,b)=>a.localeCompare(b,'es'));
+  const ciudades=[...new Set(DATA.map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));
+  const opt=nombres.map(n=>`<option value="${esc(n)}">`).join("");
+  $("centros-dl").innerHTML=opt;
+  const q=$("q-dl"); if(q) q.innerHTML=opt+ciudades.map(c=>`<option value="${esc(c)}">`).join("");
+}
 
 /* ---------- distancias ---------- */
 function aplicarDistancias(){DATA.forEach(h=>{h._d=(userPos&&h.lat!=null&&h.lng!=null)?haversine(userPos.lat,userPos.lng,h.lat,h.lng):null;});}
@@ -817,7 +824,7 @@ $("p-send").addEventListener("click",async ()=>{
   const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null};
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
-    const existe=DATA.some(h=>norm(h.nombre)===norm(centro));
+    const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     await registrarPaciente(d);
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
