@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f3f5f8">
-<meta name="description" content="Encuentra a familiares ingresados en hospitales de Venezuela. Registro voluntario y comunitario tras el sismo.">
+<meta name="description" content="Hospitales en Venezuela: encuentra a familiares ingresados y centros de salud operativos. Registro voluntario y comunitario.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://ozuxfepfkvnxkywdsqxy.supabase.co" crossorigin>
-<title>¿Dónde está? · Buscar familiares · Venezuela</title>
+<title>Hospitales en Venezuela · Encuentra a tu familiar</title>
 <style>
   :root{
     --bg:#f3f5f8; --surface:#ffffff; --surface-2:#eef1f5;
@@ -54,7 +54,7 @@
     box-shadow:0 4px 12px rgba(10,141,143,.4)}
   .mark svg{width:1.35rem;height:1.35rem}
   .brand-tt{min-width:0}
-  .brand-tt h1{margin:0;font-size:1.18rem;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .brand-tt h1{margin:0;font-size:1.04rem;font-weight:800;letter-spacing:-.02em;line-height:1.1}
   .brand-tt p{margin:.05rem 0 0;font-size:.72rem;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bar-actions{margin-left:auto;display:flex;align-items:center;gap:.4rem;flex:none}
   .az{display:flex;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);
@@ -260,8 +260,8 @@
   <div class="bar-in">
     <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg></span>
     <div class="brand-tt">
-      <h1>¿Dónde está?</h1>
-      <p>Encuentra a tu familiar · Venezuela</p>
+      <h1>Hospitales en Venezuela</h1>
+      <p>Encuentra a tu familiar ingresado</p>
     </div>
     <div class="bar-actions">
       <div class="az" role="group" aria-label="Tamaño de letra">
@@ -414,6 +414,7 @@
     <select id="p-quien" class="fld">
       <option value="familiar">Soy familiar o allegado</option>
       <option value="paciente">Soy la propia persona</option>
+      <option value="voluntario">Solo quiero ayudar</option>
     </select>
     <label for="p-cargo">¿Trabajas en este centro? (opcional)</label>
     <select id="p-cargo" class="fld">
