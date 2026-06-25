@@ -142,6 +142,37 @@
     font-size:1.02rem;padding:.85rem;border-radius:.8rem;min-height:3.1rem}
   .ally .go svg{width:1.1rem;height:1.1rem}
 
+  /* reportar dato falso */
+  .flag{margin-top:.5rem;border:none;background:none;color:var(--muted);font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.4rem 0}
+  .flag svg{width:.95rem;height:.95rem}
+  .flag:active{color:var(--bad)}
+  .opt.sel{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
+
+  /* asistente IA (burbuja) */
+  .chat-fab{position:fixed;right:1rem;bottom:1.1rem;width:3.6rem;height:3.6rem;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(150deg,#13b6b7,#086e70);box-shadow:0 8px 24px rgba(10,141,143,.45);z-index:60;
+    display:flex;align-items:center;justify-content:center;transition:transform .15s var(--ease)}
+  .chat-fab:active{transform:scale(.92)}.chat-fab svg{width:1.7rem;height:1.7rem}
+  .chat-fab.hide{display:none}
+  .chat{position:fixed;right:1rem;bottom:1.1rem;width:min(92vw,380px);height:min(72vh,560px);background:var(--surface);
+    border:1px solid var(--line-2);border-radius:1.2rem;box-shadow:var(--shadow-l);z-index:61;display:none;flex-direction:column;overflow:hidden}
+  .chat.open{display:flex}
+  .chat-h{display:flex;align-items:center;gap:.6rem;padding:.8rem .9rem;background:linear-gradient(150deg,#13b6b7,#086e70);color:#fff}
+  .chat-ht{display:flex;align-items:center;gap:.55rem;flex:1;min-width:0}
+  .chat-dot{width:.6rem;height:.6rem;border-radius:50%;background:#7CFFC4;box-shadow:0 0 0 3px rgba(124,255,196,.3);flex:none}
+  .chat-ht b{display:block;font-size:1rem;line-height:1.1}.chat-ht span{display:block;font-size:.74rem;color:#d8f5f4}
+  .chat-x{border:none;background:rgba(255,255,255,.18);color:#fff;width:2rem;height:2rem;border-radius:.6rem;cursor:pointer;font-size:.9rem}
+  .chat-body{flex:1;overflow:auto;padding:.9rem;display:flex;flex-direction:column;gap:.6rem;background:var(--bg)}
+  .msg{max-width:86%;padding:.7rem .85rem;border-radius:1rem;font-size:.95rem;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+  .msg.bot{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);align-self:flex-start;border-bottom-left-radius:.3rem}
+  .msg.user{background:var(--brand);color:#fff;align-self:flex-end;border-bottom-right-radius:.3rem}
+  .msg.typing{color:var(--muted)}
+  .chat-in{display:flex;gap:.5rem;padding:.7rem;border-top:1px solid var(--line-2);background:var(--surface)}
+  .chat-in input{flex:1;min-width:0;font-size:1rem;font-family:var(--sans);padding:.7rem .85rem;border:1.5px solid var(--line);border-radius:var(--r-pill);background:var(--surface);color:var(--ink)}
+  .chat-in input:focus{outline:none;border-color:var(--brand)}
+  .chat-in button{flex:none;width:2.8rem;height:2.8rem;border:none;border-radius:50%;background:var(--brand);cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .chat-in button svg{width:1.2rem;height:1.2rem}.chat-in button:disabled{opacity:.5}
+
   .empty{text-align:center;color:var(--muted);padding:2.4rem 1rem;font-size:.98rem;line-height:1.5}
   .empty svg{width:2.6rem;height:2.6rem;color:#b9c2cd;margin-bottom:.6rem}
   .empty b{color:var(--ink-2)}
@@ -504,6 +535,38 @@
   </div>
 </div>
 
+<div id="sheet-abuso" class="scrim" role="dialog" aria-modal="true" aria-label="Reportar dato falso">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>Reportar dato falso</h2>
+    <p class="hint" id="abuso-sub">Tu reporte ayuda a moderar la información.</p>
+    <label>¿Qué ocurre con este dato?</label>
+    <div class="opts" id="abuso-op">
+      <div class="opt" data-m="No existe / es falso">No existe</div>
+      <div class="opt" data-m="Datos incorrectos">Datos incorrectos</div>
+      <div class="opt" data-m="Duplicado">Duplicado</div>
+    </div>
+    <input id="abuso-nota" class="fld" maxlength="160" placeholder="Detalle (opcional)">
+    <button id="abuso-send" class="send">Enviar reporte</button>
+    <button class="cancel" data-close>Cancelar</button>
+  </div>
+</div>
+
+<button id="chat-fab" class="chat-fab" aria-label="Abrir asistente">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+</button>
+<div id="chat" class="chat">
+  <div class="chat-h">
+    <div class="chat-ht"><span class="chat-dot"></span><div><b>Asistente</b><span>Hospitales en Venezuela</span></div></div>
+    <button id="chat-x" class="chat-x" aria-label="Cerrar asistente">✕</button>
+  </div>
+  <div id="chat-body" class="chat-body" aria-live="polite"></div>
+  <div class="chat-in">
+    <input id="chat-text" type="text" placeholder="Escribe tu pregunta…" maxlength="500" autocomplete="off" aria-label="Mensaje para el asistente">
+    <button id="chat-send" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -540,6 +603,27 @@ function distLabel(km){if(km==null)return"";if(km<1)return"a "+Math.round(km*100
 /* ---------- API ---------- */
 function api(path,opts){opts=opts||{};return fetch(SUPABASE_URL+"/rest/v1/"+path,Object.assign({},opts,{headers:Object.assign({"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},opts.headers||{})}));}
 
+/* ---------- dispositivo + tope anti-spam (20 por hora) ---------- */
+const DEV_KEY="ve_salud_dev", ACT_KEY="ve_salud_acts", RATE_MAX=20, RATE_MIN=60;
+function getDeviceId(){try{let d=localStorage.getItem(DEV_KEY);if(!d){d=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("dev-"+Date.now()+"-"+Math.random().toString(36).slice(2));localStorage.setItem(DEV_KEY,d);}return d;}catch(e){return "dev-"+Date.now()+Math.random().toString(36).slice(2);}}
+function actsRecientes(){try{const a=JSON.parse(localStorage.getItem(ACT_KEY)||"[]").filter(t=>Date.now()-t<RATE_MIN*60000);localStorage.setItem(ACT_KEY,JSON.stringify(a));return a;}catch(e){return [];}}
+function rateOk(){return actsRecientes().length<RATE_MAX;}
+function recordAct(){try{const a=actsRecientes();a.push(Date.now());localStorage.setItem(ACT_KEY,JSON.stringify(a));}catch(e){}}
+async function callRPC(name,body){
+  const r=await api("rpc/"+name,{method:"POST",body:JSON.stringify(body)});
+  if(!r.ok){let m="";try{const e=await r.json();m=(e&&(e.message||e.error||e.hint))||"";}catch(_){}
+    if(/limite_alcanzado|device_invalido/.test(m))throw new Error("limite");throw new Error(m||"rpc");}
+  return await r.json().catch(()=>({}));
+}
+async function reportarAbuso(tipo,referencia,motivo){
+  if(DEMO){await new Promise(r=>setTimeout(r,200));return;}
+  await callRPC("reportar_abuso",{p_tipo:tipo,p_referencia:referencia||null,p_motivo:motivo||null,p_device:getDeviceId()});
+}
+async function chatSend(message,history){
+  const r=await fetch(SUPABASE_URL+"/functions/v1/chat",{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({message,history:history||[]})});
+  const d=await r.json().catch(()=>({}));return d.reply||"No pude responder ahora. Intenta de nuevo.";
+}
+
 function demoCentros(){const now=Date.now(),iso=m=>new Date(now-m*60000).toISOString();return [
  {id:"1",nombre:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",tipo:"hospital",estado:"Carabobo",ciudad:"Valencia",telefono:"0241-8675000",lat:10.162,lng:-68.0078,estado_operativo:"abierto",capacidad:"limitada",nota:"Atendiendo emergencias",confirmaciones:7,personal_salud:true,ultima_actualizacion:iso(8),verificado:true},
  {id:"2",nombre:"Hospital Central de Maracay",tipo:"hospital",estado:"Aragua",ciudad:"Maracay",telefono:null,lat:10.2469,lng:-67.5958,estado_operativo:"saturado",capacidad:"llena",nota:"Esperas largas",confirmaciones:5,personal_salud:false,ultima_actualizacion:iso(14),verificado:true},
@@ -561,8 +645,11 @@ async function cargarCentros(){
 async function enviarReporte(id,p){if(DEMO){await new Promise(r=>setTimeout(r,200));return;}const r=await api("reportes",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify(Object.assign({hospital_id:id},p))});if(!r.ok)throw new Error("rep");}
 async function registrarCentro(d){
   if(DEMO){await new Promise(r=>setTimeout(r,200));const n=Object.assign({id:"demo-"+Date.now(),confirmaciones:0,ultima_actualizacion:null,verificado:false,personal_salud:false},d);DATA.push(n);return n;}
-  const r=await api("hospitales?select=id,nombre,tipo,estado,ciudad,telefono,lat,lng,estado_operativo,capacidad,nota,confirmaciones,ultima_actualizacion,verificado,personal_salud",{method:"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify(Object.assign({verificado:false,activo:true},d))});
-  if(!r.ok)throw new Error("center");return (await r.json())[0];
+  const res=await callRPC("registrar_centro",{p_nombre:d.nombre,p_tipo:d.tipo||"otro",p_estado:d.estado||"Por confirmar",p_ciudad:d.ciudad||"Por confirmar",p_telefono:d.telefono||null,p_lat:(d.lat==null?null:d.lat),p_lng:(d.lng==null?null:d.lng),p_device:getDeviceId()});
+  recordAct();
+  const n=Object.assign({id:res.id||("tmp-"+Date.now()),confirmaciones:0,ultima_actualizacion:null,verificado:false,personal_salud:false,estado_operativo:d.estado_operativo||"desconocido"},d);
+  if(!DATA.some(h=>norm(h.nombre)===norm(n.nombre)))DATA.push(n);
+  return n;
 }
 async function buscarPaciente(term){
   const t=norm(term),dig=soloDig(term);if(t.length<3&&dig.length<5)return null;
@@ -571,8 +658,8 @@ async function buscarPaciente(term){
 }
 async function registrarPaciente(d){
   if(DEMO){await new Promise(r=>setTimeout(r,220));const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return;}
-  const r=await api("rpc/registrar_paciente",{method:"POST",body:JSON.stringify({p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null})});
-  if(!r.ok)throw new Error("regpac");
+  await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId()});
+  recordAct();
 }
 
 /* ---------- cache ---------- */
@@ -619,6 +706,7 @@ function cardHTML(h){
     <div class="meta">${esc(hace(h.ultima_actualizacion))}${conf}${pro}</div>
     ${cap}
     <div class="row-actions"><button class="act" data-toggle="${esc(h.id)}">Reportar estado</button>${tel}${go}</div>
+    <button class="flag" data-flag="${esc(h.id)}" data-name="${esc(h.nombre)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button>
     <div class="reportbox" id="rb-${esc(h.id)}">
       <p class="qlabel">¿Cómo está ahora?</p>
       <div class="opts op-estado"><div class="opt s-ok" data-v="abierto">Abierto</div><div class="opt s-warn" data-v="saturado">Saturado</div><div class="opt s-bad" data-v="cerrado">Cerrado</div></div>
@@ -630,7 +718,9 @@ function cardHTML(h){
     </div></li>`;
 }
 $("list").addEventListener("click",async (e)=>{
-  const t=e.target.closest("[data-toggle],.btn-cerrar,.opt,.btn-enviar")||e.target;
+  const t=e.target.closest("[data-toggle],[data-flag],.btn-cerrar,.opt,.btn-enviar")||e.target;
+  const fl=t.getAttribute&&t.getAttribute("data-flag");
+  if(fl){abrirAbuso("centro",fl,t.getAttribute("data-name"));return;}
   const tg=t.getAttribute&&t.getAttribute("data-toggle");
   if(tg){const box=$("rb-"+tg);document.querySelectorAll(".reportbox.open").forEach(b=>{if(b!==box)b.classList.remove("open");});box.classList.toggle("open");if(box.classList.contains("open"))box.scrollIntoView({block:"nearest",behavior:"smooth"});return;}
   if(t.classList&&t.classList.contains("btn-cerrar")){t.closest(".reportbox").classList.remove("open");return;}
@@ -712,7 +802,7 @@ function pintarResultadoPersona(res){
   if(!res||!res.length){box.innerHTML='<div class="empty" style="padding:1.8rem 1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div><b>No hay ningún registro que coincida.</b><br>Puede que aún no lo hayan registrado en ningún hospital. Si sabes dónde está, regístralo abajo.<br><a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;background:#26329e;color:#fff;font-weight:800;text-decoration:none;padding:.75rem 1.1rem;border-radius:.7rem">Buscar en Red de Ayuda Venezuela →</a></div></div>';return;}
   box.innerHTML='<div style="font-size:.86rem;color:var(--muted);font-weight:700;margin:0 .2rem .6rem">'+(res.length===1?"1 registro coincide":res.length+" registros coinciden")+'</div>'+res.map(r=>{
     const tel=r.telefono?`<a class="act tel" href="tel:${esc(r.telefono)}" style="margin-top:.7rem"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Llamar al centro</a>`:"";
-    return `<div class="found"><div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Sí, hay un registro que coincide</h3></div><div class="where">${esc(r.centro||"Centro de salud")}</div><div class="city">${esc(r.ciudad||"")}</div>${tel}<div class="pnote">Por privacidad no mostramos su estado de salud. Llama al centro para confirmar su identidad y recibir información.</div></div>`;
+    return `<div class="found"><div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Sí, hay un registro que coincide</h3></div><div class="where">${esc(r.centro||"Centro de salud")}</div><div class="city">${esc(r.ciudad||"")}</div>${tel}<div class="pnote">Por privacidad no mostramos su estado de salud. Llama al centro para confirmar su identidad y recibir información.</div><button class="flag" data-flagp="${esc(r.centro||"")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button></div>`;
   }).join("");
 }
 
@@ -722,6 +812,7 @@ $("p-send").addEventListener("click",async ()=>{
   if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
   if(!centro){toast("Indica en qué centro está","err");return;}
   if(!$("p-consent").checked){toast("Marca la autorización para continuar","err");return;}
+  if(!rateOk()){toast("Alcanzaste el límite de 20 registros por hora. Inténtalo más tarde.","err");return;}
   const cargo=$("p-cargo").value;
   const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null};
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
@@ -732,7 +823,7 @@ $("p-send").addEventListener("click",async ()=>{
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
     cerrarSheets();["p-nombre","p-cedula","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
-  }catch(err){toast("No se pudo registrar. Revisa tu conexión","err");}
+  }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":"No se pudo registrar. Revisa tu conexión","err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
 });
 
@@ -740,11 +831,12 @@ $("p-send").addEventListener("click",async ()=>{
 $("r-send").addEventListener("click",async ()=>{
   const nombre=$("r-nombre").value.trim(),estado=$("r-estado").value.trim(),ciudad=$("r-ciudad").value.trim();
   if(nombre.length<2||!estado||!ciudad){toast("Completa nombre, estado y ciudad","err");return;}
+  if(!rateOk()){toast("Alcanzaste el límite de 20 registros por hora. Inténtalo más tarde.","err");return;}
   const d={nombre,tipo:$("r-tipo").value,estado,ciudad,telefono:$("r-tel").value.trim()||null,estado_operativo:"desconocido"};
   if($("r-geo").checked&&userPos){d.lat=userPos.lat;d.lng=userPos.lng;}
   const btn=$("r-send");btn.disabled=true;btn.textContent="Agregando…";
   try{await registrarCentro(d);toast("Centro agregado. ¡Gracias!","ok");cerrarSheets();["r-nombre","r-estado","r-ciudad","r-tel"].forEach(i=>$(i).value="");$("r-geo").checked=false;poblarEstados();poblarCiudades();poblarCentrosDL();render();}
-  catch(err){toast("No se pudo agregar. Revisa tu conexión","err");}
+  catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":"No se pudo agregar. Revisa tu conexión","err");}
   finally{btn.disabled=false;btn.textContent="Agregar centro";}
 });
 
@@ -776,6 +868,43 @@ document.querySelectorAll(".role").forEach(r=>r.addEventListener("click",()=>{ce
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",cerrarSheets));
 document.querySelectorAll(".scrim").forEach(s=>s.addEventListener("click",e=>{if(e.target===s)cerrarSheets();}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrarSheets();});
+
+/* ---------- reportar dato falso ---------- */
+let abusoCtx=null, abusoMotivo=null;
+function abrirAbuso(tipo,referencia,nombre){
+  abusoCtx={tipo,referencia};abusoMotivo=null;
+  $("abuso-sub").textContent=(nombre?('"'+nombre+'"  ·  '):"")+"Tu reporte ayuda a moderar la información.";
+  $("abuso-op").querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));$("abuso-nota").value="";
+  abrir("sheet-abuso");
+}
+$("abuso-op").addEventListener("click",e=>{const o=e.target.closest(".opt");if(!o)return;$("abuso-op").querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));o.classList.add("sel");abusoMotivo=o.getAttribute("data-m");});
+$("abuso-send").addEventListener("click",async ()=>{
+  if(!abusoCtx)return;
+  const motivo=[abusoMotivo,$("abuso-nota").value.trim()].filter(Boolean).join(" — ")||null;
+  const btn=$("abuso-send");btn.disabled=true;btn.textContent="Enviando…";
+  try{await reportarAbuso(abusoCtx.tipo,abusoCtx.referencia,motivo);toast("Gracias, lo revisaremos","ok");cerrarSheets();}
+  catch(err){toast(err&&err.message==="limite"?"Demasiados envíos. Inténtalo más tarde.":"No se pudo enviar el reporte","err");}
+  finally{btn.disabled=false;btn.textContent="Enviar reporte";}
+});
+$("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp]");if(b)abrirAbuso("persona",b.getAttribute("data-flagp"),b.getAttribute("data-flagp"));});
+
+/* ---------- asistente IA ---------- */
+let chatHist=[], chatBusy=false, chatGreeted=false;
+function chatAdd(role,text,cls){const b=$("chat-body");const d=document.createElement("div");d.className="msg "+(cls||(role==="user"?"user":"bot"));d.textContent=text;b.appendChild(d);b.scrollTop=b.scrollHeight;return d;}
+function abrirChat(){$("chat").classList.add("open");$("chat-fab").classList.add("hide");if(!chatGreeted){chatGreeted=true;chatAdd("bot","¡Hola! Soy el asistente de Hospitales en Venezuela. Te ayudo a buscar a un familiar, registrar a alguien o ver centros cercanos. ¿En qué te ayudo?");}setTimeout(()=>$("chat-text").focus(),200);}
+function cerrarChat(){$("chat").classList.remove("open");$("chat-fab").classList.remove("hide");}
+async function enviarChat(){
+  if(chatBusy)return;const inp=$("chat-text");const msg=inp.value.trim();if(!msg)return;
+  inp.value="";chatAdd("user",msg);chatHist.push({role:"user",text:msg});
+  chatBusy=true;$("chat-send").disabled=true;const t=chatAdd("bot","Escribiendo…","bot typing");
+  try{const reply=await chatSend(msg,chatHist);t.remove();chatAdd("bot",reply);chatHist.push({role:"model",text:reply});if(chatHist.length>16)chatHist=chatHist.slice(-16);}
+  catch(err){t.remove();chatAdd("bot","No pude responder ahora. Revisa tu conexión e intenta de nuevo.");}
+  finally{chatBusy=false;$("chat-send").disabled=false;$("chat-text").focus();}
+}
+$("chat-fab").addEventListener("click",abrirChat);
+$("chat-x").addEventListener("click",cerrarChat);
+$("chat-send").addEventListener("click",enviarChat);
+$("chat-text").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();enviarChat();}});
 
 /* ---------- filtros / mapa / geo ---------- */
 $("q").addEventListener("input",render);
