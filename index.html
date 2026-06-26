@@ -585,6 +585,18 @@
   </div>
 </div>
 
+<div id="sheet-dup" class="scrim" role="dialog" aria-modal="true" aria-label="Cédula ya registrada">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>Esta cédula ya está registrada</h2>
+    <p class="hint">Para no duplicar, verifica si es la misma persona y si el centro es el correcto. Si el dato está mal, repórtalo para corregirlo.</p>
+    <div id="dup-card" class="found"></div>
+    <button id="dup-ok" class="send" style="margin-top:.8rem">Sí, es correcto — es la misma persona</button>
+    <button id="dup-report" class="send dark" style="margin-top:.6rem">El dato es incorrecto — reportar y corregir</button>
+    <button class="cancel" data-close>Cerrar</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -675,9 +687,13 @@ async function buscarPaciente(term){
   const r=await api("rpc/buscar_paciente",{method:"POST",body:JSON.stringify({p_term:term})});if(!r.ok)throw new Error("search");return await r.json();
 }
 async function registrarPaciente(d){
-  if(DEMO){await new Promise(r=>setTimeout(r,220));const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",detalle:d.detalle||null,hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return;}
-  await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null});
-  recordAct();
+  if(DEMO){await new Promise(r=>setTimeout(r,220));
+    const dig=soloDig(d.cedula);
+    if(dig.length>=5){const ex=PAC.find(p=>soloDig(p.cedula)===dig);if(ex)return {ok:false,duplicado:true,existente:{nombre:ex.nombre,detalle:ex.detalle||null,centro:ex.hospital,ciudad:ex.ciudad,telefono:ex.telefono,cedula:"••••"+dig.slice(-4)}};}
+    const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",detalle:d.detalle||null,hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return {ok:true};}
+  const res=await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null});
+  if(res&&res.ok)recordAct();
+  return res;
 }
 
 /* ---------- cache ---------- */
@@ -853,9 +869,10 @@ $("p-send").addEventListener("click",async ()=>{
   const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null};
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
+    const res=await registrarPaciente(d);
+    if(res&&res.duplicado){mostrarDuplicado(res.existente);return;}
     const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
-    await registrarPaciente(d);
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
     cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
@@ -923,6 +940,19 @@ $("abuso-send").addEventListener("click",async ()=>{
   finally{btn.disabled=false;btn.textContent="Enviar reporte";}
 });
 $("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp]");if(b)abrirAbuso("persona",b.getAttribute("data-flagp"),b.getAttribute("data-flagp"));});
+
+/* ---------- cédula ya registrada (evitar duplicados) ---------- */
+let dupCtx=null;
+function mostrarDuplicado(ex){
+  dupCtx={nombre:ex.nombre||"",centro:ex.centro||""};
+  const meta=[ex.detalle, ex.cedula?("C.I. "+ex.cedula):null].filter(Boolean).join("   ·   ");
+  const tel=ex.telefono?`<a class="act tel" href="tel:${esc(ex.telefono)}" style="margin-top:.7rem"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Llamar al centro</a>`:"";
+  $("dup-card").innerHTML=`<div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Ya está registrada</h3></div><div class="where">${esc(ex.nombre||"Persona")}</div>${meta?`<div class="city">${esc(meta)}</div>`:""}<div class="ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><div>Ingresado en <b>${esc(ex.centro||"un centro")}</b>${ex.ciudad?(" · "+esc(ex.ciudad)):""}</div></div>${tel}`;
+  cerrarSheets();setTimeout(()=>abrir("sheet-dup"),140);
+}
+function limpiarFormPersona(){["p-nombre","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;}
+$("dup-ok").addEventListener("click",()=>{cerrarSheets();limpiarFormPersona();toast("Listo, esa persona ya estaba registrada","ok");});
+$("dup-report").addEventListener("click",()=>{const c=dupCtx||{};limpiarFormPersona();cerrarSheets();setTimeout(()=>abrirAbuso("persona",(c.nombre||"")+" · "+(c.centro||""),c.nombre||"este registro"),140);});
 
 /* ---------- asistente IA ---------- */
 let chatHist=[], chatBusy=false, chatGreeted=false;
