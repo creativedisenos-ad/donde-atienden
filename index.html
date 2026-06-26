@@ -632,7 +632,7 @@
     <p class="hint">Sube una lista de varias personas a la vez con un archivo. Ideal para hospitales y centros de salud.</p>
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>Paso 1 · Descarga la plantilla</h3>
-      <p class="sh">Una persona por fila. Complétala y guárdala.</p>
+      <p class="sh"><b>Indispensable:</b> usa esta plantilla y <b>no cambies los títulos de las columnas</b>. Una persona por fila. Si subes otro formato, dará error.</p>
       <button id="bulk-template" class="send dark">Descargar plantilla (.csv)</button>
     </div>
     <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> y <b>edad_sector</b> son <b>opcionales</b> (puedes agregar personas sin cédula).<br>Lo que no sepas, <b>déjalo vacío</b> — no inventes. Solo se omiten las filas sin nombre o sin centro. No se cargan duplicados.</div>
@@ -1090,7 +1090,15 @@ $("bulk-send").addEventListener("click",async ()=>{
   const file=$("bulk-file").files[0];if(!file){toast("Elige un archivo primero","err");return;}
   const btn=$("bulk-send");btn.disabled=true;btn.textContent="Procesando…";$("bulk-status").innerHTML='<div class="bulk-info">Leyendo archivo…</div>';
   try{
-    const raw=await parsearArchivo(file);const valid=[];let omit=0;
+    const raw=await parsearArchivo(file);
+    const heads=raw.length?Object.keys(raw[0]).map(h=>norm(h)):[];
+    const hayNombre=heads.some(h=>h==="nombre"||h==="nombres");
+    const hayCentro=heads.some(h=>["centro","centro de salud","hospital","centro hospitalario"].includes(h));
+    if(!raw.length||!hayNombre||!hayCentro){
+      $("bulk-status").innerHTML='<div class="bulk-err"><b>⚠️ El archivo no sigue la plantilla.</b><br>Descarga la plantilla del <b>Paso 1</b>, llénala <b>sin cambiar los títulos de las columnas</b> (nombre, apellido, cedula, centro, edad_sector) y vuelve a subirla tal cual. Así no dará error.</div>';
+      btn.disabled=false;btn.textContent="Cargar lista";return;
+    }
+    const valid=[];let omit=0;
     raw.forEach(r=>{const o=normFila(r);const nom=((o.nombre||"")+" "+(o.apellido||"")).trim();
       if(nom.length>=3&&o.centro)valid.push({nombre:nom,cedula:o.cedula||null,centro:o.centro,detalle:o.detalle||null});else omit++;});
     if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita al menos <b>nombre y centro de salud</b> (la cédula es opcional). Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
