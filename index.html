@@ -472,6 +472,9 @@
     <input id="p-nombre" class="fld" maxlength="120" placeholder="Ej: José Antonio Pérez">
     <label for="p-cedula">Cédula (recomendada)</label>
     <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Ej: V-12345678">
+    <label for="p-detalle">Edad y/o sector (opcional)</label>
+    <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
+    <p class="help">Solo si lo sabes con certeza — ayuda a la familia a verificar. No lo inventes; si no lo sabes, déjalo vacío.</p>
     <label for="p-centro">¿En qué centro está? *</label>
     <input id="p-centro" class="fld" list="centros-dl" maxlength="160" placeholder="Escribe o elige el centro">
     <datalist id="centros-dl"></datalist>
@@ -637,8 +640,8 @@ function demoCentros(){const now=Date.now(),iso=m=>new Date(now-m*60000).toISOSt
  {id:"8",nombre:"Hospital Universitario de Los Andes (IAHULA)",tipo:"hospital",estado:"Mérida",ciudad:"Mérida",telefono:null,lat:8.5897,lng:-71.1561,estado_operativo:"abierto",capacidad:"disponible",nota:null,confirmaciones:2,personal_salud:false,ultima_actualizacion:iso(40),verificado:true}
 ];}
 function demoPacientes(){return [
- {nombre:"José Antonio Pérez",cedula:"V-12345678",detalle:"45 años · Valencia",hospital:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",ciudad:"Valencia",telefono:"0241-8675000"},
- {nombre:"María Fernanda González",cedula:"V-20111222",detalle:"29 años · Caracas",hospital:"Hospital Universitario de Caracas",ciudad:"Caracas",telefono:null}
+ {nombre:"José Antonio Pérez",cedula:"V-12345678",detalle:null,hospital:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",ciudad:"Valencia",telefono:"0241-8675000"},
+ {nombre:"María Fernanda González",cedula:"V-20111222",detalle:null,hospital:"Hospital Universitario de Caracas",ciudad:"Caracas",telefono:null}
 ];}
 
 async function cargarCentros(){
@@ -661,8 +664,8 @@ async function buscarPaciente(term){
   const r=await api("rpc/buscar_paciente",{method:"POST",body:JSON.stringify({p_term:term})});if(!r.ok)throw new Error("search");return await r.json();
 }
 async function registrarPaciente(d){
-  if(DEMO){await new Promise(r=>setTimeout(r,220));const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return;}
-  await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId()});
+  if(DEMO){await new Promise(r=>setTimeout(r,220));const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",detalle:d.detalle||null,hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return;}
+  await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null});
   recordAct();
 }
 
@@ -831,14 +834,14 @@ $("p-send").addEventListener("click",async ()=>{
   if(!$("p-consent").checked){toast("Marca la autorización para continuar","err");return;}
   if(!rateOk()){toast("Alcanzaste el límite de 20 registros por hora. Inténtalo más tarde.","err");return;}
   const cargo=$("p-cargo").value;
-  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null};
+  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null};
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
     const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     await registrarPaciente(d);
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
-    cerrarSheets();["p-nombre","p-cedula","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;
+    cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":"No se pudo registrar. Revisa tu conexión","err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
@@ -952,5 +955,8 @@ $("a-plus").addEventListener("click",()=>{fsi=Math.min(FS.length-1,fsi+1);aplica
 })();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{});});}
 </script>
+<!-- Vercel Web Analytics (sitio estático) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
