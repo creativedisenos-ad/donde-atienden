@@ -100,6 +100,12 @@
   .search::placeholder{color:var(--muted)}
   .search:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
 
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:.85rem 0 0}
+  .stat{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-card);
+    padding:.85rem .7rem;text-align:center;box-shadow:var(--shadow-s)}
+  .stat .num{display:block;font-size:1.85rem;font-weight:800;color:var(--brand-deep);letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
+  .stat .lbl{display:block;font-size:.8rem;color:var(--muted);font-weight:700;margin-top:.2rem;line-height:1.2}
+
   .privacy{display:flex;gap:.6rem;align-items:flex-start;background:var(--blue-soft);border:1px solid #cfe0ff;color:#143b73;
     font-size:.86rem;padding:.75rem .85rem;border-radius:var(--r-card);margin-top:.8rem;line-height:1.45}
   .privacy svg{flex:none;width:1.25rem;height:1.25rem;margin-top:.05rem;color:var(--blue)}
@@ -370,6 +376,17 @@
       <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <input id="qp" class="search" type="search" inputmode="search" placeholder="Nombre completo o cédula…" autocomplete="off" aria-label="Buscar persona ingresada">
+      </div>
+    </div>
+
+    <div class="stats" id="stats" aria-live="polite">
+      <div class="stat">
+        <span class="num" id="stat-pac">—</span>
+        <span class="lbl">personas registradas</span>
+      </div>
+      <div class="stat">
+        <span class="num" id="stat-vol">—</span>
+        <span class="lbl">voluntarios activos</span>
       </div>
     </div>
 
@@ -679,11 +696,28 @@ function distLabel(km){if(km==null)return"";if(km<1)return"a "+Math.round(km*100
 /* ---------- API ---------- */
 function api(path,opts){opts=opts||{};return fetch(SUPABASE_URL+"/rest/v1/"+path,Object.assign({},opts,{headers:Object.assign({"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},opts.headers||{})}));}
 
+/* ---------- contadores del home (pacientes + voluntarios activos) ---------- */
+function animarNum(el,target){
+  if(!el)return; target=Math.max(0,target|0);
+  const start=parseInt(String(el.textContent||"").replace(/\D/g,""))||0;
+  if(start===target){el.textContent=target.toLocaleString("es-VE");return;}
+  const dur=650,t0=performance.now();
+  (function step(t){const p=Math.min(1,(t-t0)/dur);const v=Math.round(start+(target-start)*(1-Math.pow(1-p,3)));el.textContent=v.toLocaleString("es-VE");if(p<1)requestAnimationFrame(step);})(t0);
+}
+async function cargarStats(){
+  try{
+    let s;
+    if(DEMO){s={pacientes:(typeof PAC!=="undefined"&&PAC.length)||0,voluntarios_activos:1};}
+    else{const r=await api("rpc/estadisticas",{method:"POST",body:"{}"});if(!r.ok)return;s=await r.json();}
+    if(s&&typeof s==="object"){animarNum(document.getElementById("stat-pac"),s.pacientes||0);animarNum(document.getElementById("stat-vol"),s.voluntarios_activos||0);}
+  }catch(e){}
+}
+
 /* ---------- dispositivo + tope anti-spam (20 por hora) ---------- */
 const DEV_KEY="ve_salud_dev", ACT_KEY="ve_salud_acts", RATE_MAX=20, RATE_MIN=60;
 function getDeviceId(){try{let d=localStorage.getItem(DEV_KEY);if(!d){d=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("dev-"+Date.now()+"-"+Math.random().toString(36).slice(2));localStorage.setItem(DEV_KEY,d);}return d;}catch(e){return "dev-"+Date.now()+Math.random().toString(36).slice(2);}}
 function actsRecientes(){try{const a=JSON.parse(localStorage.getItem(ACT_KEY)||"[]").filter(t=>Date.now()-t<RATE_MIN*60000);localStorage.setItem(ACT_KEY,JSON.stringify(a));return a;}catch(e){return [];}}
-function rateOk(){return actsRecientes().length<RATE_MAX;}
+function rateOk(){return true;} /* Sin tope de registros: ahora más que nunca se necesita ayudar. */
 function recordAct(){try{const a=actsRecientes();a.push(Date.now());localStorage.setItem(ACT_KEY,JSON.stringify(a));}catch(e){}}
 async function callRPC(name,body){
   const r=await api("rpc/"+name,{method:"POST",body:JSON.stringify(body)});
@@ -722,7 +756,7 @@ async function enviarReporte(id,p){if(DEMO){await new Promise(r=>setTimeout(r,20
 async function registrarCentro(d){
   if(DEMO){await new Promise(r=>setTimeout(r,200));const n=Object.assign({id:"demo-"+Date.now(),confirmaciones:0,ultima_actualizacion:null,verificado:false,personal_salud:false},d);DATA.push(n);return n;}
   const res=await callRPC("registrar_centro",{p_nombre:d.nombre,p_tipo:d.tipo||"otro",p_estado:d.estado||"Por confirmar",p_ciudad:d.ciudad||"Por confirmar",p_telefono:d.telefono||null,p_lat:(d.lat==null?null:d.lat),p_lng:(d.lng==null?null:d.lng),p_device:getDeviceId()});
-  recordAct();
+  recordAct(); cargarStats();
   const n=Object.assign({id:res.id||("tmp-"+Date.now()),confirmaciones:0,ultima_actualizacion:null,verificado:false,personal_salud:false,estado_operativo:d.estado_operativo||"desconocido"},d);
   if(!DATA.some(h=>norm(h.nombre)===norm(n.nombre)))DATA.push(n);
   return n;
@@ -738,7 +772,7 @@ async function registrarPaciente(d){
     if(dig.length>=5){const ex=PAC.find(p=>soloDig(p.cedula)===dig);if(ex)return {ok:false,duplicado:true,existente:{nombre:ex.nombre,detalle:ex.detalle||null,centro:ex.hospital,ciudad:ex.ciudad,telefono:ex.telefono,cedula:"••••"+dig.slice(-4)}};}
     const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",detalle:d.detalle||null,hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return {ok:true};}
   const res=await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null});
-  if(res&&res.ok)recordAct();
+  if(res&&res.ok){recordAct();cargarStats();}
   return res;
 }
 
@@ -1043,6 +1077,7 @@ async function cargarMasivo(rows){
   if(DEMO){await new Promise(r=>setTimeout(r,300));let ins=0;rows.forEach(x=>{const dig=soloDig(x.cedula);if(dig&&!PAC.some(p=>soloDig(p.cedula)===dig)){const c=DATA.find(h=>norm(h.nombre)===norm(x.centro));PAC.push({nombre:x.nombre,cedula:x.cedula,detalle:x.detalle||null,hospital:x.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});ins++;}});return{insertados:ins,duplicados:rows.length-ins,invalidos:0};}
   const CH=300;let ins=0,dup=0,inv=0;
   for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId()});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;}
+  cargarStats();
   return {insertados:ins,duplicados:dup,invalidos:inv};
 }
 $("bulk-template").addEventListener("click",descargarPlantilla);
@@ -1094,7 +1129,7 @@ $("qp").addEventListener("input",onBuscarPersona);
 document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");filtro=c.getAttribute("data-fil");render();}));
 document.querySelectorAll("#viewtoggle button").forEach(b=>b.addEventListener("click",()=>setMapMode(b.getAttribute("data-mode"))));
 $("near").addEventListener("click",()=>pedirUbicacion(true));
-window.addEventListener("online",()=>refrescar(true));
+window.addEventListener("online",()=>{refrescar(true);cargarStats();});
 window.addEventListener("offline",()=>$("offline").classList.add("show"));
 
 /* ---------- tamaño de letra ---------- */
@@ -1110,6 +1145,7 @@ $("a-plus").addEventListener("click",()=>{fsi=Math.min(FS.length-1,fsi+1);aplica
   if(DEMO){PAC=demoPacientes();}
   const c=leerCache();if(c&&c.d&&c.d.length){DATA=c.d;aplicarDistancias();poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   refrescar(false);
+  cargarStats(); setInterval(cargarStats,45000); // contadores en vivo
   pedirUbicacion(false); // intenta ubicar al entrar (best-effort)
   try{if(!localStorage.getItem(SEEN_KEY))setTimeout(()=>abrir("sheet-guia"),500);else setTimeout(mostrarTip,2600);}catch(e){setTimeout(mostrarTip,2600);}
 })();
