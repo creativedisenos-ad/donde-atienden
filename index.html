@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f3f5f8">
-<meta name="description" content="Hospitales en Venezuela: encuentra a familiares ingresados y centros de salud operativos. Registro voluntario y comunitario.">
+<meta name="description" content="Encuentra a tu familiar ingresado en hospitales y centros de salud de Venezuela tras el sismo. Para personas desaparecidas (que no están en un hospital), visita redayudavenezuela.com.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://ozuxfepfkvnxkywdsqxy.supabase.co" crossorigin>
@@ -152,13 +152,23 @@
   .opt.sel{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
 
   /* asistente IA (burbuja) */
-  .chat-fab{position:fixed;right:1rem;bottom:1.1rem;width:3.6rem;height:3.6rem;border-radius:50%;border:none;cursor:pointer;
-    background:linear-gradient(150deg,#13b6b7,#086e70);box-shadow:0 8px 24px rgba(10,141,143,.45);z-index:60;
-    display:flex;align-items:center;justify-content:center;transition:transform .15s var(--ease)}
-  .chat-fab:active{transform:scale(.92)}.chat-fab svg{width:1.7rem;height:1.7rem}
-  .chat-fab.hide{display:none}
-  .chat{position:fixed;right:1rem;bottom:1.1rem;width:min(92vw,380px);height:min(72vh,560px);background:var(--surface);
-    border:1px solid var(--line-2);border-radius:1.2rem;box-shadow:var(--shadow-l);z-index:61;display:none;flex-direction:column;overflow:hidden}
+  .chat-fab{position:fixed;right:1rem;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));width:3.7rem;height:3.7rem;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(150deg,#13b6b7,#086e70);box-shadow:0 8px 24px rgba(10,141,143,.5);z-index:90;
+    display:flex !important;align-items:center;justify-content:center;transition:transform .15s var(--ease)}
+  .chat-fab:active{transform:scale(.92)}.chat-fab svg{width:1.75rem;height:1.75rem}
+  .chat-fab.hide{display:none !important}
+  .chat-fab::after{content:"";position:absolute;top:.15rem;right:.15rem;width:.85rem;height:.85rem;border-radius:50%;background:#FF3B30;border:2px solid #fff;opacity:0;transition:opacity .2s}
+  .chat-fab.alert::after{opacity:1}
+  /* saludito flotante del asistente */
+  .chat-tip{position:fixed;right:1rem;bottom:calc(5.4rem + env(safe-area-inset-bottom,0px));z-index:90;max-width:15.5rem;
+    background:var(--surface);border:1px solid var(--line-2);border-radius:1rem 1rem .3rem 1rem;box-shadow:var(--shadow-m);
+    padding:.7rem .55rem .7rem .9rem;display:none;align-items:center;gap:.5rem;font-size:.92rem;font-weight:700;color:var(--ink)}
+  .chat-tip.show{display:flex;animation:tipin .3s var(--ease)}
+  .chat-tip .tx{flex:1;cursor:pointer;line-height:1.35}
+  .chat-tip button{border:none;background:var(--surface-2);color:var(--muted);width:1.6rem;height:1.6rem;border-radius:50%;cursor:pointer;flex:none;font-size:.8rem;line-height:1}
+  @keyframes tipin{from{opacity:0;transform:translateY(.5rem) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .chat{position:fixed;right:1rem;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));width:min(92vw,380px);height:min(72vh,560px);max-height:calc(100vh - 2rem);background:var(--surface);
+    border:1px solid var(--line-2);border-radius:1.2rem;box-shadow:var(--shadow-l);z-index:92;display:none;flex-direction:column;overflow:hidden}
   .chat.open{display:flex}
   .chat-h{display:flex;align-items:center;gap:.6rem;padding:.8rem .9rem;background:linear-gradient(150deg,#13b6b7,#086e70);color:#fff}
   .chat-ht{display:flex;align-items:center;gap:.55rem;flex:1;min-width:0}
@@ -342,7 +352,7 @@
   <section id="view-personas">
     <div class="hero">
       <h2>Busca a un familiar ingresado</h2>
-      <p>Escribe su <b>nombre completo</b> o su <b>cédula</b>. Aparecen las personas que la comunidad ha registrado en la app.</p>
+      <p>Esta app es para encontrar a quien está <b>ingresado en un hospital o centro de salud</b>. Escribe su <b>nombre completo</b> o su <b>cédula</b>. Si la persona está <b>desaparecida</b> (no en un hospital), búscala en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>.</p>
       <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <input id="qp" class="search" type="search" inputmode="search" placeholder="Nombre completo o cédula…" autocomplete="off" aria-label="Buscar persona ingresada">
@@ -533,7 +543,7 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Cómo funciona</h2>
-    <p class="hint">App gratuita para reencontrar familiares tras el sismo. Tres cosas que puedes hacer:</p>
+    <p class="hint">App gratuita para encontrar a familiares <b>ingresados en hospitales o centros de salud</b> tras el sismo. Para personas <b>desaparecidas</b>, visita <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>. Tres cosas que puedes hacer aquí:</p>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">1</span><div><b style="font-size:1rem">Buscar a tu familiar</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Buscar persona</b>, escribe nombre o cédula. La app confirma si está registrado y en qué centro, sin exponer datos sensibles.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">2</span><div><b style="font-size:1rem">Registrar a alguien</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">Cualquiera puede registrar a una persona ingresada. Si trabajas en el centro, indícalo y tu reporte queda verificado.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">3</span><div><b style="font-size:1rem">Ver centros cerca</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Centros</b> ves hospitales en lista o mapa, ordenados por cercanía a tu ubicación, con su estado.</div></div></div>
@@ -559,7 +569,8 @@
   </div>
 </div>
 
-<button id="chat-fab" class="chat-fab" aria-label="Abrir asistente">
+<div id="chat-tip" class="chat-tip"><span class="tx">👋 ¡Hola! Soy tu asistente, te ayudo a buscar</span><button id="chat-tip-x" aria-label="Cerrar saludo">✕</button></div>
+<button id="chat-fab" class="chat-fab" aria-label="Abrir asistente de ayuda">
   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
 </button>
 <div id="chat" class="chat">
@@ -883,7 +894,7 @@ function cerrarSheets(){document.querySelectorAll(".scrim.open").forEach(s=>s.cl
 $("cta-persona").addEventListener("click",()=>abrir("sheet-persona"));
 $("cta-centro").addEventListener("click",()=>abrir("sheet-centro"));
 $("btn-guia").addEventListener("click",()=>abrir("sheet-guia"));
-$("guia-ok").addEventListener("click",()=>{try{localStorage.setItem(SEEN_KEY,"1");}catch(e){}cerrarSheets();});
+$("guia-ok").addEventListener("click",()=>{try{localStorage.setItem(SEEN_KEY,"1");}catch(e){}cerrarSheets();setTimeout(mostrarTip,900);});
 document.querySelectorAll(".role").forEach(r=>r.addEventListener("click",()=>{cerrarSheets();setTimeout(()=>abrir(r.getAttribute("data-open")),120);}));
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",cerrarSheets));
 document.querySelectorAll(".scrim").forEach(s=>s.addEventListener("click",e=>{if(e.target===s)cerrarSheets();}));
@@ -911,7 +922,10 @@ $("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp
 /* ---------- asistente IA ---------- */
 let chatHist=[], chatBusy=false, chatGreeted=false;
 function chatAdd(role,text,cls){const b=$("chat-body");const d=document.createElement("div");d.className="msg "+(cls||(role==="user"?"user":"bot"));d.textContent=text;b.appendChild(d);b.scrollTop=b.scrollHeight;return d;}
-function abrirChat(){$("chat").classList.add("open");$("chat-fab").classList.add("hide");if(!chatGreeted){chatGreeted=true;chatAdd("bot","¡Hola! Soy el asistente de Hospitales en Venezuela. Te ayudo a buscar a un familiar, registrar a alguien o ver centros cercanos. ¿En qué te ayudo?");}setTimeout(()=>$("chat-text").focus(),200);}
+const TIP_KEY="ve_salud_tip";
+function ocultarTip(){$("chat-tip").classList.remove("show");$("chat-fab").classList.remove("alert");try{localStorage.setItem(TIP_KEY,"1");}catch(e){}}
+function mostrarTip(){try{if(localStorage.getItem(TIP_KEY))return;}catch(e){}if($("chat").classList.contains("open"))return;$("chat-tip").classList.add("show");$("chat-fab").classList.add("alert");clearTimeout(window._tipT);window._tipT=setTimeout(()=>$("chat-tip").classList.remove("show"),12000);}
+function abrirChat(){ocultarTip();$("chat").classList.add("open");$("chat-fab").classList.add("hide");if(!chatGreeted){chatGreeted=true;chatAdd("bot","¡Hola! Soy el asistente de Hospitales en Venezuela. Te ayudo a buscar a un familiar, registrar a alguien o ver centros cercanos. ¿En qué te ayudo?");}setTimeout(()=>$("chat-text").focus(),200);}
 function cerrarChat(){$("chat").classList.remove("open");$("chat-fab").classList.remove("hide");}
 async function enviarChat(){
   if(chatBusy)return;const inp=$("chat-text");const msg=inp.value.trim();if(!msg)return;
@@ -922,6 +936,7 @@ async function enviarChat(){
   finally{chatBusy=false;$("chat-send").disabled=false;$("chat-text").focus();}
 }
 $("chat-fab").addEventListener("click",abrirChat);
+$("chat-tip").addEventListener("click",e=>{if(e.target.id==="chat-tip-x"){ocultarTip();return;}abrirChat();});
 $("chat-x").addEventListener("click",cerrarChat);
 $("chat-send").addEventListener("click",enviarChat);
 $("chat-text").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();enviarChat();}});
@@ -951,9 +966,13 @@ $("a-plus").addEventListener("click",()=>{fsi=Math.min(FS.length-1,fsi+1);aplica
   const c=leerCache();if(c&&c.d&&c.d.length){DATA=c.d;aplicarDistancias();poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   refrescar(false);
   pedirUbicacion(false); // intenta ubicar al entrar (best-effort)
-  try{if(!localStorage.getItem(SEEN_KEY))setTimeout(()=>abrir("sheet-guia"),500);}catch(e){}
+  try{if(!localStorage.getItem(SEEN_KEY))setTimeout(()=>abrir("sheet-guia"),500);else setTimeout(mostrarTip,2600);}catch(e){setTimeout(mostrarTip,2600);}
 })();
-if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{});});}
+if("serviceWorker" in navigator){
+  let _refreshing=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(_refreshing)return;if(navigator.serviceWorker.controller){_refreshing=true;location.reload();}});
+  window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").then(r=>{try{r.update();}catch(e){}}).catch(()=>{});});
+}
 </script>
 <!-- Vercel Web Analytics (sitio estático) -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
