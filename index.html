@@ -761,12 +761,17 @@ $("list").addEventListener("click",async (e)=>{
 });
 
 /* ---------- mapa (Leaflet diferido) ---------- */
+const LEAFLET_CSS=["https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"];
+const LEAFLET_JS=["https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"];
 function ensureLeaflet(cb){
   if(window.L){cb();return;}
   if(leafletLoading){setTimeout(()=>ensureLeaflet(cb),200);return;}
   leafletLoading=true;
-  const css=document.createElement("link");css.rel="stylesheet";css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.appendChild(css);
-  const js=document.createElement("script");js.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";js.onload=cb;js.onerror=()=>{toast("No se pudo cargar el mapa","err");};document.head.appendChild(js);
+  const css=document.createElement("link");css.rel="stylesheet";css.href=LEAFLET_CSS[0];css.onerror=()=>{css.href=LEAFLET_CSS[1];};document.head.appendChild(css);
+  (function loadJs(i){const js=document.createElement("script");js.src=LEAFLET_JS[i];
+    js.onload=()=>{leafletLoading=false;if(window.L)cb();};
+    js.onerror=()=>{if(i+1<LEAFLET_JS.length)loadJs(i+1);else{leafletLoading=false;toast("No se pudo cargar el mapa. Revisa tu conexión.","err");}};
+    document.head.appendChild(js);})(0);
 }
 function pintarMapa(rows){
   ensureLeaflet(()=>{

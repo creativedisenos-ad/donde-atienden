@@ -1,7 +1,7 @@
 /* Service worker — la app abre sin señal, pero SIEMPRE intenta traer
    la versión más reciente cuando hay internet (network-first para el HTML).
    Así cualquier actualización llega de inmediato a todos los usuarios. */
-const CACHE = "salud-ve-v10";
+const CACHE = "salud-ve-v11";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
