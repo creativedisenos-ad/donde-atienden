@@ -114,6 +114,9 @@
   .found h3{margin:0;font-size:1.08rem;letter-spacing:-.01em}
   .found .where{font-size:1.12rem;font-weight:800;margin:.5rem 0 .1rem}
   .found .city{font-size:.92rem;color:var(--muted);font-weight:600}
+  .found .ingreso{display:flex;align-items:flex-start;gap:.45rem;font-size:.98rem;color:var(--ink-2);margin-top:.7rem}
+  .found .ingreso svg{width:1.1rem;height:1.1rem;color:var(--brand-deep);flex:none;margin-top:.1rem}
+  .found .ingreso b{color:var(--ink)}
   .found .pnote{font-size:.85rem;color:var(--ink-2);background:var(--surface-2);border-radius:.7rem;padding:.65rem .75rem;margin-top:.7rem;line-height:1.45}
 
   /* botones grandes */
@@ -634,8 +637,8 @@ function demoCentros(){const now=Date.now(),iso=m=>new Date(now-m*60000).toISOSt
  {id:"8",nombre:"Hospital Universitario de Los Andes (IAHULA)",tipo:"hospital",estado:"Mérida",ciudad:"Mérida",telefono:null,lat:8.5897,lng:-71.1561,estado_operativo:"abierto",capacidad:"disponible",nota:null,confirmaciones:2,personal_salud:false,ultima_actualizacion:iso(40),verificado:true}
 ];}
 function demoPacientes(){return [
- {nombre:"José Antonio Pérez",cedula:"V-12345678",hospital:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",ciudad:"Valencia",telefono:"0241-8675000"},
- {nombre:"María Fernanda González",cedula:"V-20111222",hospital:"Hospital Universitario de Caracas",ciudad:"Caracas",telefono:null}
+ {nombre:"José Antonio Pérez",cedula:"V-12345678",detalle:"45 años · Valencia",hospital:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",ciudad:"Valencia",telefono:"0241-8675000"},
+ {nombre:"María Fernanda González",cedula:"V-20111222",detalle:"29 años · Caracas",hospital:"Hospital Universitario de Caracas",ciudad:"Caracas",telefono:null}
 ];}
 
 async function cargarCentros(){
@@ -654,7 +657,7 @@ async function registrarCentro(d){
 }
 async function buscarPaciente(term){
   const t=norm(term),dig=soloDig(term);if(t.length<3&&dig.length<5)return null;
-  if(DEMO){await new Promise(r=>setTimeout(r,260));return PAC.filter(p=>{const nom=t.length>=3&&norm(p.nombre).includes(t);const ced=dig.length>=5&&soloDig(p.cedula)===dig;return nom||ced;}).map(p=>({centro:p.hospital,ciudad:p.ciudad,telefono:p.telefono}));}
+  if(DEMO){await new Promise(r=>setTimeout(r,260));return PAC.filter(p=>{const nom=t.length>=3&&norm(p.nombre).includes(t);const ced=dig.length>=5&&soloDig(p.cedula)===dig;return nom||ced;}).map(p=>({nombre:p.nombre,detalle:p.detalle||null,cedula:p.cedula?("••••"+soloDig(p.cedula).slice(-4)):null,centro:p.hospital,ciudad:p.ciudad,telefono:p.telefono}));}
   const r=await api("rpc/buscar_paciente",{method:"POST",body:JSON.stringify({p_term:term})});if(!r.ok)throw new Error("search");return await r.json();
 }
 async function registrarPaciente(d){
@@ -809,7 +812,14 @@ function pintarResultadoPersona(res){
   if(!res||!res.length){box.innerHTML='<div class="empty" style="padding:1.8rem 1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div><b>No hay ningún registro que coincida.</b><br>Puede que aún no lo hayan registrado en ningún hospital. Si sabes dónde está, regístralo abajo.<br><a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;background:#26329e;color:#fff;font-weight:800;text-decoration:none;padding:.75rem 1.1rem;border-radius:.7rem">Buscar en Red de Ayuda Venezuela →</a></div></div>';return;}
   box.innerHTML='<div style="font-size:.86rem;color:var(--muted);font-weight:700;margin:0 .2rem .6rem">'+(res.length===1?"1 registro coincide":res.length+" registros coinciden")+'</div>'+res.map(r=>{
     const tel=r.telefono?`<a class="act tel" href="tel:${esc(r.telefono)}" style="margin-top:.7rem"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Llamar al centro</a>`:"";
-    return `<div class="found"><div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Sí, hay un registro que coincide</h3></div><div class="where">${esc(r.centro||"Centro de salud")}</div><div class="city">${esc(r.ciudad||"")}</div>${tel}<div class="pnote">Por privacidad no mostramos su estado de salud. Llama al centro para confirmar su identidad y recibir información.</div><button class="flag" data-flagp="${esc(r.centro||"")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button></div>`;
+    const meta=[r.detalle, r.cedula?("C.I. "+r.cedula):null].filter(Boolean).join("   ·   ");
+    return `<div class="found"><div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Sí, coincide con un registro</h3></div>
+      <div class="where">${esc(r.nombre||"Persona registrada")}</div>
+      ${meta?`<div class="city">${esc(meta)}</div>`:""}
+      <div class="ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><div>Ingresado en <b>${esc(r.centro||"un centro")}</b>${r.ciudad?(" · "+esc(r.ciudad)):""}</div></div>
+      ${tel}
+      <div class="pnote">Verifica que sea tu familiar por el <b>nombre, la edad y el sector</b>. Por privacidad no mostramos su estado de salud: llama al centro para confirmar y recibir información.</div>
+      <button class="flag" data-flagp="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button></div>`;
   }).join("");
 }
 
