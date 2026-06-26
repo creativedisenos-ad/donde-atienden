@@ -520,8 +520,8 @@
     <p class="hint">Para que su familia pueda ubicarla. Solo nombre y centro son obligatorios.</p>
     <label for="p-nombre">Nombre y apellido *</label>
     <input id="p-nombre" class="fld" maxlength="120" placeholder="Ej: José Antonio Pérez">
-    <label for="p-cedula">Cédula (recomendada)</label>
-    <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Ej: V-12345678">
+    <label for="p-cedula">Cédula (opcional, si la tienes)</label>
+    <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Opcional — Ej: V-12345678">
     <label for="p-detalle">Edad y/o sector (opcional)</label>
     <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
     <p class="help">Solo si lo sabes con certeza — ayuda a la familia a verificar. No lo inventes; si no lo sabes, déjalo vacío.</p>
@@ -635,7 +635,7 @@
       <p class="sh">Una persona por fila. Complétala y guárdala.</p>
       <button id="bulk-template" class="send dark">Descargar plantilla (.csv)</button>
     </div>
-    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido, cédula y centro de salud. La columna <b>edad_sector</b> es opcional.<br>Lo que no sepas, <b>déjalo vacío</b> — no inventes. Las filas a las que les falte alguno de los 4 datos obligatorios se omiten automáticamente.</div>
+    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> y <b>edad_sector</b> son <b>opcionales</b> (puedes agregar personas sin cédula).<br>Lo que no sepas, <b>déjalo vacío</b> — no inventes. Solo se omiten las filas sin nombre o sin centro. No se cargan duplicados.</div>
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-4 4 4M5 3h14"/></svg>Paso 2 · Sube tu archivo</h3>
       <p class="sh">Acepta .csv, .xlsx o .xls. Si usas Excel, también puedes Guardar como CSV.</p>
@@ -1092,8 +1092,8 @@ $("bulk-send").addEventListener("click",async ()=>{
   try{
     const raw=await parsearArchivo(file);const valid=[];let omit=0;
     raw.forEach(r=>{const o=normFila(r);const nom=((o.nombre||"")+" "+(o.apellido||"")).trim();
-      if(o.nombre&&o.apellido&&o.cedula&&o.centro)valid.push({nombre:nom,cedula:o.cedula,centro:o.centro,detalle:o.detalle||null});else omit++;});
-    if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita <b>nombre, apellido, cédula y centro</b>. Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
+      if(nom.length>=3&&o.centro)valid.push({nombre:nom,cedula:o.cedula||null,centro:o.centro,detalle:o.detalle||null});else omit++;});
+    if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita al menos <b>nombre y centro de salud</b> (la cédula es opcional). Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
     $("bulk-status").innerHTML='<div class="bulk-info">Cargando '+valid.length+' personas…</div>';
     const res=await cargarMasivo(valid);
     $("bulk-status").innerHTML='<div class="bulk-ok"><b>¡Carga completada!</b><br>Agregados: '+res.insertados+'<br>Ya estaban (duplicados): '+res.duplicados+'<br>Omitidos por faltar datos: '+(res.invalidos+omit)+'</div>';
