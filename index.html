@@ -301,6 +301,16 @@
   .role .rc svg{width:1.2rem;height:1.2rem;color:var(--muted)}
   .ri.c-person{background:linear-gradient(150deg,#13b6b7,#086e70)}
   .ri.c-center{background:linear-gradient(150deg,#7c5cff,#5b3fd6)}
+  .ri.c-bulk{background:linear-gradient(150deg,#e08a16,#b9650a)}
+  .bulk-req{font-size:.86rem;color:var(--ink-2);background:#fff7ec;border:1px solid #f4dcb6;border-radius:.8rem;padding:.75rem .85rem;margin:.2rem 0 .9rem;line-height:1.55}
+  .bulk-req b{color:var(--ink)}
+  .bulk-pick{display:flex;align-items:center;gap:.5rem;justify-content:center;border:1.5px dashed var(--brand);color:var(--brand-deep);background:var(--brand-soft);border-radius:var(--r-fld);padding:.9rem;font-weight:800;cursor:pointer;margin-bottom:.6rem;min-height:3.1rem;text-align:center}
+  .bulk-pick svg{width:1.2rem;height:1.2rem;flex:none}
+  #bulk-status{margin-top:.3rem}
+  .bulk-info{font-size:.92rem;color:var(--muted);font-weight:700;padding:.5rem 0}
+  .bulk-ok{font-size:.95rem;color:var(--ink-2);background:var(--ok-bg);border:1px solid #bfe6c9;border-radius:.8rem;padding:.85rem .9rem;line-height:1.7}
+  .bulk-ok b{color:var(--ok)}
+  .bulk-err{font-size:.92rem;color:var(--bad);background:var(--bad-bg);border:1px solid #f3cdc9;border-radius:.8rem;padding:.85rem .9rem;line-height:1.5}
 
   .hide{display:none !important}
   #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(.5rem);bottom:1.6rem;background:var(--ink);color:#fff;
@@ -369,6 +379,10 @@
     <button id="cta-persona" class="cta solid">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       Registrar a una persona ingresada
+    </button>
+    <button id="cta-bulk" class="cta" style="margin-top:.6rem;font-size:.95rem;padding:.9rem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>
+      ¿Tienes una lista? Súbela masivamente (CSV/Excel)
     </button>
 
     <a class="ally" href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">
@@ -466,6 +480,11 @@
       <button class="role" data-open="sheet-centro">
         <span class="ri c-center"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg></span>
         <span class="rt"><b>Agregar un centro de salud</b><span>Hospital, clínica o ambulatorio que falta</span></span>
+        <span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></span>
+      </button>
+      <button class="role" data-open="sheet-bulk">
+        <span class="ri c-bulk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg></span>
+        <span class="rt"><b>Subir varios (carga masiva)</b><span>Una lista en CSV o Excel · ideal para hospitales</span></span>
         <span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></span>
       </button>
     </div>
@@ -582,6 +601,29 @@
   <div class="chat-in">
     <input id="chat-text" type="text" placeholder="Escribe tu pregunta…" maxlength="500" autocomplete="off" aria-label="Mensaje para el asistente">
     <button id="chat-send" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+  </div>
+</div>
+
+<div id="sheet-bulk" class="scrim" role="dialog" aria-modal="true" aria-label="Carga masiva">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>Carga masiva</h2>
+    <p class="hint">Sube una lista de varias personas a la vez con un archivo. Ideal para hospitales y centros de salud.</p>
+    <div class="seccard">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>Paso 1 · Descarga la plantilla</h3>
+      <p class="sh">Una persona por fila. Complétala y guárdala.</p>
+      <button id="bulk-template" class="send dark">Descargar plantilla (.csv)</button>
+    </div>
+    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido, cédula y centro de salud. La columna <b>edad_sector</b> es opcional.<br>Lo que no sepas, <b>déjalo vacío</b> — no inventes. Las filas a las que les falte alguno de los 4 datos obligatorios se omiten automáticamente.</div>
+    <div class="seccard">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-4 4 4M5 3h14"/></svg>Paso 2 · Sube tu archivo</h3>
+      <p class="sh">Acepta .csv, .xlsx o .xls. Si usas Excel, también puedes Guardar como CSV.</p>
+      <input id="bulk-file" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none">
+      <label for="bulk-file" class="bulk-pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span id="bulk-fname">Elegir archivo</span></label>
+      <button id="bulk-send" class="send" disabled>Cargar lista</button>
+    </div>
+    <div id="bulk-status"></div>
+    <button class="cancel" data-close>Cerrar</button>
   </div>
 </div>
 
@@ -915,6 +957,7 @@ function abrir(id){$(id).classList.add("open");document.body.style.overflow="hid
 function cerrarSheets(){document.querySelectorAll(".scrim.open").forEach(s=>s.classList.remove("open"));document.body.style.overflow="";}
 $("cta-persona").addEventListener("click",()=>abrir("sheet-persona"));
 $("cta-centro").addEventListener("click",()=>abrir("sheet-centro"));
+$("cta-bulk").addEventListener("click",()=>abrir("sheet-bulk"));
 $("btn-guia").addEventListener("click",()=>abrir("sheet-guia"));
 $("guia-ok").addEventListener("click",()=>{try{localStorage.setItem(SEEN_KEY,"1");}catch(e){}cerrarSheets();setTimeout(mostrarTip,900);});
 document.querySelectorAll(".role").forEach(r=>r.addEventListener("click",()=>{cerrarSheets();setTimeout(()=>abrir(r.getAttribute("data-open")),120);}));
@@ -953,6 +996,69 @@ function mostrarDuplicado(ex){
 function limpiarFormPersona(){["p-nombre","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;}
 $("dup-ok").addEventListener("click",()=>{cerrarSheets();limpiarFormPersona();toast("Listo, esa persona ya estaba registrada","ok");});
 $("dup-report").addEventListener("click",()=>{const c=dupCtx||{};limpiarFormPersona();cerrarSheets();setTimeout(()=>abrirAbuso("persona",(c.nombre||"")+" · "+(c.centro||""),c.nombre||"este registro"),140);});
+
+/* ---------- carga masiva (CSV / Excel) ---------- */
+function descargarPlantilla(){
+  const csv="nombre,apellido,cedula,centro,edad_sector\n"+
+    "José Antonio,Pérez García,V-12345678,Hospital Universitario de Caracas,40 años · Petare\n"+
+    ",,,,\n";
+  const blob=new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="plantilla_pacientes.csv";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+function parseCSV(text){
+  text=String(text||"").replace(/^﻿/,"");
+  const rows=[];let i=0,field="",row=[],inQ=false;
+  while(i<text.length){const c=text[i];
+    if(inQ){if(c==='"'){if(text[i+1]==='"'){field+='"';i+=2;continue;}inQ=false;i++;continue;}field+=c;i++;continue;}
+    if(c==='"'){inQ=true;i++;continue;}
+    if(c===','){row.push(field);field="";i++;continue;}
+    if(c==='\r'){i++;continue;}
+    if(c==='\n'){row.push(field);rows.push(row);row=[];field="";i++;continue;}
+    field+=c;i++;
+  }
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  if(!rows.length)return [];
+  const headers=rows[0].map(h=>String(h||"").trim());
+  return rows.slice(1).filter(r=>r.some(x=>x&&String(x).trim())).map(r=>{const o={};headers.forEach((h,idx)=>o[h]=r[idx]!=null?r[idx]:"");return o;});
+}
+function normFila(r){const m={};for(const k in r){m[norm(k)]=String(r[k]==null?"":r[k]).trim();}
+  return {nombre:m["nombre"]||m["nombres"]||"",apellido:m["apellido"]||m["apellidos"]||"",
+    cedula:m["cedula"]||m["ci"]||m["cedula de identidad"]||"",
+    centro:m["centro"]||m["centro de salud"]||m["hospital"]||m["centro hospitalario"]||"",
+    detalle:m["edad sector"]||m["edad"]||m["sector"]||m["detalle"]||m["observaciones"]||m["observacion"]||""};}
+function ensureXLSX(){return new Promise((res,rej)=>{if(window.XLSX){res();return;}const s=document.createElement("script");s.src="./xlsx.min.js";s.onload=()=>res();s.onerror=()=>rej(new Error("xlsx"));document.head.appendChild(s);});}
+async function parsearArchivo(file){
+  const name=(file.name||"").toLowerCase();
+  if(name.endsWith(".csv")||file.type==="text/csv"){return parseCSV(await file.text());}
+  await ensureXLSX();
+  const wb=XLSX.read(await file.arrayBuffer(),{type:"array"});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(ws,{defval:""});
+}
+async function cargarMasivo(rows){
+  if(DEMO){await new Promise(r=>setTimeout(r,300));let ins=0;rows.forEach(x=>{const dig=soloDig(x.cedula);if(dig&&!PAC.some(p=>soloDig(p.cedula)===dig)){const c=DATA.find(h=>norm(h.nombre)===norm(x.centro));PAC.push({nombre:x.nombre,cedula:x.cedula,detalle:x.detalle||null,hospital:x.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});ins++;}});return{insertados:ins,duplicados:rows.length-ins,invalidos:0};}
+  const CH=300;let ins=0,dup=0,inv=0;
+  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId()});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;}
+  return {insertados:ins,duplicados:dup,invalidos:inv};
+}
+$("bulk-template").addEventListener("click",descargarPlantilla);
+$("bulk-file").addEventListener("change",()=>{const f=$("bulk-file").files[0];$("bulk-fname").textContent=f?f.name:"Elegir archivo";$("bulk-send").disabled=!f;$("bulk-status").innerHTML="";});
+$("bulk-send").addEventListener("click",async ()=>{
+  const file=$("bulk-file").files[0];if(!file){toast("Elige un archivo primero","err");return;}
+  const btn=$("bulk-send");btn.disabled=true;btn.textContent="Procesando…";$("bulk-status").innerHTML='<div class="bulk-info">Leyendo archivo…</div>';
+  try{
+    const raw=await parsearArchivo(file);const valid=[];let omit=0;
+    raw.forEach(r=>{const o=normFila(r);const nom=((o.nombre||"")+" "+(o.apellido||"")).trim();
+      if(o.nombre&&o.apellido&&o.cedula&&o.centro)valid.push({nombre:nom,cedula:o.cedula,centro:o.centro,detalle:o.detalle||null});else omit++;});
+    if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita <b>nombre, apellido, cédula y centro</b>. Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
+    $("bulk-status").innerHTML='<div class="bulk-info">Cargando '+valid.length+' personas…</div>';
+    const res=await cargarMasivo(valid);
+    $("bulk-status").innerHTML='<div class="bulk-ok"><b>¡Carga completada!</b><br>Agregados: '+res.insertados+'<br>Ya estaban (duplicados): '+res.duplicados+'<br>Omitidos por faltar datos: '+(res.invalidos+omit)+'</div>';
+    toast("Carga masiva completada","ok");$("bulk-file").value="";$("bulk-fname").textContent="Elegir archivo";$("bulk-send").disabled=true;
+    refrescar(true);
+  }catch(err){$("bulk-status").innerHTML='<div class="bulk-err">'+(err&&err.message==="limite"?"Alcanzaste el límite de cargas masivas por hora. Inténtalo más tarde.":"No se pudo procesar el archivo. Revisa que tenga las columnas de la plantilla, o súbelo como CSV.")+'</div>';}
+  finally{btn.disabled=false;btn.textContent="Cargar lista";}
+});
 
 /* ---------- asistente IA ---------- */
 let chatHist=[], chatBusy=false, chatGreeted=false;
