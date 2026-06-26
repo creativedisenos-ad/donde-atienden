@@ -699,10 +699,14 @@ function api(path,opts){opts=opts||{};return fetch(SUPABASE_URL+"/rest/v1/"+path
 /* ---------- contadores del home (pacientes + voluntarios activos) ---------- */
 function animarNum(el,target){
   if(!el)return; target=Math.max(0,target|0);
+  const fmt=n=>n.toLocaleString("es-VE");
   const start=parseInt(String(el.textContent||"").replace(/\D/g,""))||0;
-  if(start===target){el.textContent=target.toLocaleString("es-VE");return;}
+  el.__t=target;
+  if(start===target||document.hidden||typeof requestAnimationFrame!=="function"){el.textContent=fmt(target);return;}
   const dur=650,t0=performance.now();
-  (function step(t){const p=Math.min(1,(t-t0)/dur);const v=Math.round(start+(target-start)*(1-Math.pow(1-p,3)));el.textContent=v.toLocaleString("es-VE");if(p<1)requestAnimationFrame(step);})(t0);
+  function step(t){if(el.__t!==target)return;const p=Math.min(1,(t-t0)/dur);el.textContent=fmt(Math.round(start+(target-start)*(1-Math.pow(1-p,3))));if(p<1)requestAnimationFrame(step);}
+  setTimeout(()=>{if(el.__t===target)el.textContent=fmt(target);},dur+150); // garantiza el valor final aunque rAF se congele
+  requestAnimationFrame(step);
 }
 async function cargarStats(){
   try{
