@@ -761,8 +761,8 @@ $("list").addEventListener("click",async (e)=>{
 });
 
 /* ---------- mapa (Leaflet diferido) ---------- */
-const LEAFLET_CSS=["https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"];
-const LEAFLET_JS=["https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"];
+const LEAFLET_CSS=["./leaflet.min.css","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"];
+const LEAFLET_JS=["./leaflet.min.js","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"];
 function ensureLeaflet(cb){
   if(window.L){cb();return;}
   if(leafletLoading){setTimeout(()=>ensureLeaflet(cb),200);return;}
