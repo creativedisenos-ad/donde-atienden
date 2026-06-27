@@ -499,9 +499,10 @@
     <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
     <p class="help">Solo si lo sabes con certeza — ayuda a la familia a verificar. No lo inventes; si no lo sabes, déjalo vacío.</p>
     <label for="p-centro">¿En qué centro está? *</label>
-    <input id="p-centro" class="fld" list="centros-dl" maxlength="160" placeholder="Escribe o elige el centro">
-    <datalist id="centros-dl"></datalist>
-    <p class="help">¿No aparece? Escríbelo igual y lo agregamos a la lista de centros.</p>
+    <select id="p-centro" class="fld">
+      <option value="">Elige el centro de la lista…</option>
+    </select>
+    <p class="help">¿No aparece tu centro? <a href="#" id="p-add-centro" data-open="sheet-centro">➕ Agrégalo a la lista</a> y luego selecciónalo.</p>
     <label for="p-quien">¿Quién registra? *</label>
     <select id="p-quien" class="fld">
       <option value="familiar">Soy familiar o allegado</option>
@@ -758,11 +759,15 @@ function leerCache(){try{const r=localStorage.getItem(CACHE_KEY);return r?JSON.p
 function poblarEstados(){const sel=$("f-estado"),dl=$("estados-dl");const es=[...new Set(DATA.map(h=>h.estado))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todos los estados</option>'+es.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join("");if(es.includes(cur))sel.value=cur;dl.innerHTML=es.map(e=>`<option value="${esc(e)}">`).join("");}
 function poblarCiudades(){const est=$("f-estado").value,sel=$("f-ciudad");const c=[...new Set(DATA.filter(h=>!est||h.estado===est).map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todas las ciudades</option>'+c.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");if(c.includes(cur))sel.value=cur;else sel.value="";}
 function poblarCentrosDL(){
-  const nombres=[...new Set(DATA.map(h=>h.nombre))].sort((a,b)=>a.localeCompare(b,'es'));
+  const nombres=[...new Set(DATA.map(h=>h.nombre))].filter(Boolean).sort((a,b)=>a.localeCompare(b,'es'));
+  const sel=$("p-centro");
+  if(sel){
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Elige el centro de la lista…</option>'+nombres.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
+    if(nombres.includes(cur)) sel.value=cur;
+  }
   const ciudades=[...new Set(DATA.map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));
-  const opt=nombres.map(n=>`<option value="${esc(n)}">`).join("");
-  $("centros-dl").innerHTML=opt;
-  const q=$("q-dl"); if(q) q.innerHTML=opt+ciudades.map(c=>`<option value="${esc(c)}">`).join("");
+  const q=$("q-dl"); if(q) q.innerHTML=nombres.map(n=>`<option value="${esc(n)}">`).join("")+ciudades.map(c=>`<option value="${esc(c)}">`).join("");
 }
 
 /* ---------- distancias ---------- */
@@ -875,7 +880,7 @@ function pintarResultadoPersona(res){
 $("p-send").addEventListener("click",async ()=>{
   const nombre=$("p-nombre").value.trim(),centro=$("p-centro").value.trim();
   if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
-  if(!centro){toast("Indica en qué centro está","err");return;}
+  if(!centro){toast("Elige el centro de la lista. Si no aparece, usa “Agrégalo a la lista”.","err");$("p-centro").focus();return;}
   if(!$("p-consent").checked){toast("Marca la autorización para continuar","err");return;}
   if(!rateOk()){toast("Alcanzaste el límite de 20 registros por hora. Inténtalo más tarde.","err");return;}
   const cargo=$("p-cargo").value;
@@ -901,7 +906,7 @@ $("r-send").addEventListener("click",async ()=>{
   const d={nombre,tipo:$("r-tipo").value,estado,ciudad,telefono:$("r-tel").value.trim()||null,estado_operativo:"desconocido"};
   if($("r-geo").checked&&userPos){d.lat=userPos.lat;d.lng=userPos.lng;}
   const btn=$("r-send");btn.disabled=true;btn.textContent="Agregando…";
-  try{await registrarCentro(d);toast("Centro agregado. ¡Gracias!","ok");cerrarSheets();["r-nombre","r-estado","r-ciudad","r-tel"].forEach(i=>$(i).value="");$("r-geo").checked=false;poblarEstados();poblarCiudades();poblarCentrosDL();render();}
+  try{await registrarCentro(d);toast("Centro agregado. ¡Gracias!","ok");cerrarSheets();["r-nombre","r-estado","r-ciudad","r-tel"].forEach(i=>$(i).value="");$("r-geo").checked=false;try{DATA=await cargarCentros();guardarCache();aplicarDistancias();}catch(e){}poblarEstados();poblarCiudades();poblarCentrosDL();render();if(nombre&&$("p-centro"))$("p-centro").value=nombre;}
   catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":"No se pudo agregar. Revisa tu conexión","err");}
   finally{btn.disabled=false;btn.textContent="Agregar centro";}
 });
