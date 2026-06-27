@@ -201,11 +201,6 @@
 
   /* ===================== Centros: controles ===================== */
   .ctrls{margin-top:.9rem;display:flex;gap:.5rem;align-items:center}
-  .viewtoggle{display:flex;background:#e3e7ee;border-radius:.7rem;padding:.2rem}
-  .viewtoggle button{border:none;background:none;cursor:pointer;font-size:.9rem;font-weight:700;color:var(--ink-2);
-    padding:.5rem .9rem;border-radius:.55rem;display:flex;align-items:center;gap:.35rem;min-height:2.5rem}
-  .viewtoggle button svg{width:1rem;height:1rem}
-  .viewtoggle button.on{background:var(--surface);color:var(--brand-deep);box-shadow:0 1px 3px rgba(15,23,42,.15)}
   .nearbtn{margin-left:auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);
     font-size:.85rem;font-weight:700;color:var(--brand-deep);padding:.55rem .85rem;cursor:pointer;display:flex;
     align-items:center;gap:.35rem;box-shadow:var(--shadow-s);min-height:2.5rem}
@@ -224,14 +219,6 @@
   .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
   .count{font-size:.82rem;color:var(--muted);margin:.85rem .2rem .2rem;font-weight:700}
 
-  /* map */
-  #map{height:62vh;min-height:340px;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line-2);
-    margin-top:.85rem;box-shadow:var(--shadow-s);background:var(--surface-2)}
-  .leaflet-popup-content{font-family:var(--sans);font-size:.9rem;margin:.7rem .8rem}
-  .leaflet-popup-content b{font-size:.98rem}
-  .map-legend{display:flex;gap:.8rem;flex-wrap:wrap;margin:.7rem .2rem 0;font-size:.8rem;color:var(--muted);font-weight:600}
-  .map-legend span{display:inline-flex;align-items:center;gap:.3rem}
-  .map-legend i{width:.7rem;height:.7rem;border-radius:50%}
 
   /* tarjetas centro */
   ul.list{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
@@ -432,10 +419,6 @@
     <div id="offline" class="banner offline">Sin conexión. Mostrando lo último guardado en este teléfono.</div>
 
     <div class="ctrls">
-      <div class="viewtoggle" id="viewtoggle">
-        <button data-mode="lista" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Lista</button>
-        <button data-mode="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4 6 2 6-2v15l-6 2-6-2-6 2V6z"/><path d="M9 4v15M15 6v15"/></svg>Mapa</button>
-      </div>
       <button id="near" class="nearbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Cerca de mí</button>
     </div>
     <div id="geoline" class="geoline hide"></div>
@@ -458,16 +441,6 @@
       <div id="count" class="count"></div>
       <ul id="list" class="list" aria-live="polite"><li class="skel"></li><li class="skel"></li><li class="skel"></li></ul>
       <div id="empty" class="empty hide"></div>
-    </div>
-
-    <div id="pane-mapa" class="hide">
-      <div id="map"></div>
-      <div class="map-legend">
-        <span><i style="background:#16a34a"></i>Abierto</span>
-        <span><i style="background:#e08a16"></i>Saturado</span>
-        <span><i style="background:#dc2626"></i>Cerrado</span>
-        <span><i style="background:#7a8794"></i>Sin reporte</span>
-      </div>
     </div>
 
     <button id="cta-centro" class="cta">
@@ -573,7 +546,7 @@
     <input id="r-ciudad" class="fld" maxlength="80" placeholder="Ej: Valencia">
     <label for="r-tel">Teléfono (opcional)</label>
     <input id="r-tel" class="fld" inputmode="tel" maxlength="40" placeholder="0241-…">
-    <label class="check"><input type="checkbox" id="r-geo"><span>Usar mi ubicación actual para colocarlo en el mapa (opcional).</span></label>
+    <label class="check"><input type="checkbox" id="r-geo"><span>Usar mi ubicación actual como ubicación del centro (opcional).</span></label>
     <button id="r-send" class="send dark">Agregar centro</button>
     <button class="cancel" data-close>Cancelar</button>
   </div>
@@ -586,7 +559,7 @@
     <p class="hint">App gratuita para encontrar a familiares <b>ingresados en hospitales o centros de salud</b> tras el sismo. Para personas <b>desaparecidas</b>, visita <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>. Tres cosas que puedes hacer aquí:</p>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">1</span><div><b style="font-size:1rem">Buscar a tu familiar</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Buscar persona</b>, escribe nombre o cédula. La app confirma si está registrado y en qué centro, sin exponer datos sensibles.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">2</span><div><b style="font-size:1rem">Registrar a alguien</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">Cualquiera puede registrar a una persona ingresada. Si trabajas en el centro, indícalo y tu reporte queda verificado.</div></div></div>
-    <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">3</span><div><b style="font-size:1rem">Ver centros cerca</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Centros</b> ves hospitales en lista o mapa, ordenados por cercanía a tu ubicación, con su estado.</div></div></div>
+    <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">3</span><div><b style="font-size:1rem">Ver centros cerca</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Centros</b> ves los hospitales en lista, ordenados por cercanía a tu ubicación, con su estado.</div></div></div>
     <p style="font-size:.84rem;color:var(--muted);border-top:1px solid var(--line-2);padding-top:.9rem">Información voluntaria y comunitaria, no oficial. Siempre llama antes de trasladar a un paciente. Emergencias: <b>171</b>.</p>
     <button id="guia-ok" class="send">Entendido</button>
   </div>
@@ -675,9 +648,7 @@ let DATA = [];      // centros
 let PAC  = [];      // demo patients
 let filtro = "todos";
 let view = "personas";
-let mapMode = "lista";
 let userPos = null; // {lat,lng}
-let mapObj = null, mapLayer = null, leafletLoading = false;
 
 /* ---------- utils ---------- */
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
@@ -688,7 +659,6 @@ function soloDig(s){return String(s||"").replace(/\D/g,"");}
 function tipoLabel(t){return {hospital:"Hospital",clinica:"Clínica",ambulatorio:"Ambulatorio",cdi:"CDI",maternidad:"Maternidad",otro:"Centro"}[t]||"Centro";}
 function capLabel(c){return {disponible:"Camas disponibles",limitada:"Capacidad limitada",llena:"Sin cupo"}[c]||"";}
 function badge(op){if(op==="abierto")return['b-ok','Abierto'];if(op==="saturado")return['b-warn','Saturado'];if(op==="cerrado")return['b-bad','Cerrado'];return['b-unk','Sin reporte'];}
-function colorOp(op){return op==="abierto"?"#16a34a":op==="saturado"?"#e08a16":op==="cerrado"?"#dc2626":"#7a8794";}
 function hace(ts){if(!ts)return"Sin reporte aún";const d=(Date.now()-new Date(ts).getTime())/1000;if(d<60)return"hace segundos";if(d<3600)return"hace "+Math.floor(d/60)+" min";if(d<86400)return"hace "+Math.floor(d/3600)+" h";const dd=Math.floor(d/86400);return"hace "+dd+(dd===1?" día":" días");}
 function haversine(a,b,c,d){const R=6371,r=Math.PI/180;const dLat=(c-a)*r,dLon=(d-b)*r;const s=Math.sin(dLat/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
 function distLabel(km){if(km==null)return"";if(km<1)return"a "+Math.round(km*1000)+" m";if(km<20)return"a "+km.toFixed(1)+" km";return"a "+Math.round(km)+" km";}
@@ -812,7 +782,6 @@ function render(){
   $("count").textContent=rows.length+(rows.length===1?" centro":" centros")+(userPos?" · ordenados por cercanía":"");
   if(!rows.length){list.innerHTML="";empty.classList.remove("hide");empty.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div>'+(DATA.length?"No hay centros con ese filtro. Prueba con otro o agrégalo.":"Aún no hay centros cargados.")+'</div>';return;}
   empty.classList.add("hide");list.innerHTML=rows.map(cardHTML).join("");
-  if(mapMode==="mapa")pintarMapa(rows);
 }
 function cardHTML(h){
   const [bc,bl]=badge(h.estado_operativo);
@@ -860,46 +829,6 @@ $("list").addEventListener("click",async (e)=>{
   }
 });
 
-/* ---------- mapa (Leaflet diferido) ---------- */
-const LEAFLET_CSS=["./leaflet.min.css","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"];
-const LEAFLET_JS=["./leaflet.min.js","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"];
-function ensureLeaflet(cb){
-  if(window.L){cb();return;}
-  if(leafletLoading){setTimeout(()=>ensureLeaflet(cb),200);return;}
-  leafletLoading=true;
-  const css=document.createElement("link");css.rel="stylesheet";css.href=LEAFLET_CSS[0];css.onerror=()=>{css.href=LEAFLET_CSS[1];};document.head.appendChild(css);
-  (function loadJs(i){const js=document.createElement("script");js.src=LEAFLET_JS[i];
-    js.onload=()=>{leafletLoading=false;if(window.L)cb();};
-    js.onerror=()=>{if(i+1<LEAFLET_JS.length)loadJs(i+1);else{leafletLoading=false;toast("No se pudo cargar el mapa. Revisa tu conexión.","err");}};
-    document.head.appendChild(js);})(0);
-}
-function pintarMapa(rows){
-  ensureLeaflet(()=>{
-    if(!mapObj){
-      mapObj=L.map("map",{zoomControl:true,attributionControl:false});
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(mapObj);
-      mapLayer=L.layerGroup().addTo(mapObj);
-    }
-    mapLayer.clearLayers();
-    const pts=[];
-    rows.forEach(h=>{if(h.lat==null||h.lng==null)return;
-      const m=L.circleMarker([h.lat,h.lng],{radius:9,color:"#fff",weight:2,fillColor:colorOp(h.estado_operativo),fillOpacity:1});
-      const [,bl]=badge(h.estado_operativo);
-      m.bindPopup(`<b>${esc(h.nombre)}</b><br>${esc(h.ciudad)}, ${esc(h.estado)}<br><span style="color:${colorOp(h.estado_operativo)};font-weight:700">${bl}</span>`);
-      mapLayer.addLayer(m);pts.push([h.lat,h.lng]);
-    });
-    if(userPos){L.circleMarker([userPos.lat,userPos.lng],{radius:8,color:"#fff",weight:3,fillColor:"#0a6cff",fillOpacity:1}).addTo(mapLayer).bindPopup("Tu ubicación aproximada");pts.push([userPos.lat,userPos.lng]);}
-    setTimeout(()=>{mapObj.invalidateSize();if(userPos){mapObj.setView([userPos.lat,userPos.lng],11);}else if(pts.length){mapObj.fitBounds(pts,{padding:[30,30],maxZoom:12});}else{mapObj.setView([8.0,-66.0],6);}},60);
-  });
-}
-function setMapMode(m){
-  mapMode=m;
-  document.querySelectorAll("#viewtoggle button").forEach(b=>b.classList.toggle("on",b.getAttribute("data-mode")===m));
-  $("pane-lista").classList.toggle("hide",m!=="lista");
-  $("pane-mapa").classList.toggle("hide",m!=="mapa");
-  if(m==="mapa")pintarMapa(aplicarFiltros());
-}
-
 /* ---------- geolocalización ---------- */
 function pedirUbicacion(manual){
   if(!navigator.geolocation){if(manual)toast("Tu equipo no permite ubicación","err");return;}
@@ -909,7 +838,7 @@ function pedirUbicacion(manual){
     aplicarDistancias();
     $("geoline").classList.remove("hide");
     $("geoline").innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Mostrando los centros más cercanos a ti';
-    render();if(mapMode==="mapa")pintarMapa(aplicarFiltros());
+    render();
     if(manual)toast("Listo, ordené por cercanía","ok");
   },err=>{if(manual)toast("No pudimos obtener tu ubicación","err");},{enableHighAccuracy:false,timeout:8000,maximumAge:300000});
 }
@@ -989,7 +918,6 @@ function setView(v){
   document.querySelectorAll(".seg").forEach(s=>s.classList.toggle("on",s.getAttribute("data-view")===v));
   $("view-personas").classList.toggle("hide",v!=="personas");
   $("view-centros").classList.toggle("hide",v!=="centros");
-  if(v==="centros"&&mapMode==="mapa")setTimeout(()=>pintarMapa(aplicarFiltros()),50);
   window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".seg").forEach(s=>s.addEventListener("click",()=>setView(s.getAttribute("data-view"))));
@@ -1139,7 +1067,6 @@ $("f-estado").addEventListener("change",()=>{poblarCiudades();render();});
 $("f-ciudad").addEventListener("change",render);
 $("qp").addEventListener("input",onBuscarPersona);
 document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");filtro=c.getAttribute("data-fil");render();}));
-document.querySelectorAll("#viewtoggle button").forEach(b=>b.addEventListener("click",()=>setMapMode(b.getAttribute("data-mode"))));
 $("near").addEventListener("click",()=>pedirUbicacion(true));
 window.addEventListener("online",()=>{refrescar(true);cargarStats();});
 window.addEventListener("offline",()=>$("offline").classList.add("show"));
