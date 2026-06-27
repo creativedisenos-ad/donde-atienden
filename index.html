@@ -620,7 +620,16 @@
     </div>
     <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> y <b>edad_sector</b> son <b>opcionales</b> (puedes agregar personas sin cédula).<br>Lo que no sepas, <b>déjalo vacío</b> — no inventes. Solo se omiten las filas sin nombre o sin centro. No se cargan duplicados.</div>
     <div class="seccard">
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-4 4 4M5 3h14"/></svg>Paso 2 · Sube tu archivo</h3>
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Paso 2 · ¿De dónde sacaste la lista?</h3>
+      <p class="sh"><b>Obligatorio.</b> Escribe la fuente y adjunta una <b>foto de la lista</b> o pega el <b>enlace de Instagram</b> donde aparece. Así cada dato queda respaldado.</p>
+      <input id="bulk-origen" class="fld" type="text" maxlength="200" placeholder="Ej.: Lista de pediatría del Hospital X · grupo de WhatsApp de voluntarios">
+      <input id="bulk-foto" type="file" accept="image/*" style="display:none">
+      <label for="bulk-foto" class="bulk-pick" style="margin-top:.6rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="bulk-foto-name">📷 Adjuntar foto de la lista</span></label>
+      <div style="text-align:center;font-size:.82rem;color:var(--muted);margin:.15rem 0 .55rem;font-weight:600">— o —</div>
+      <input id="bulk-insta" class="fld" type="url" maxlength="300" placeholder="https://instagram.com/p/…  (enlace donde sale la lista)">
+    </div>
+    <div class="seccard">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-4 4 4M5 3h14"/></svg>Paso 3 · Sube tu archivo</h3>
       <p class="sh">Acepta .csv, .xlsx o .xls. Si usas Excel, también puedes Guardar como CSV.</p>
       <input id="bulk-file" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none">
       <label for="bulk-file" class="bulk-pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span id="bulk-fname">Elegir archivo</span></label>
@@ -1047,15 +1056,41 @@ async function parsearArchivo(file){
   const ws=wb.Sheets[wb.SheetNames[0]];
   return XLSX.utils.sheet_to_json(ws,{defval:""});
 }
-async function cargarMasivo(rows){
+/* ---------- fuente/origen de la lista ---------- */
+function bulkListo(){
+  const f=$("bulk-file").files[0];
+  const origen=($("bulk-origen").value||"").trim();
+  const foto=$("bulk-foto").files[0];
+  const insta=($("bulk-insta").value||"").trim();
+  return !!f && origen.length>=3 && (!!foto || insta.length>=8);
+}
+function refrescarBulkBtn(){ const b=$("bulk-send"); if(b) b.disabled=!bulkListo(); }
+async function subirFotoLista(file){
+  const ext=((file.name||"").split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"jpg";
+  const key="lista_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
+  const r=await fetch(SUPABASE_URL+"/storage/v1/object/fuentes-listas/"+encodeURIComponent(key),{
+    method:"POST",
+    headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"x-upsert":"true","Content-Type":file.type||"image/jpeg"},
+    body:file
+  });
+  if(!r.ok){let m="";try{m=(await r.json()).message||"";}catch(_){}throw new Error("foto"+(m?": "+m:""));}
+  return SUPABASE_URL+"/storage/v1/object/public/fuentes-listas/"+encodeURIComponent(key);
+}
+async function crearCargaFuente(origen,fotoUrl,insta){
+  const res=await callRPC("crear_carga",{p_origen:origen,p_foto_url:fotoUrl||null,p_instagram:insta||null,p_device:getDeviceId()});
+  return res&&res.carga_id?res.carga_id:null;
+}
+async function cargarMasivo(rows, cargaId){
   if(DEMO){await new Promise(r=>setTimeout(r,300));let ins=0;rows.forEach(x=>{const dig=soloDig(x.cedula);if(dig&&!PAC.some(p=>soloDig(p.cedula)===dig)){const c=DATA.find(h=>norm(h.nombre)===norm(x.centro));PAC.push({nombre:x.nombre,cedula:x.cedula,detalle:x.detalle||null,hospital:x.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});ins++;}});return{insertados:ins,duplicados:rows.length-ins,invalidos:0};}
   const CH=300;let ins=0,dup=0,inv=0;
-  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId()});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;}
+  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId(),p_carga_id:cargaId||null});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;}
   cargarStats();
   return {insertados:ins,duplicados:dup,invalidos:inv};
 }
 $("bulk-template").addEventListener("click",descargarPlantilla);
-$("bulk-file").addEventListener("change",()=>{const f=$("bulk-file").files[0];$("bulk-fname").textContent=f?f.name:"Elegir archivo";$("bulk-send").disabled=!f;$("bulk-status").innerHTML="";});
+$("bulk-file").addEventListener("change",()=>{const f=$("bulk-file").files[0];$("bulk-fname").textContent=f?f.name:"Elegir archivo";$("bulk-status").innerHTML="";refrescarBulkBtn();});
+$("bulk-foto").addEventListener("change",()=>{const f=$("bulk-foto").files[0];$("bulk-foto-name").textContent=f?("✓ "+(f.name||"foto adjunta")):"📷 Adjuntar foto de la lista";refrescarBulkBtn();});
+["bulk-origen","bulk-insta"].forEach(id=>{const el=$(id);if(el)el.addEventListener("input",refrescarBulkBtn);});
 $("bulk-send").addEventListener("click",async ()=>{
   const file=$("bulk-file").files[0];if(!file){toast("Elige un archivo primero","err");return;}
   const btn=$("bulk-send");btn.disabled=true;btn.textContent="Procesando…";$("bulk-status").innerHTML='<div class="bulk-info">Leyendo archivo…</div>';
@@ -1072,13 +1107,34 @@ $("bulk-send").addEventListener("click",async ()=>{
     raw.forEach(r=>{const o=normFila(r);const nom=((o.nombre||"")+" "+(o.apellido||"")).trim();
       if(nom.length>=3&&o.centro)valid.push({nombre:nom,cedula:o.cedula||null,centro:o.centro,detalle:o.detalle||null});else omit++;});
     if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita al menos <b>nombre y centro de salud</b> (la cédula es opcional). Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
+    const origen=($("bulk-origen").value||"").trim();
+    const insta=($("bulk-insta").value||"").trim();
+    const foto=$("bulk-foto").files[0];
+    if(origen.length<3||(!foto&&insta.length<8)){
+      $("bulk-status").innerHTML='<div class="bulk-err"><b>Falta el origen de la lista.</b><br>Indica de dónde sacaste la lista y adjunta una <b>foto</b> o pega el <b>enlace de Instagram</b> antes de cargar.</div>';
+      btn.disabled=false;btn.textContent="Cargar lista";return;
+    }
+    if(foto&&foto.size>6*1024*1024){
+      $("bulk-status").innerHTML='<div class="bulk-err">La foto pesa demasiado (máx. 6 MB). Usa una imagen más liviana o pega el enlace de Instagram.</div>';
+      btn.disabled=false;btn.textContent="Cargar lista";return;
+    }
+    let fotoUrl=null;
+    if(foto){
+      $("bulk-status").innerHTML='<div class="bulk-info">Subiendo foto de la lista…</div>';
+      try{ fotoUrl=await subirFotoLista(foto); }
+      catch(e){ $("bulk-status").innerHTML='<div class="bulk-err">No se pudo subir la foto. Revisa tu conexión, prueba otra imagen o pega el enlace de Instagram.</div>';btn.disabled=false;btn.textContent="Cargar lista";return; }
+    }
+    $("bulk-status").innerHTML='<div class="bulk-info">Registrando la fuente…</div>';
+    let cargaId=null;
+    try{ cargaId=await crearCargaFuente(origen,fotoUrl,insta); }
+    catch(e){ $("bulk-status").innerHTML='<div class="bulk-err">No se pudo registrar el origen de la lista. Revisa los datos e inténtalo de nuevo.</div>';btn.disabled=false;btn.textContent="Cargar lista";return; }
     $("bulk-status").innerHTML='<div class="bulk-info">Cargando '+valid.length+' personas…</div>';
-    const res=await cargarMasivo(valid);
+    const res=await cargarMasivo(valid,cargaId);
     $("bulk-status").innerHTML='<div class="bulk-ok"><b>¡Carga completada!</b><br>Agregados: '+res.insertados+'<br>Ya estaban (duplicados): '+res.duplicados+'<br>Omitidos por faltar datos: '+(res.invalidos+omit)+'</div>';
-    toast("Carga masiva completada","ok");$("bulk-file").value="";$("bulk-fname").textContent="Elegir archivo";$("bulk-send").disabled=true;
+    toast("Carga masiva completada","ok");$("bulk-file").value="";$("bulk-fname").textContent="Elegir archivo";$("bulk-origen").value="";$("bulk-insta").value="";$("bulk-foto").value="";$("bulk-foto-name").textContent="📷 Adjuntar foto de la lista";$("bulk-send").disabled=true;
     refrescar(true);
   }catch(err){$("bulk-status").innerHTML='<div class="bulk-err">'+(err&&err.message==="limite"?"Alcanzaste el límite de cargas masivas por hora. Inténtalo más tarde.":"No se pudo procesar el archivo. Revisa que tenga las columnas de la plantilla, o súbelo como CSV.")+'</div>';}
-  finally{btn.disabled=false;btn.textContent="Cargar lista";}
+  finally{btn.textContent="Cargar lista";refrescarBulkBtn();}
 });
 
 /* ---------- asistente IA ---------- */
