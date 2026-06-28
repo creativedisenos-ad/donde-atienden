@@ -509,6 +509,7 @@
     <div id="p-sug" class="psug" hidden></div>
     <label for="p-cedula">Cédula (muy recomendada)</label>
     <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Ej: V-12345678">
+    <p class="help">Pedimos la cédula para <b>evitar errores y duplicados</b>. Si no la tienes, puedes registrar sin ella <b>asumiendo la responsabilidad</b> de los datos que cargas.</p>
     <div id="p-sincedula-box" class="bulk-req">
       <b>Vas a registrar SIN cédula.</b> Por la calidad de la información, hazte responsable e identifícate:
       <label class="check" style="margin-top:.55rem"><input type="checkbox" id="p-resp"><span>Me hago responsable de este registro sin cédula.</span></label>
@@ -545,6 +546,7 @@
     <label for="p-origen">¿De dónde sacaste este dato? *</label>
     <input id="p-origen" class="fld" maxlength="200" placeholder="Ej.: Soy su familiar · Lista de IG @cuenta · Me lo dijo el centro">
     <p class="help"><b>Obligatorio:</b> adjunta la <b>foto</b> de la lista o pega el <b>enlace de Instagram</b> donde aparece (basta con uno de los dos).</p>
+    <p class="help" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.6rem;padding:.5rem .65rem;color:#166534">🟢 <b>Servidor robusto · estado: sano.</b> Soporta y soportará la carga de imágenes para validar el origen de los datos del paciente.</p>
     <input id="p-foto" type="file" accept="image/*" style="display:none">
     <label for="p-foto" class="bulk-pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="p-foto-name">📷 Adjuntar foto de la lista</span></label>
     <input id="p-insta" class="fld" type="url" maxlength="300" placeholder="https://instagram.com/p/…  (enlace donde sale la lista)">
@@ -649,6 +651,7 @@
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Paso 2 · ¿De dónde sacaste la lista?</h3>
       <p class="sh"><b>Obligatorio.</b> Escribe la fuente y adjunta una <b>foto de la lista</b> o pega el <b>enlace de Instagram</b> donde aparece. Así cada dato queda respaldado.</p>
+      <p class="sh" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.6rem;padding:.5rem .65rem;color:#166534">🟢 <b>Servidor robusto · estado: sano.</b> Soporta y soportará la carga de imágenes para validar el origen de la lista.</p>
       <input id="bulk-origen" class="fld" type="text" maxlength="200" placeholder="Ej.: Lista de pediatría del Hospital X · grupo de WhatsApp de voluntarios">
       <input id="bulk-foto" type="file" accept="image/*" style="display:none">
       <label for="bulk-foto" class="bulk-pick" style="margin-top:.6rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="bulk-foto-name">📷 Adjuntar foto de la lista</span></label>
