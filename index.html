@@ -92,6 +92,9 @@
     padding:1.15rem 1.15rem;margin:.9rem 0 0;box-shadow:var(--shadow-s)}
   .hero h2{margin:0 0 .3rem;font-size:1.32rem;letter-spacing:-.02em;line-height:1.15}
   .hero p{margin:0;font-size:.95rem;color:var(--ink-2);line-height:1.5}
+  .solo-banner{background:#fee2e2;border:2px solid #f87171;color:#991b1b;border-radius:.9rem;padding:.85rem 1rem;margin:.2rem 0 .9rem;font-weight:800;font-size:1.02rem;line-height:1.45;text-align:center}
+  .solo-banner u{text-underline-offset:2px}
+  .solo-banner a{color:#991b1b;text-decoration:underline;font-weight:800}
 
   .searchbox{position:relative;margin-top:.85rem}
   .searchbox svg{position:absolute;left:1rem;top:50%;transform:translateY(-50%);width:1.3rem;height:1.3rem;color:var(--muted);pointer-events:none}
@@ -365,6 +368,7 @@
 
   <!-- ===================== PERSONAS (principal) ===================== -->
   <section id="view-personas">
+    <div class="solo-banner">⚠️ Esto es <u>SOLO para personas INGRESADAS en hospitales</u>.<br>¿Buscas a un <b>desaparecido</b> (no está en un hospital)? → <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
     <div class="hero">
       <h2>Busca a un familiar ingresado</h2>
       <p>Esta app es para encontrar a quien está <b>ingresado en un hospital o centro de salud</b>. Escribe su <b>nombre completo</b> o su <b>cédula</b>. Si la persona está <b>desaparecida</b> (no en un hospital), búscala en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>.</p>
@@ -498,12 +502,19 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Registrar a una persona</h2>
-    <p class="hint">Para que su familia pueda ubicarla. Solo nombre y centro son obligatorios.</p>
+    <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en un hospital</u>.<br>Si está <b>desaparecida</b> (no en un hospital), regístrala en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
+    <p class="hint">Para que su familia pueda ubicarla.</p>
     <label for="p-nombre">Nombre y apellido *</label>
     <input id="p-nombre" class="fld" maxlength="120" placeholder="Ej: José Antonio Pérez" autocomplete="off">
     <div id="p-sug" class="psug" hidden></div>
-    <label for="p-cedula">Cédula *</label>
-    <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Obligatoria — Ej: V-12345678">
+    <label for="p-cedula">Cédula (muy recomendada)</label>
+    <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Ej: V-12345678">
+    <div id="p-sincedula-box" class="bulk-req">
+      <b>Vas a registrar SIN cédula.</b> Por la calidad de la información, hazte responsable e identifícate:
+      <label class="check" style="margin-top:.55rem"><input type="checkbox" id="p-resp"><span>Me hago responsable de este registro sin cédula.</span></label>
+      <input id="p-vol-nombre" class="fld" maxlength="80" placeholder="Tu nombre y apellido (voluntario) *" style="margin-top:.55rem">
+      <input id="p-vol-tel" class="fld" inputmode="tel" maxlength="40" placeholder="Tu teléfono *" style="margin-top:.45rem">
+    </div>
     <label for="p-detalle">Edad y/o sector (opcional)</label>
     <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
     <p class="help">Solo si lo sabes con certeza — ayuda a la familia a verificar. No lo inventes; si no lo sabes, déjalo vacío.</p>
@@ -511,6 +522,8 @@
     <input id="p-centro" class="fld" autocomplete="off" placeholder="Escribe el hospital o centro…">
     <div id="p-centro-sug" class="psug" hidden></div>
     <p class="help">Escribe el nombre y elige una opción de la lista de abajo. ¿No aparece? <a href="#" id="p-add-centro" data-open="sheet-centro">➕ Agrégalo</a>.</p>
+    <label for="p-area">Parte del centro (opcional)</label>
+    <input id="p-area" class="fld" maxlength="60" placeholder="Ej: pediatría, politrauma, trauma-shock">
     <label for="p-quien">¿Quién registra? *</label>
     <select id="p-quien" class="fld">
       <option value="familiar">Soy familiar o allegado</option>
@@ -618,13 +631,21 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Carga masiva</h2>
+    <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en hospitales</u>. No cargues desaparecidos ni refugiados — esos van a <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
     <p class="hint">Sube una lista de varias personas a la vez con un archivo. Ideal para hospitales y centros de salud.</p>
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>Paso 1 · Descarga la plantilla</h3>
       <p class="sh"><b>Indispensable:</b> usa esta plantilla y <b>no cambies los títulos de las columnas</b>. Una persona por fila. Si subes otro formato, dará error.</p>
       <button id="bulk-template" class="send dark">Descargar plantilla (.csv)</button>
     </div>
-    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido, <b>cédula</b> y centro de salud. <b>edad_sector</b> es opcional.<br>Las filas <b>sin cédula se omiten</b> (por seguridad, todas las personas deben tener cédula). Lo que no sepas, déjalo vacío — no inventes. No se cargan duplicados.</div>
+    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> es muy recomendada. <b>edad_sector</b> es opcional.<br>Si tu lista trae personas <b>sin cédula</b>, abajo debes <b>identificarte como responsable</b>. Lo que no sepas, déjalo vacío — no inventes. No se cargan duplicados.</div>
+    <div class="seccard" id="bulk-resp-card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Si tu lista trae personas SIN cédula</h3>
+      <p class="sh">Para cargar personas sin cédula, <b>identifícate como responsable</b> (si todas tienen cédula, ignora esto):</p>
+      <label class="check"><input type="checkbox" id="bulk-resp"><span>Me hago responsable de cargar registros sin cédula.</span></label>
+      <input id="bulk-vol-nombre" class="fld" maxlength="80" placeholder="Tu nombre y apellido (voluntario)" style="margin-top:.55rem">
+      <input id="bulk-vol-tel" class="fld" inputmode="tel" maxlength="40" placeholder="Tu teléfono" style="margin-top:.45rem">
+    </div>
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Paso 2 · ¿De dónde sacaste la lista?</h3>
       <p class="sh"><b>Obligatorio.</b> Escribe la fuente y adjunta una <b>foto de la lista</b> o pega el <b>enlace de Instagram</b> donde aparece. Así cada dato queda respaldado.</p>
@@ -770,7 +791,7 @@ async function registrarPaciente(d){
     const dig=soloDig(d.cedula);
     if(dig.length>=5){const ex=PAC.find(p=>soloDig(p.cedula)===dig);if(ex)return {ok:false,duplicado:true,existente:{nombre:ex.nombre,detalle:ex.detalle||null,centro:ex.hospital,ciudad:ex.ciudad,telefono:ex.telefono,cedula:"••••"+dig.slice(-4)}};}
     const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",detalle:d.detalle||null,hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return {ok:true};}
-  const res=await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null,p_origen:d.origen||null,p_foto_url:d.foto_url||null,p_instagram:d.instagram||null});
+  const res=await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null,p_origen:d.origen||null,p_foto_url:d.foto_url||null,p_instagram:d.instagram||null,p_vol_nombre:d.vol_nombre||null,p_vol_telefono:d.vol_telefono||null,p_area:d.area||null});
   if(res&&res.ok){recordAct();cargarStats();}
   return res;
 }
@@ -899,7 +920,11 @@ $("p-send").addEventListener("click",async ()=>{
   const nombre=$("p-nombre").value.trim(),centro=$("p-centro").value.trim();
   if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
   if(!centro){toast("Escribe y elige el centro. Si no aparece, usa “Agrégalo”.","err");$("p-centro").focus();return;}
-  if(soloDig($("p-cedula").value).length<6){toast("La cédula es obligatoria (mínimo 6 dígitos)","err");$("p-cedula").focus();return;}
+  if(soloDig($("p-cedula").value).length<6){
+    if(!$("p-resp").checked){toast("Sin cédula: marca la casilla de responsabilidad","err");$("p-resp").focus();return;}
+    if((($("p-vol-nombre").value)||"").trim().length<3){toast("Sin cédula: escribe tu nombre (voluntario)","err");$("p-vol-nombre").focus();return;}
+    if(soloDig($("p-vol-tel").value).length<7){toast("Sin cédula: escribe tu teléfono (voluntario)","err");$("p-vol-tel").focus();return;}
+  }
   if(!$("p-consent").checked){toast("Marca la autorización para continuar","err");return;}
   const origen=$("p-origen").value.trim();
   if(origen.length<3){toast("Escribe de dónde sacaste este dato","err");$("p-origen").focus();return;}
@@ -907,7 +932,7 @@ $("p-send").addEventListener("click",async ()=>{
   const cargo=$("p-cargo").value;
   const insta=$("p-insta").value.trim();const foto=$("p-foto").files[0];
   if(!foto && insta.length<8){toast("Adjunta una foto de la lista o pega el enlace de Instagram (obligatorio)","err");$("p-insta").focus();return;}
-  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null};
+  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null,area:($("p-area").value||"").trim()||null,vol_nombre:($("p-vol-nombre").value||"").trim()||null,vol_telefono:($("p-vol-tel").value||"").trim()||null};
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
     if(foto){if(foto.size>6*1024*1024){toast("La foto pesa demasiado (máx. 6 MB)","err");btn.disabled=false;btn.textContent="Registrar persona";return;}btn.textContent="Subiendo foto…";try{d.foto_url=await subirFotoLista(foto);}catch(e){toast("No se pudo subir la foto. Quítala o usa el enlace.","err");btn.disabled=false;btn.textContent="Registrar persona";return;}btn.textContent="Registrando…";}
@@ -916,7 +941,7 @@ $("p-send").addEventListener("click",async ()=>{
     const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
-    cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";
+    cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta","p-area","p-vol-nombre","p-vol-tel"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;if($("p-resp"))$("p-resp").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";if(typeof toggleSinCedula==="function")toggleSinCedula();
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":(err&&/cedula/i.test(err.message||"")?"La cédula es obligatoria para registrar.":"No se pudo registrar. Revisa tu conexión"),"err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
@@ -1029,6 +1054,9 @@ function onSugCentro(){
   }
   if(box) box.addEventListener("click",e=>{const it=e.target.closest(".psug-it");if(!it)return;$("p-centro").value=it.getAttribute("data-n");box.hidden=true;box.innerHTML="";});
 })();
+/* ---------- bloque "sin cédula" (responsable) ---------- */
+function toggleSinCedula(){const b=$("p-sincedula-box");if(!b)return;const c=$("p-cedula");b.style.display=(soloDig((c&&c.value)||"").length>=6)?"none":"block";}
+(function(){const c=$("p-cedula");if(c)c.addEventListener("input",toggleSinCedula);toggleSinCedula();})();
 
 /* ---------- cédula ya registrada (evitar duplicados) ---------- */
 let dupCtx=null;
@@ -1107,10 +1135,10 @@ async function crearCargaFuente(origen,fotoUrl,insta){
   const res=await callRPC("crear_carga",{p_origen:origen,p_foto_url:fotoUrl||null,p_instagram:insta||null,p_device:getDeviceId()});
   return res&&res.carga_id?res.carga_id:null;
 }
-async function cargarMasivo(rows, cargaId){
+async function cargarMasivo(rows, cargaId, volNom, volTel){
   if(DEMO){await new Promise(r=>setTimeout(r,300));let ins=0;rows.forEach(x=>{const dig=soloDig(x.cedula);if(dig&&!PAC.some(p=>soloDig(p.cedula)===dig)){const c=DATA.find(h=>norm(h.nombre)===norm(x.centro));PAC.push({nombre:x.nombre,cedula:x.cedula,detalle:x.detalle||null,hospital:x.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});ins++;}});return{insertados:ins,duplicados:rows.length-ins,invalidos:0};}
   const CH=300;let ins=0,dup=0,inv=0,sinced=0;
-  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId(),p_carga_id:cargaId||null});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;sinced+=res.sin_cedula||0;}
+  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId(),p_carga_id:cargaId||null,p_vol_nombre:volNom||null,p_vol_telefono:volTel||null});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;sinced+=res.sin_cedula||0;}
   cargarStats();
   return {insertados:ins,duplicados:dup,invalidos:inv,sin_cedula:sinced};
 }
@@ -1134,6 +1162,12 @@ $("bulk-send").addEventListener("click",async ()=>{
     raw.forEach(r=>{const o=normFila(r);const nom=((o.nombre||"")+" "+(o.apellido||"")).trim();
       if(nom.length>=3&&o.centro)valid.push({nombre:nom,cedula:o.cedula||null,centro:o.centro,detalle:o.detalle||null});else omit++;});
     if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita al menos <b>nombre y centro de salud</b> (la cédula es opcional). Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
+    const sinCedRows=valid.filter(v=>!v.cedula||soloDig(v.cedula).length<6).length;
+    const volNom=($("bulk-vol-nombre").value||"").trim(), volTel=($("bulk-vol-tel").value||"").trim();
+    if(sinCedRows>0 && (!$("bulk-resp").checked || volNom.length<3 || soloDig(volTel).length<7)){
+      $("bulk-status").innerHTML='<div class="bulk-err"><b>Tu lista tiene '+sinCedRows+' persona(s) sin cédula.</b><br>Marca la casilla de responsabilidad y pon tu nombre y teléfono (sección «Si tu lista trae personas SIN cédula») para poder cargarlas.</div>';
+      btn.disabled=false;btn.textContent="Cargar lista";return;
+    }
     const origen=($("bulk-origen").value||"").trim();
     const insta=($("bulk-insta").value||"").trim();
     const foto=$("bulk-foto").files[0];
@@ -1156,7 +1190,7 @@ $("bulk-send").addEventListener("click",async ()=>{
     try{ cargaId=await crearCargaFuente(origen,fotoUrl,insta); }
     catch(e){ $("bulk-status").innerHTML='<div class="bulk-err">No se pudo registrar el origen de la lista. Revisa los datos e inténtalo de nuevo.</div>';btn.disabled=false;btn.textContent="Cargar lista";return; }
     $("bulk-status").innerHTML='<div class="bulk-info">Cargando '+valid.length+' personas…</div>';
-    const res=await cargarMasivo(valid,cargaId);
+    const res=await cargarMasivo(valid,cargaId,volNom,volTel);
     $("bulk-status").innerHTML='<div class="bulk-ok"><b>¡Carga completada!</b><br>Agregados: '+res.insertados+'<br>Ya estaban (duplicados): '+res.duplicados+'<br>Omitidos sin cédula: '+(res.sin_cedula||0)+'<br>Omitidos por faltar datos: '+(res.invalidos+omit)+'</div>';
     toast("Carga masiva completada","ok");$("bulk-file").value="";$("bulk-fname").textContent="Elegir archivo";$("bulk-origen").value="";$("bulk-insta").value="";$("bulk-foto").value="";$("bulk-foto-name").textContent="📷 Adjuntar foto de la lista";$("bulk-send").disabled=true;
     refrescar(true);
