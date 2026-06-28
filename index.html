@@ -559,6 +559,16 @@
   </div>
 </div>
 
+<div id="sheet-dupcheck" class="scrim" role="dialog" aria-modal="true" aria-label="Verificar duplicado">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>⚠️ Verifica antes de registrar</h2>
+    <p class="hint" id="dup-msg"></p>
+    <div id="dup-list" class="psug" style="margin:.4rem 0 .9rem;max-height:46vh;overflow:auto"></div>
+    <button id="dup-nueva" class="send">Es una persona NUEVA — registrar</button>
+    <button id="dup-ya" class="cancel" style="margin-top:.45rem">Ya está registrada — no registrar</button>
+  </div>
+</div>
 <div id="sheet-centro" class="scrim" role="dialog" aria-modal="true" aria-label="Agregar centro">
   <div class="sheet">
     <div class="grip"></div>
@@ -940,6 +950,23 @@ $("p-send").addEventListener("click",async ()=>{
   const insta=$("p-insta").value.trim();const foto=$("p-foto").files[0];
   if(!foto && insta.length<8){toast("Adjunta una foto de la lista o pega el enlace de Instagram (obligatorio)","err");$("p-insta").focus();return;}
   const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null,area:($("p-area").value||"").trim()||null,vol_nombre:($("p-vol-nombre").value||"").trim()||null,vol_telefono:($("p-vol-tel").value||"").trim()||null};
+  // Antes de registrar: revisar si ya hay personas con nombres y apellidos similares
+  const _btn=$("p-send");_btn.disabled=true;_btn.textContent="Revisando…";
+  let _sim=null; try{ _sim=await buscarPaciente(nombre); }catch(e){}
+  _btn.disabled=false;_btn.textContent="Registrar persona";
+  if(_sim && _sim.length){
+    _pendingReg=d;
+    $("dup-msg").textContent="Hay "+_sim.length+" persona(s) registrada(s) con nombres y apellidos similares. Revisa que tu persona NO sea ninguna de estas:";
+    $("dup-list").innerHTML=_sim.slice(0,8).map(function(r){return '<div class="psug-it"><b>'+esc(r.nombre||"")+'</b><span>'+esc(r.centro||"")+(r.detalle?(" · "+esc(r.detalle)):"")+(r.cedula?(" · C.I. "+esc(r.cedula)):"")+'</span></div>';}).join("");
+    abrir("sheet-dupcheck");
+    return;
+  }
+  ejecutarRegistroPersona(d);
+});
+
+var _pendingReg=null;
+async function ejecutarRegistroPersona(d){
+  const centro=d.centro, foto=$("p-foto").files[0];
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
     if(foto){if(foto.size>6*1024*1024){toast("La foto pesa demasiado (máx. 6 MB)","err");btn.disabled=false;btn.textContent="Registrar persona";return;}btn.textContent="Subiendo foto…";try{d.foto_url=await subirFotoLista(foto);}catch(e){toast("No se pudo subir la foto. Quítala o usa el enlace.","err");btn.disabled=false;btn.textContent="Registrar persona";return;}btn.textContent="Registrando…";}
@@ -952,7 +979,9 @@ $("p-send").addEventListener("click",async ()=>{
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":(err&&/cedula/i.test(err.message||"")?"La cédula es obligatoria para registrar.":"No se pudo registrar. Revisa tu conexión"),"err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
-});
+}
+$("dup-nueva")&&$("dup-nueva").addEventListener("click",function(){var d=_pendingReg;_pendingReg=null;var s=$("sheet-dupcheck");if(s)s.classList.remove("open");if(d)ejecutarRegistroPersona(d);});
+$("dup-ya")&&$("dup-ya").addEventListener("click",function(){_pendingReg=null;cerrarSheets();toast("Perfecto, no se registró de nuevo. ¡Gracias por verificar!","ok");});
 
 /* ---------- agregar centro ---------- */
 $("r-send").addEventListener("click",async ()=>{
