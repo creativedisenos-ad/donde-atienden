@@ -102,6 +102,15 @@
   .estb{margin-top:.6rem;border-radius:.7rem;padding:.6rem .75rem;font-weight:700;font-size:.9rem;line-height:1.4}
   .estb.enc{background:#dcfce7;border:1px solid #86efac;color:#166534}
   .estb.alta{background:#dbeafe;border:1px solid #93c5fd;color:#1e40af}
+  .act-fall{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;margin-top:.6rem;font-weight:800;border-radius:.7rem;padding:.7rem;cursor:pointer;font-size:.9rem;border:1.5px solid #cbd5e1;background:#f8fafc;color:#475569}
+  .estb.fall{margin-top:.6rem;border-radius:.7rem;padding:.6rem .75rem;font-weight:700;font-size:.9rem;line-height:1.4;background:#f1f5f9;border:1px solid #cbd5e1;color:#334155}
+  .contact-box{margin-top:.6rem;background:#fffdf5;border:1px solid #fcd34d;border-radius:.7rem;padding:.6rem .75rem;font-size:.85rem;line-height:1.55}
+  .contact-box .c-tit,.corr-box .c-tit{font-weight:800;font-size:.74rem;text-transform:uppercase;letter-spacing:.02em;margin-bottom:.25rem}
+  .contact-box .c-tit{color:#92400e}.contact-box a{color:#1d4ed8;font-weight:700;text-decoration:none}
+  .corr-box{margin-top:.6rem;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:.7rem;padding:.6rem .75rem;font-size:.85rem;line-height:1.5}
+  .corr-box .c-tit{color:#5b21b6}.corr-it{margin-top:.2rem}.corr-it span{color:var(--muted);font-size:.8rem}
+  .act-corr{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;margin-top:.5rem;font-weight:700;border-radius:.7rem;padding:.6rem;cursor:pointer;font-size:.85rem;border:1.5px dashed #c4b5fd;background:#faf5ff;color:#6d28d9}
+  .act-corr svg{width:1rem;height:1rem}
   .regdate{font-size:.78rem;color:var(--muted);margin-top:.5rem}
 
   .searchbox{position:relative;margin-top:.85rem}
@@ -659,6 +668,25 @@
     <button class="cancel" data-close>Cancelar</button>
   </div>
 </div>
+
+<div id="sheet-correccion" class="scrim" role="dialog" aria-modal="true" aria-label="Corregir o agregar un dato">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>✏️ Corregir o agregar un dato</h2>
+    <p class="hint">Tu corrección se <b>publica en el registro</b> con tu nombre y teléfono, para que cualquiera pueda escribirte ante cualquier incidencia. No se borra nada: solo aclaras o agregas lo correcto.</p>
+    <label for="corr-texto">¿Qué hay que corregir o agregar? *</label>
+    <textarea id="corr-texto" class="fld" rows="3" maxlength="300" placeholder="Ej: El apellido correcto es Hidalgo, no Hilder. / Ya fue trasladado al piso 3."></textarea>
+    <label for="corr-por">Tu nombre y apellido *</label>
+    <input id="corr-por" class="fld" maxlength="80" placeholder="Quién corrige (responsable)">
+    <label for="corr-tel">Tu teléfono *</label>
+    <input id="corr-tel" class="fld" inputmode="tel" maxlength="30" placeholder="Para que te contacten — Ej: 0414...">
+    <label for="corr-ced">Tu cédula (opcional)</label>
+    <input id="corr-ced" class="fld" inputmode="numeric" maxlength="20" placeholder="Solo se muestran los últimos 4 dígitos">
+    <p class="help">Se guarda la <b>fecha y hora</b> (Caracas). Tu cédula se muestra enmascarada (••••1234).</p>
+    <button id="corr-send" class="send">Publicar corrección</button>
+    <button class="cancel" data-close>Cancelar</button>
+  </div>
+</div>
 <div id="chat-tip" class="chat-tip"><span class="tx">👋 ¡Hola! Soy tu asistente, te ayudo a buscar</span><button id="chat-tip-x" aria-label="Cerrar saludo">✕</button></div>
 <button id="chat-fab" class="chat-fab" aria-label="Abrir asistente de ayuda">
   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
@@ -972,7 +1000,10 @@ function pintarResultadoPersona(res){
       ${tel}
       <div class="pnote">Verifica que sea tu familiar por el <b>nombre, la edad y el sector</b>. Por privacidad no mostramos su estado de salud: llama al centro para confirmar y recibir información.</div>
       ${r.registrado?`<div class="regdate">🕒 Registrado: <b>${esc(r.registrado)}</b> · hora Caracas</div>`:""}
-      ${r.estado==='encontrada'?`<div class="estb enc">✓ <b>Encontrada por su familia</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='alta'?`<div class="estb alta">🏥 <b>Dado de alta</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:`<button class="act-found" data-estado="encontrada" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ya fue encontrada por su familia</button><button class="act-alta" data-estado="alta" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Ya fue dado de alta</button>`}
+      ${r.estado==='encontrada'?`<div class="estb enc">✓ <b>Encontrada por su familia</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='alta'?`<div class="estb alta">🏥 <b>Dado de alta</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='fallecido'?`<div class="estb fall">🕊️ <b>Falleció</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:`<button class="act-found" data-estado="encontrada" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ya fue encontrada por su familia</button><button class="act-alta" data-estado="alta" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Ya fue dado de alta</button><button class="act-fall" data-estado="fallecido" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}">🕊️ Falleció</button>`}
+      ${(r.vol_nombre||r.vol_tel||r.contacto)?`<div class="contact-box"><div class="c-tit">📇 Contacto ante cualquier incidencia</div>${(r.vol_nombre||r.vol_tel)?`<div>🙋 Cargado por: <b>${esc(r.vol_nombre||"voluntario")}</b>${r.vol_tel?` · <a href="tel:${esc(r.vol_tel)}">${esc(r.vol_tel)}</a> · <a href="https://wa.me/${esc((r.vol_tel||"").replace(/[^0-9]/g,''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>`:""}</div>`:""}${r.contacto?`<div>📞 Contacto del registro: <a href="tel:${esc(r.contacto)}">${esc(r.contacto)}</a> · <a href="https://wa.me/${esc((r.contacto||"").replace(/[^0-9]/g,''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>`:""}</div>`:""}
+      ${(Array.isArray(r.correcciones)&&r.correcciones.length)?`<div class="corr-box"><div class="c-tit">✏️ Correcciones publicadas</div>${r.correcciones.map(c=>`<div class="corr-it">“${esc(c.texto||"")}”<span> — ${esc(c.por||"anónimo")}${c.tel?(" · "+esc(c.tel)):""}${c.fecha?(" · "+esc(c.fecha)):""}</span></div>`).join("")}</div>`:""}
+      <button class="act-corr" data-corr="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>✏️ Corregir o agregar un dato</button>
       <button class="flag" data-flagp="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button></div>`;
   }).join("");
 }
@@ -1091,8 +1122,18 @@ $("abuso-send").addEventListener("click",async ()=>{
   finally{btn.disabled=false;btn.textContent="Enviar reporte";}
 });
 $("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp]");if(b)abrirAbuso("persona",b.getAttribute("data-flagp"),b.getAttribute("data-flagp"));});
-var estCtx=null;
-$("result-p").addEventListener("click",function(e){var b=e.target.closest("[data-estado]");if(!b)return;estCtx={referencia:b.getAttribute("data-ref"),estado:b.getAttribute("data-estado")};$("est-title").textContent=estCtx.estado==='alta'?"🏥 Ya fue dado de alta":"✓ Ya fue encontrada por su familia";$("est-sub").textContent=estCtx.estado==='alta'?"Confirma que esta persona ya fue dada de alta del hospital.":"Confirma que esta persona ya fue reunida con su familia.";$("est-por").value="";$("est-ced").value="";$("est-tel").value="";abrir("sheet-estado");});
+var estCtx=null, corrCtx=null;
+function abrirCorreccion(ref){corrCtx={referencia:ref};if($("corr-texto"))$("corr-texto").value="";if($("corr-por"))$("corr-por").value="";if($("corr-tel"))$("corr-tel").value="";if($("corr-ced"))$("corr-ced").value="";abrir("sheet-correccion");}
+$("result-p").addEventListener("click",function(e){
+  var bc=e.target.closest("[data-corr]");
+  if(bc){abrirCorreccion(bc.getAttribute("data-corr"));return;}
+  var b=e.target.closest("[data-estado]");if(!b)return;
+  estCtx={referencia:b.getAttribute("data-ref"),estado:b.getAttribute("data-estado")};
+  var TT={encontrada:["✓ Ya fue encontrada por su familia","Confirma que esta persona ya fue reunida con su familia."],alta:["🏥 Ya fue dado de alta","Confirma que esta persona ya fue dada de alta del hospital."],fallecido:["🕊️ Reportar fallecimiento","Confirma con respeto este reporte. Se publica con tu nombre para poder verificar."]};
+  var ti=TT[estCtx.estado]||TT.encontrada;
+  $("est-title").textContent=ti[0];$("est-sub").textContent=ti[1];
+  $("est-por").value="";$("est-ced").value="";$("est-tel").value="";abrir("sheet-estado");
+});
 $("est-send")&&$("est-send").addEventListener("click",async function(){
   if(!estCtx)return;
   var por=($("est-por").value||"").trim(), ced=($("est-ced").value||"").trim(), tel=($("est-tel").value||"").trim();
@@ -1100,9 +1141,20 @@ $("est-send")&&$("est-send").addEventListener("click",async function(){
   if(soloDig(ced).length<6){toast("Escribe tu cédula","err");$("est-ced").focus();return;}
   if(soloDig(tel).length<7){toast("Escribe tu teléfono","err");$("est-tel").focus();return;}
   var btn=$("est-send");btn.disabled=true;btn.textContent="Enviando…";
-  try{await callRPC("marcar_estado",{p_referencia:estCtx.referencia,p_estado:estCtx.estado,p_por:por,p_cedula:ced,p_tel:tel,p_device:getDeviceId()});toast(estCtx.estado==='alta'?"Marcada como dada de alta. ¡Gracias!":"Marcada como encontrada. ¡Gracias!","ok");cerrarSheets();}
+  try{await callRPC("marcar_estado",{p_referencia:estCtx.referencia,p_estado:estCtx.estado,p_por:por,p_cedula:ced,p_tel:tel,p_device:getDeviceId()});toast(estCtx.estado==='alta'?"Marcada como dada de alta. ¡Gracias!":estCtx.estado==='fallecido'?"Reporte registrado. Gracias por informar.":"Marcada como encontrada. ¡Gracias!","ok");cerrarSheets();var _q=$("qp");if(_q&&_q.value.trim().length>=2)_q.dispatchEvent(new Event("input"));}
   catch(err){toast("No se pudo registrar. Inténtalo de nuevo.","err");}
   finally{btn.disabled=false;btn.textContent="Confirmar";}
+});
+$("corr-send")&&$("corr-send").addEventListener("click",async function(){
+  if(!corrCtx)return;
+  var txt=($("corr-texto").value||"").trim(), por=($("corr-por").value||"").trim(), tel=($("corr-tel").value||"").trim(), ced=($("corr-ced").value||"").trim();
+  if(txt.length<4){toast("Escribe qué hay que corregir o agregar","err");$("corr-texto").focus();return;}
+  if(por.replace(/[^A-Za-zÀ-ÿñÑ]/g,'').length<3){toast("Escribe tu nombre y apellido","err");$("corr-por").focus();return;}
+  if(soloDig(tel).length<7){toast("Escribe tu teléfono para que te contacten","err");$("corr-tel").focus();return;}
+  var btn=$("corr-send");btn.disabled=true;btn.textContent="Publicando…";
+  try{await callRPC("publicar_correccion",{p_referencia:corrCtx.referencia,p_texto:txt,p_por:por,p_tel:tel,p_cedula:ced||null,p_device:getDeviceId()});toast("Corrección publicada. ¡Gracias!","ok");cerrarSheets();var _q2=$("qp");if(_q2&&_q2.value.trim().length>=2)_q2.dispatchEvent(new Event("input"));}
+  catch(err){toast(motivoRegistro(err),"err");}
+  finally{btn.disabled=false;btn.textContent="Publicar corrección";}
 });
 
 /* ---------- autocompletar nombre en el registro (avisa si ya existe) ---------- */
@@ -1202,7 +1254,7 @@ function mostrarDuplicado(ex, esCedula){
 }
 function limpiarFormPersona(){["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;const _s=$("p-sug");if(_s){_s.hidden=true;_s.innerHTML="";}}
 $("dup-ok").addEventListener("click",()=>{cerrarSheets();limpiarFormPersona();toast("Listo, esa persona ya estaba registrada","ok");});
-$("dup-report").addEventListener("click",()=>{const c=dupCtx||{};limpiarFormPersona();cerrarSheets();setTimeout(()=>abrirAbuso("persona",(c.nombre||"")+" · "+(c.centro||""),c.nombre||"este registro"),140);});
+$("dup-report").addEventListener("click",()=>{const c=dupCtx||{};const ref=(c.nombre||"")+" · "+(c.centro||"");limpiarFormPersona();cerrarSheets();setTimeout(()=>abrirCorreccion(ref),160);});
 
 /* ---------- carga masiva (CSV / Excel) ---------- */
 function descargarPlantilla(){
