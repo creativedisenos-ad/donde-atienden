@@ -504,8 +504,10 @@
     <h2>Registrar a una persona</h2>
     <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en un hospital</u>.<br>Si está <b>desaparecida</b> (no en un hospital), regístrala en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
     <p class="hint">Para que su familia pueda ubicarla.</p>
-    <label for="p-nombre">Nombre y apellido *</label>
-    <input id="p-nombre" class="fld" maxlength="120" placeholder="Ej: José Antonio Pérez" autocomplete="off">
+    <label for="p-nombres">Nombres *</label>
+    <input id="p-nombres" class="fld" maxlength="60" placeholder="Ej: José Antonio" autocomplete="off">
+    <label for="p-apellidos">Apellidos *</label>
+    <input id="p-apellidos" class="fld" maxlength="60" placeholder="Ej: Pérez González" autocomplete="off">
     <div id="p-sug" class="psug" hidden></div>
     <label for="p-cedula">Cédula (muy recomendada)</label>
     <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Ej: V-12345678">
@@ -920,9 +922,10 @@ function pintarResultadoPersona(res){
 
 /* ---------- registrar persona ---------- */
 $("p-send").addEventListener("click",async ()=>{
-  const nombre=$("p-nombre").value.trim(),centro=$("p-centro").value.trim();
-  if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
-  if(nombre.split(/\s+/).filter(function(w){return w.replace(/[^A-Za-zÀ-ÿñÑ]/g,'').length>=2;}).length<2){toast("Escribe nombre y apellido completos (sin números)","err");$("p-nombre").focus();return;}
+  const _nom=($("p-nombres").value||"").trim().replace(/\s+/g,' '), _ape=($("p-apellidos").value||"").trim().replace(/\s+/g,' ');
+  const nombre=(_nom+" "+_ape).trim(),centro=$("p-centro").value.trim();
+  if(_nom.replace(/[^A-Za-zÀ-ÿñÑ]/g,'').length<2){toast("Escribe los Nombres","err");$("p-nombres").focus();return;}
+  if(_ape.replace(/[^A-Za-zÀ-ÿñÑ]/g,'').length<2){toast("Escribe los Apellidos","err");$("p-apellidos").focus();return;}
   if(!centro){toast("Escribe y elige el centro. Si no aparece, usa “Agrégalo”.","err");$("p-centro").focus();return;}
   if(soloDig($("p-cedula").value).length<6){
     if(!$("p-resp").checked){toast("Sin cédula: marca la casilla de responsabilidad","err");$("p-resp").focus();return;}
@@ -945,7 +948,7 @@ $("p-send").addEventListener("click",async ()=>{
     const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
-    cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta","p-area","p-vol-nombre","p-vol-tel"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;if($("p-resp"))$("p-resp").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";if(typeof toggleSinCedula==="function")toggleSinCedula();
+    cerrarSheets();["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta","p-area","p-vol-nombre","p-vol-tel"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;if($("p-resp"))$("p-resp").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";if(typeof toggleSinCedula==="function")toggleSinCedula();
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":(err&&/cedula/i.test(err.message||"")?"La cédula es obligatoria para registrar.":"No se pudo registrar. Revisa tu conexión"),"err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
@@ -1015,10 +1018,10 @@ $("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp
 /* ---------- autocompletar nombre en el registro (avisa si ya existe) ---------- */
 let pSugTimer=null;
 function onSugNombre(){
-  var _el=$("p-nombre"); if(_el){var _c=_el.value.replace(/[0-9]/g,'');if(_c!==_el.value){var _p=_el.selectionStart;_el.value=_c;try{_el.setSelectionRange(_p>0?_p-1:0,_p>0?_p-1:0);}catch(e){}}}
+  ["p-nombres","p-apellidos"].forEach(function(id){var _el=$(id); if(_el){var _c=_el.value.replace(/[0-9]/g,'');if(_c!==_el.value){var _p=_el.selectionStart;_el.value=_c;try{_el.setSelectionRange(_p>0?_p-1:0,_p>0?_p-1:0);}catch(e){}}}});
   clearTimeout(pSugTimer);
   pSugTimer=setTimeout(async ()=>{
-    const v=$("p-nombre").value.trim(), box=$("p-sug");
+    const v=((($("p-nombres").value||"")+" "+($("p-apellidos").value||"")).trim()), box=$("p-sug");
     if(!box) return;
     if(norm(v).length<3){box.hidden=true;box.innerHTML="";return;}
     try{
@@ -1030,13 +1033,12 @@ function onSugNombre(){
   },300);
 }
 (function(){
-  const inp=$("p-nombre");
-  if(inp){
+  ["p-nombres","p-apellidos"].forEach(function(id){var inp=$(id); if(inp){
     inp.addEventListener("input",onSugNombre);
-    inp.addEventListener("blur",()=>setTimeout(()=>{const b=$("p-sug");if(b)b.hidden=true;},180));
-  }
+    inp.addEventListener("blur",function(){setTimeout(function(){const b=$("p-sug");if(b)b.hidden=true;},180);});
+  }});
   const sug=$("p-sug");
-  if(sug) sug.addEventListener("click",e=>{const it=e.target.closest(".psug-it");if(!it)return;$("p-nombre").value=it.getAttribute("data-n");sug.hidden=true;sug.innerHTML="";});
+  if(sug) sug.addEventListener("click",e=>{const it=e.target.closest(".psug-it");if(!it)return;const _v=it.getAttribute("data-n")||"";if($("p-nombres"))$("p-nombres").value=_v;if($("p-apellidos"))$("p-apellidos").value="";sug.hidden=true;sug.innerHTML="";});
 })();
 /* ---------- autocompletar de centro (escribir + sugerencias) ---------- */
 function onSugCentro(){
@@ -1074,7 +1076,7 @@ function mostrarDuplicado(ex, esCedula){
   $("dup-card").innerHTML=_ban+`<div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Ya está registrada</h3></div><div class="where">${esc(ex.nombre||"Persona")}</div>${meta?`<div class="city">${esc(meta)}</div>`:""}<div class="ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><div>Ingresado en <b>${esc(ex.centro||"un centro")}</b>${ex.ciudad?(" · "+esc(ex.ciudad)):""}</div></div>${tel}`;
   cerrarSheets();setTimeout(()=>abrir("sheet-dup"),140);
 }
-function limpiarFormPersona(){["p-nombre","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;const _s=$("p-sug");if(_s){_s.hidden=true;_s.innerHTML="";}}
+function limpiarFormPersona(){["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;const _s=$("p-sug");if(_s){_s.hidden=true;_s.innerHTML="";}}
 $("dup-ok").addEventListener("click",()=>{cerrarSheets();limpiarFormPersona();toast("Listo, esa persona ya estaba registrada","ok");});
 $("dup-report").addEventListener("click",()=>{const c=dupCtx||{};limpiarFormPersona();cerrarSheets();setTimeout(()=>abrirAbuso("persona",(c.nombre||"")+" · "+(c.centro||""),c.nombre||"este registro"),140);});
 
