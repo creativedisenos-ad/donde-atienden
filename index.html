@@ -95,6 +95,14 @@
   .solo-banner{background:#fee2e2;border:2px solid #f87171;color:#991b1b;border-radius:.9rem;padding:.85rem 1rem;margin:.2rem 0 .9rem;font-weight:800;font-size:1.02rem;line-height:1.45;text-align:center}
   .solo-banner u{text-underline-offset:2px}
   .solo-banner a{color:#991b1b;text-decoration:underline;font-weight:800}
+  .act-found,.act-alta{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;margin-top:.6rem;font-weight:800;border-radius:.7rem;padding:.7rem;cursor:pointer;font-size:.9rem;border:1.5px solid}
+  .act-found{background:#f0fdf4;border-color:#86efac;color:#166534}
+  .act-alta{background:#eff6ff;border-color:#93c5fd;color:#1e40af}
+  .act-found svg,.act-alta svg{width:1.05rem;height:1.05rem}
+  .estb{margin-top:.6rem;border-radius:.7rem;padding:.6rem .75rem;font-weight:700;font-size:.9rem;line-height:1.4}
+  .estb.enc{background:#dcfce7;border:1px solid #86efac;color:#166534}
+  .estb.alta{background:#dbeafe;border:1px solid #93c5fd;color:#1e40af}
+  .regdate{font-size:.78rem;color:var(--muted);margin-top:.5rem}
 
   .searchbox{position:relative;margin-top:.85rem}
   .searchbox svg{position:absolute;left:1rem;top:50%;transform:translateY(-50%);width:1.3rem;height:1.3rem;color:var(--muted);pointer-events:none}
@@ -625,6 +633,22 @@
   </div>
 </div>
 
+<div id="sheet-estado" class="scrim" role="dialog" aria-modal="true" aria-label="Actualizar estado">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2 id="est-title">Actualizar estado</h2>
+    <p class="hint" id="est-sub"></p>
+    <label for="est-por">Tu nombre y apellido *</label>
+    <input id="est-por" class="fld" maxlength="80" placeholder="¿Quién reporta esto?">
+    <label for="est-ced">Tu cédula *</label>
+    <input id="est-ced" class="fld" inputmode="numeric" maxlength="20" placeholder="Para verificar — Ej: V-12345678">
+    <label for="est-tel">Tu teléfono *</label>
+    <input id="est-tel" class="fld" inputmode="tel" maxlength="30" placeholder="Por si hay que confirmar">
+    <p class="help">Se guarda automáticamente la <b>fecha y hora</b> (Caracas) de este reporte.</p>
+    <button id="est-send" class="send">Confirmar</button>
+    <button class="cancel" data-close>Cancelar</button>
+  </div>
+</div>
 <div id="chat-tip" class="chat-tip"><span class="tx">👋 ¡Hola! Soy tu asistente, te ayudo a buscar</span><button id="chat-tip-x" aria-label="Cerrar saludo">✕</button></div>
 <button id="chat-fab" class="chat-fab" aria-label="Abrir asistente de ayuda">
   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
@@ -926,6 +950,8 @@ function pintarResultadoPersona(res){
       <div class="ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><div>Ingresado en <b>${esc(r.centro||"un centro")}</b>${r.ciudad?(" · "+esc(r.ciudad)):""}</div></div>
       ${tel}
       <div class="pnote">Verifica que sea tu familiar por el <b>nombre, la edad y el sector</b>. Por privacidad no mostramos su estado de salud: llama al centro para confirmar y recibir información.</div>
+      ${r.registrado?`<div class="regdate">🕒 Registrado: <b>${esc(r.registrado)}</b> · hora Caracas</div>`:""}
+      ${r.estado==='encontrada'?`<div class="estb enc">✓ <b>Encontrada por su familia</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='alta'?`<div class="estb alta">🏥 <b>Dado de alta</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:`<button class="act-found" data-estado="encontrada" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ya fue encontrada por su familia</button><button class="act-alta" data-estado="alta" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Ya fue dado de alta</button>`}
       <button class="flag" data-flagp="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button></div>`;
   }).join("");
 }
@@ -1043,6 +1069,19 @@ $("abuso-send").addEventListener("click",async ()=>{
   finally{btn.disabled=false;btn.textContent="Enviar reporte";}
 });
 $("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp]");if(b)abrirAbuso("persona",b.getAttribute("data-flagp"),b.getAttribute("data-flagp"));});
+var estCtx=null;
+$("result-p").addEventListener("click",function(e){var b=e.target.closest("[data-estado]");if(!b)return;estCtx={referencia:b.getAttribute("data-ref"),estado:b.getAttribute("data-estado")};$("est-title").textContent=estCtx.estado==='alta'?"🏥 Ya fue dado de alta":"✓ Ya fue encontrada por su familia";$("est-sub").textContent=estCtx.estado==='alta'?"Confirma que esta persona ya fue dada de alta del hospital.":"Confirma que esta persona ya fue reunida con su familia.";$("est-por").value="";$("est-ced").value="";$("est-tel").value="";abrir("sheet-estado");});
+$("est-send")&&$("est-send").addEventListener("click",async function(){
+  if(!estCtx)return;
+  var por=($("est-por").value||"").trim(), ced=($("est-ced").value||"").trim(), tel=($("est-tel").value||"").trim();
+  if(por.replace(/[^A-Za-zÀ-ÿñÑ]/g,'').length<3){toast("Escribe tu nombre y apellido","err");$("est-por").focus();return;}
+  if(soloDig(ced).length<6){toast("Escribe tu cédula","err");$("est-ced").focus();return;}
+  if(soloDig(tel).length<7){toast("Escribe tu teléfono","err");$("est-tel").focus();return;}
+  var btn=$("est-send");btn.disabled=true;btn.textContent="Enviando…";
+  try{await callRPC("marcar_estado",{p_referencia:estCtx.referencia,p_estado:estCtx.estado,p_por:por,p_cedula:ced,p_tel:tel,p_device:getDeviceId()});toast(estCtx.estado==='alta'?"Marcada como dada de alta. ¡Gracias!":"Marcada como encontrada. ¡Gracias!","ok");cerrarSheets();}
+  catch(err){toast("No se pudo registrar. Inténtalo de nuevo.","err");}
+  finally{btn.disabled=false;btn.textContent="Confirmar";}
+});
 
 /* ---------- autocompletar nombre en el registro (avisa si ya existe) ---------- */
 let pSugTimer=null;
