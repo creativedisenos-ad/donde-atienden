@@ -532,10 +532,10 @@
     <input id="p-contacto" class="fld" inputmode="tel" maxlength="40" placeholder="Para que el centro pueda ubicarte">
     <label for="p-origen">¿De dónde sacaste este dato? *</label>
     <input id="p-origen" class="fld" maxlength="200" placeholder="Ej.: Soy su familiar · Lista de IG @cuenta · Me lo dijo el centro">
-    <p class="help">Si lo viste en una lista, adjunta la <b>foto</b> o pega el <b>enlace de Instagram</b> (opcional, ayuda a verificar).</p>
+    <p class="help"><b>Obligatorio:</b> adjunta la <b>foto</b> de la lista o pega el <b>enlace de Instagram</b> donde aparece (basta con uno de los dos).</p>
     <input id="p-foto" type="file" accept="image/*" style="display:none">
-    <label for="p-foto" class="bulk-pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="p-foto-name">📷 Adjuntar foto (opcional)</span></label>
-    <input id="p-insta" class="fld" type="url" maxlength="300" placeholder="https://instagram.com/p/…  (opcional)">
+    <label for="p-foto" class="bulk-pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="p-foto-name">📷 Adjuntar foto de la lista</span></label>
+    <input id="p-insta" class="fld" type="url" maxlength="300" placeholder="https://instagram.com/p/…  (enlace donde sale la lista)">
     <label class="check"><input type="checkbox" id="p-consent"><span>Autorizo registrar estos datos en la app con el único fin de ayudar a reencontrar a la persona con su familia.</span></label>
     <button id="p-send" class="send">Registrar persona</button>
     <button class="cancel" data-close>Cancelar</button>
@@ -911,6 +911,7 @@ $("p-send").addEventListener("click",async ()=>{
   if(!rateOk()){toast("Alcanzaste el límite de 20 registros por hora. Inténtalo más tarde.","err");return;}
   const cargo=$("p-cargo").value;
   const insta=$("p-insta").value.trim();const foto=$("p-foto").files[0];
+  if(!foto && insta.length<8){toast("Adjunta una foto de la lista o pega el enlace de Instagram (obligatorio)","err");$("p-insta").focus();return;}
   const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null};
   const btn=$("p-send");btn.disabled=true;btn.textContent="Registrando…";
   try{
@@ -920,7 +921,7 @@ $("p-send").addEventListener("click",async ()=>{
     const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
-    cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto (opcional)";
+    cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":"No se pudo registrar. Revisa tu conexión","err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
