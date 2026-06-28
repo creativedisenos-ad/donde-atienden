@@ -411,7 +411,7 @@
     </a>
 
     <footer>
-      <p><b>Esta lista la construye la gente.</b> Nadie aparece aquí sin que alguien lo registre. Si sabes dónde está un familiar, regístralo para que otros parientes puedan reencontrarlo. Información voluntaria y comunitaria, no oficial.</p>
+      <p><b>Esta lista la construye la gente, como Wikipedia.</b> Todos los datos son ingresados por voluntarios de la comunidad. La plataforma <b>no verifica ni se responsabiliza</b> por la exactitud de la información; puede contener errores. <b>Confirma siempre llamando al centro</b> antes de actuar. Información comunitaria, no oficial.</p>
       <div class="nums">
         <a class="num" href="tel:171"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.3a1 1 0 0 1 1 1c0 1.2.2 2.4.6 3.6a1 1 0 0 1-.25 1z"/></svg>Emergencias 171</a>
       </div>
@@ -502,16 +502,15 @@
     <label for="p-nombre">Nombre y apellido *</label>
     <input id="p-nombre" class="fld" maxlength="120" placeholder="Ej: José Antonio Pérez" autocomplete="off">
     <div id="p-sug" class="psug" hidden></div>
-    <label for="p-cedula">Cédula (opcional, si la tienes)</label>
-    <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Opcional — Ej: V-12345678">
+    <label for="p-cedula">Cédula *</label>
+    <input id="p-cedula" class="fld" inputmode="numeric" maxlength="20" placeholder="Obligatoria — Ej: V-12345678">
     <label for="p-detalle">Edad y/o sector (opcional)</label>
     <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
     <p class="help">Solo si lo sabes con certeza — ayuda a la familia a verificar. No lo inventes; si no lo sabes, déjalo vacío.</p>
     <label for="p-centro">¿En qué centro está? *</label>
-    <select id="p-centro" class="fld">
-      <option value="">Elige el centro de la lista…</option>
-    </select>
-    <p class="help">¿No aparece tu centro? <a href="#" id="p-add-centro" data-open="sheet-centro">➕ Agrégalo a la lista</a> y luego selecciónalo.</p>
+    <input id="p-centro" class="fld" autocomplete="off" placeholder="Escribe el hospital o centro…">
+    <div id="p-centro-sug" class="psug" hidden></div>
+    <p class="help">Escribe el nombre y elige una opción de la lista de abajo. ¿No aparece? <a href="#" id="p-add-centro" data-open="sheet-centro">➕ Agrégalo</a>.</p>
     <label for="p-quien">¿Quién registra? *</label>
     <select id="p-quien" class="fld">
       <option value="familiar">Soy familiar o allegado</option>
@@ -536,6 +535,7 @@
     <input id="p-foto" type="file" accept="image/*" style="display:none">
     <label for="p-foto" class="bulk-pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="p-foto-name">📷 Adjuntar foto de la lista</span></label>
     <input id="p-insta" class="fld" type="url" maxlength="300" placeholder="https://instagram.com/p/…  (enlace donde sale la lista)">
+    <p class="help" style="background:#fff7ec;border:1px solid #f4dcb6;border-radius:.7rem;padding:.6rem .7rem">Plataforma comunitaria (como Wikipedia): ingresa solo datos reales. La plataforma no se responsabiliza por la información publicada por los voluntarios.</p>
     <label class="check"><input type="checkbox" id="p-consent"><span>Autorizo registrar estos datos en la app con el único fin de ayudar a reencontrar a la persona con su familia.</span></label>
     <button id="p-send" class="send">Registrar persona</button>
     <button class="cancel" data-close>Cancelar</button>
@@ -576,7 +576,7 @@
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">1</span><div><b style="font-size:1rem">Buscar a tu familiar</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Buscar persona</b>, escribe nombre o cédula. La app confirma si está registrado y en qué centro, sin exponer datos sensibles.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">2</span><div><b style="font-size:1rem">Registrar a alguien</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">Cualquiera puede registrar a una persona ingresada. Si trabajas en el centro, indícalo y tu reporte queda verificado.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">3</span><div><b style="font-size:1rem">Ver centros cerca</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Centros</b> ves los hospitales en lista, ordenados por cercanía a tu ubicación, con su estado.</div></div></div>
-    <p style="font-size:.84rem;color:var(--muted);border-top:1px solid var(--line-2);padding-top:.9rem">Información voluntaria y comunitaria, no oficial. Siempre llama antes de trasladar a un paciente. Emergencias: <b>171</b>.</p>
+    <p style="font-size:.84rem;color:var(--muted);border-top:1px solid var(--line-2);padding-top:.9rem"><b>Descargo de responsabilidad:</b> los datos son ingresados por voluntarios de la comunidad (como Wikipedia). La plataforma no garantiza ni se responsabiliza por su exactitud. Siempre confirma llamando antes de trasladar a un paciente. Emergencias: <b>171</b>.</p>
     <button id="guia-ok" class="send">Entendido</button>
   </div>
 </div>
@@ -624,7 +624,7 @@
       <p class="sh"><b>Indispensable:</b> usa esta plantilla y <b>no cambies los títulos de las columnas</b>. Una persona por fila. Si subes otro formato, dará error.</p>
       <button id="bulk-template" class="send dark">Descargar plantilla (.csv)</button>
     </div>
-    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> y <b>edad_sector</b> son <b>opcionales</b> (puedes agregar personas sin cédula).<br>Lo que no sepas, <b>déjalo vacío</b> — no inventes. Solo se omiten las filas sin nombre o sin centro. No se cargan duplicados.</div>
+    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido, <b>cédula</b> y centro de salud. <b>edad_sector</b> es opcional.<br>Las filas <b>sin cédula se omiten</b> (por seguridad, todas las personas deben tener cédula). Lo que no sepas, déjalo vacío — no inventes. No se cargan duplicados.</div>
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.2"/><path d="M3 8.5A2 2 0 0 1 5 6.5h2l1.2-1.6h7.6L18 6.5h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Paso 2 · ¿De dónde sacaste la lista?</h3>
       <p class="sh"><b>Obligatorio.</b> Escribe la fuente y adjunta una <b>foto de la lista</b> o pega el <b>enlace de Instagram</b> donde aparece. Así cada dato queda respaldado.</p>
@@ -784,12 +784,6 @@ function poblarEstados(){const sel=$("f-estado"),dl=$("estados-dl");const es=[..
 function poblarCiudades(){const est=$("f-estado").value,sel=$("f-ciudad");const c=[...new Set(DATA.filter(h=>!est||h.estado===est).map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));const cur=sel.value;sel.innerHTML='<option value="">Todas las ciudades</option>'+c.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");if(c.includes(cur))sel.value=cur;else sel.value="";}
 function poblarCentrosDL(){
   const nombres=[...new Set(DATA.map(h=>h.nombre))].filter(Boolean).sort((a,b)=>a.localeCompare(b,'es'));
-  const sel=$("p-centro");
-  if(sel){
-    const cur=sel.value;
-    sel.innerHTML='<option value="">Elige el centro de la lista…</option>'+nombres.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
-    if(nombres.includes(cur)) sel.value=cur;
-  }
   const ciudades=[...new Set(DATA.map(h=>h.ciudad))].filter(x=>x&&x!=="Por confirmar").sort((a,b)=>a.localeCompare(b,'es'));
   const q=$("q-dl"); if(q) q.innerHTML=nombres.map(n=>`<option value="${esc(n)}">`).join("")+ciudades.map(c=>`<option value="${esc(c)}">`).join("");
 }
@@ -904,7 +898,8 @@ function pintarResultadoPersona(res){
 $("p-send").addEventListener("click",async ()=>{
   const nombre=$("p-nombre").value.trim(),centro=$("p-centro").value.trim();
   if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
-  if(!centro){toast("Elige el centro de la lista. Si no aparece, usa “Agrégalo a la lista”.","err");$("p-centro").focus();return;}
+  if(!centro){toast("Escribe y elige el centro. Si no aparece, usa “Agrégalo”.","err");$("p-centro").focus();return;}
+  if(soloDig($("p-cedula").value).length<6){toast("La cédula es obligatoria (mínimo 6 dígitos)","err");$("p-cedula").focus();return;}
   if(!$("p-consent").checked){toast("Marca la autorización para continuar","err");return;}
   const origen=$("p-origen").value.trim();
   if(origen.length<3){toast("Escribe de dónde sacaste este dato","err");$("p-origen").focus();return;}
@@ -923,7 +918,7 @@ $("p-send").addEventListener("click",async ()=>{
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
     cerrarSheets();["p-nombre","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta"].forEach(i=>$(i).value="");$("p-cargo").value="";$("p-consent").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
-  }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":"No se pudo registrar. Revisa tu conexión","err");}
+  }catch(err){toast(err&&err.message==="limite"?"Alcanzaste el límite de registros por ahora. Inténtalo más tarde.":(err&&/cedula/i.test(err.message||"")?"La cédula es obligatoria para registrar.":"No se pudo registrar. Revisa tu conexión"),"err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
 });
 
@@ -1013,6 +1008,27 @@ function onSugNombre(){
   const sug=$("p-sug");
   if(sug) sug.addEventListener("click",e=>{const it=e.target.closest(".psug-it");if(!it)return;$("p-nombre").value=it.getAttribute("data-n");sug.hidden=true;sug.innerHTML="";});
 })();
+/* ---------- autocompletar de centro (escribir + sugerencias) ---------- */
+function onSugCentro(){
+  const inp=$("p-centro"), box=$("p-centro-sug");
+  if(!inp||!box) return;
+  const v=norm(inp.value.trim());
+  if(v.length<2){box.hidden=true;box.innerHTML="";return;}
+  const toks=v.split(/\s+/).filter(t=>t.length>=2);
+  const res=DATA.filter(h=>{const n=norm(h.nombre||"");return toks.every(t=>n.includes(t));}).slice(0,8);
+  if(!res.length){box.hidden=true;box.innerHTML="";return;}
+  box.innerHTML=res.map(h=>`<div class="psug-it" data-n="${esc(h.nombre||"")}"><b>${esc(h.nombre||"")}</b><span>${esc(h.ciudad||"")}${h.estado?(" · "+esc(h.estado)):""}</span></div>`).join("");
+  box.hidden=false;
+}
+(function(){
+  const inp=$("p-centro"), box=$("p-centro-sug");
+  if(inp){
+    inp.addEventListener("input",onSugCentro);
+    inp.addEventListener("focus",onSugCentro);
+    inp.addEventListener("blur",()=>setTimeout(()=>{if(box)box.hidden=true;},180));
+  }
+  if(box) box.addEventListener("click",e=>{const it=e.target.closest(".psug-it");if(!it)return;$("p-centro").value=it.getAttribute("data-n");box.hidden=true;box.innerHTML="";});
+})();
 
 /* ---------- cédula ya registrada (evitar duplicados) ---------- */
 let dupCtx=null;
@@ -1093,10 +1109,10 @@ async function crearCargaFuente(origen,fotoUrl,insta){
 }
 async function cargarMasivo(rows, cargaId){
   if(DEMO){await new Promise(r=>setTimeout(r,300));let ins=0;rows.forEach(x=>{const dig=soloDig(x.cedula);if(dig&&!PAC.some(p=>soloDig(p.cedula)===dig)){const c=DATA.find(h=>norm(h.nombre)===norm(x.centro));PAC.push({nombre:x.nombre,cedula:x.cedula,detalle:x.detalle||null,hospital:x.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});ins++;}});return{insertados:ins,duplicados:rows.length-ins,invalidos:0};}
-  const CH=300;let ins=0,dup=0,inv=0;
-  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId(),p_carga_id:cargaId||null});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;}
+  const CH=300;let ins=0,dup=0,inv=0,sinced=0;
+  for(let i=0;i<rows.length;i+=CH){const res=await callRPC("cargar_masivo",{p_rows:rows.slice(i,i+CH),p_device:getDeviceId(),p_carga_id:cargaId||null});ins+=res.insertados||0;dup+=res.duplicados||0;inv+=res.invalidos||0;sinced+=res.sin_cedula||0;}
   cargarStats();
-  return {insertados:ins,duplicados:dup,invalidos:inv};
+  return {insertados:ins,duplicados:dup,invalidos:inv,sin_cedula:sinced};
 }
 $("bulk-template").addEventListener("click",descargarPlantilla);
 $("bulk-file").addEventListener("change",()=>{const f=$("bulk-file").files[0];$("bulk-fname").textContent=f?f.name:"Elegir archivo";$("bulk-status").innerHTML="";refrescarBulkBtn();});
@@ -1141,7 +1157,7 @@ $("bulk-send").addEventListener("click",async ()=>{
     catch(e){ $("bulk-status").innerHTML='<div class="bulk-err">No se pudo registrar el origen de la lista. Revisa los datos e inténtalo de nuevo.</div>';btn.disabled=false;btn.textContent="Cargar lista";return; }
     $("bulk-status").innerHTML='<div class="bulk-info">Cargando '+valid.length+' personas…</div>';
     const res=await cargarMasivo(valid,cargaId);
-    $("bulk-status").innerHTML='<div class="bulk-ok"><b>¡Carga completada!</b><br>Agregados: '+res.insertados+'<br>Ya estaban (duplicados): '+res.duplicados+'<br>Omitidos por faltar datos: '+(res.invalidos+omit)+'</div>';
+    $("bulk-status").innerHTML='<div class="bulk-ok"><b>¡Carga completada!</b><br>Agregados: '+res.insertados+'<br>Ya estaban (duplicados): '+res.duplicados+'<br>Omitidos sin cédula: '+(res.sin_cedula||0)+'<br>Omitidos por faltar datos: '+(res.invalidos+omit)+'</div>';
     toast("Carga masiva completada","ok");$("bulk-file").value="";$("bulk-fname").textContent="Elegir archivo";$("bulk-origen").value="";$("bulk-insta").value="";$("bulk-foto").value="";$("bulk-foto-name").textContent="📷 Adjuntar foto de la lista";$("bulk-send").disabled=true;
     refrescar(true);
   }catch(err){$("bulk-status").innerHTML='<div class="bulk-err">'+(err&&err.message==="limite"?"Alcanzaste el límite de cargas masivas por hora. Inténtalo más tarde.":"No se pudo procesar el archivo. Revisa que tenga las columnas de la plantilla, o súbelo como CSV.")+'</div>';}
