@@ -376,10 +376,10 @@
 
   <!-- ===================== PERSONAS (principal) ===================== -->
   <section id="view-personas">
-    <div class="solo-banner">⚠️ Esto es <u>SOLO para personas INGRESADAS en hospitales</u>.<br>¿Buscas a un <b>desaparecido</b> (no está en un hospital)? → <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
+    <div class="solo-banner">⚠️ Esto es <u>SOLO para personas INGRESADAS en hospitales</u>.<br>¿Buscas, quieres <b>denunciar</b> o <b>reportar</b> a un <b>desaparecido</b> (no está en un hospital)? → <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
     <div class="hero">
       <h2>Busca a un familiar ingresado</h2>
-      <p>Esta app es para encontrar a quien está <b>ingresado en un hospital o centro de salud</b>. Escribe su <b>nombre completo</b> o su <b>cédula</b>. Si la persona está <b>desaparecida</b> (no en un hospital), búscala en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>.</p>
+      <p>Esta app es para encontrar a quien está <b>ingresado en un hospital o centro de salud</b>. Escribe su <b>nombre completo</b> o su <b>cédula</b>. Si la persona está <b>desaparecida</b> (no en un hospital), o si quieres <b>denunciar o reportar un desaparecido</b>, es en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>.</p>
       <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <input id="qp" class="search" type="search" inputmode="search" placeholder="Nombre completo o cédula…" autocomplete="off" aria-label="Buscar persona ingresada">
@@ -394,6 +394,16 @@
       <div class="stat">
         <span class="num" id="stat-vol">—</span>
         <span class="lbl">voluntarios activos</span>
+      </div>
+    </div>
+    <div class="stats" id="stats2" aria-live="polite">
+      <div class="stat" style="border-color:#86efac;background:#f0fdf4">
+        <span class="num" id="stat-enc" style="color:#166534">—</span>
+        <span class="lbl">✓ ya encontradas por su familia</span>
+      </div>
+      <div class="stat" style="border-color:#93c5fd;background:#eff6ff">
+        <span class="num" id="stat-alta" style="color:#1e40af">—</span>
+        <span class="lbl">🏥 dadas de alta</span>
       </div>
     </div>
 
@@ -510,7 +520,7 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Registrar a una persona</h2>
-    <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en un hospital</u>.<br>Si está <b>desaparecida</b> (no en un hospital), regístrala en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
+    <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en un hospital</u>.<br>Si está <b>desaparecida</b>, o quieres <b>denunciar/reportar un desaparecido</b> (no en un hospital), es en <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
     <p class="hint">Para que su familia pueda ubicarla.</p>
     <label for="p-nombres">Nombres *</label>
     <input id="p-nombres" class="fld" maxlength="60" placeholder="Ej: José Antonio" autocomplete="off">
@@ -669,7 +679,7 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Carga masiva</h2>
-    <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en hospitales</u>. No cargues desaparecidos ni refugiados — esos van a <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
+    <div class="solo-banner">⚠️ SOLO para personas <u>INGRESADAS en hospitales</u>. No cargues desaparecidos ni refugiados.<br>Para <b>denunciar o reportar desaparecidos</b> → <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a></div>
     <p class="hint">Sube una lista de varias personas a la vez con un archivo. Ideal para hospitales y centros de salud.</p>
     <div class="seccard">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>Paso 1 · Descarga la plantilla</h3>
@@ -768,7 +778,7 @@ async function cargarStats(){
     let s;
     if(DEMO){s={pacientes:(typeof PAC!=="undefined"&&PAC.length)||0,voluntarios_activos:1};}
     else{const r=await api("rpc/estadisticas",{method:"POST",body:"{}"});if(!r.ok)return;s=await r.json();}
-    if(s&&typeof s==="object"){animarNum(document.getElementById("stat-pac"),s.pacientes||0);animarNum(document.getElementById("stat-vol"),s.voluntarios_activos||0);}
+    if(s&&typeof s==="object"){animarNum(document.getElementById("stat-pac"),s.pacientes||0);animarNum(document.getElementById("stat-vol"),s.voluntarios_activos||0);if(document.getElementById("stat-enc"))animarNum(document.getElementById("stat-enc"),s.encontradas||0);if(document.getElementById("stat-alta"))animarNum(document.getElementById("stat-alta"),s.altas||0);}
   }catch(e){}
 }
 
@@ -1109,15 +1119,49 @@ function onSugNombre(){
   if(sug) sug.addEventListener("click",e=>{const it=e.target.closest(".psug-it");if(!it)return;const _v=it.getAttribute("data-n")||"";if($("p-nombres"))$("p-nombres").value=_v;if($("p-apellidos"))$("p-apellidos").value="";sug.hidden=true;sug.innerHTML="";});
 })();
 /* ---------- autocompletar de centro (escribir + sugerencias) ---------- */
+const CENTROS_OFICIALES=[
+  {n:"Hospital Universitario de Caracas (HUC - El Clínico)",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Dr. Domingo Luciani (El Llanito)",c:"Caracas",e:"Miranda",k:"Hospital público"},
+  {n:"Hospital Miguel Pérez Carreño",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Militar Dr. Carlos Arvelo",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Maternidad Concepción Palacios",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Vargas de Caracas",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital de Niños J.M. de los Ríos",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Dr. José Gregorio Hernández (Los Magallanes de Catia)",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Periférico de Catia",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital General del Oeste",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital de Lídice (Dr. Jesús Yerena)",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Dr. Ricardo Baquero González (Periférico de Coche)",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital Psiquiátrico de Caracas (El Peñón)",c:"Caracas",e:"Distrito Capital",k:"Hospital público"},
+  {n:"Hospital General Regional Dr. José María Vargas (IVSS La Guaira)",c:"La Guaira",e:"La Guaira",k:"Hospital público"},
+  {n:"Hospital Dr. Rafael Medina Jiménez (Periférico de Pariata / Maiquetía)",c:"La Guaira",e:"La Guaira",k:"Hospital público"},
+  {n:"Hospital Materno Infantil Ana Teresa de Jesús Ponce",c:"La Guaira",e:"La Guaira",k:"Hospital público"},
+  {n:"Hospital Eudoro González (Carayaca)",c:"La Guaira",e:"La Guaira",k:"Hospital público"},
+  {n:"Centro Médico Docente La Trinidad",c:"Caracas",e:"Miranda",k:"Clínica privada"},
+  {n:"Hospital de Clínicas Caracas",c:"Caracas",e:"Distrito Capital",k:"Clínica privada"},
+  {n:"Centro Médico de Caracas",c:"Caracas",e:"Distrito Capital",k:"Clínica privada"},
+  {n:"Clínica Santa Sofía",c:"Caracas",e:"Miranda",k:"Clínica privada"},
+  {n:"Clínica Ávila",c:"Caracas",e:"Distrito Capital",k:"Clínica privada"},
+  {n:"Policlínica Metropolitana",c:"Caracas",e:"Miranda",k:"Clínica privada"},
+  {n:"Urológico San Román",c:"Caracas",e:"Miranda",k:"Clínica privada"},
+  {n:"Fénix Salud Centro Clínico",c:"Caracas",e:"Distrito Capital",k:"Clínica privada"},
+  {n:"Clínica Alfa",c:"La Guaira",e:"La Guaira",k:"Clínica privada"},
+  {n:"Centro Médico Provesalud (Catia La Mar)",c:"La Guaira",e:"La Guaira",k:"Clínica privada"},
+  {n:"Servisalud (Catia La Mar)",c:"La Guaira",e:"La Guaira",k:"Clínica privada"},
+  {n:"Clínica San José (Maiquetía)",c:"La Guaira",e:"La Guaira",k:"Clínica privada"}
+];
 function onSugCentro(){
   const inp=$("p-centro"), box=$("p-centro-sug");
   if(!inp||!box) return;
   const v=norm(inp.value.trim());
   if(v.length<2){box.hidden=true;box.innerHTML="";return;}
   const toks=v.split(/\s+/).filter(t=>t.length>=2);
-  const res=DATA.filter(h=>{const n=norm(h.nombre||"");return toks.every(t=>n.includes(t));}).slice(0,8);
+  const seen=new Set(), pool=[];
+  CENTROS_OFICIALES.forEach(o=>{const k=norm(o.n);if(seen.has(k))return;seen.add(k);pool.push({nombre:o.n,ciudad:o.c,estado:o.e,cat:o.k,off:true});});
+  DATA.forEach(h=>{const k=norm(h.nombre||"");if(!k||seen.has(k))return;seen.add(k);pool.push({nombre:h.nombre,ciudad:h.ciudad,estado:h.estado,cat:"",off:false});});
+  const res=pool.filter(h=>{const n=norm(h.nombre||"");return toks.every(t=>n.includes(t));}).slice(0,10);
   if(!res.length){box.hidden=true;box.innerHTML="";return;}
-  box.innerHTML=res.map(h=>`<div class="psug-it" data-n="${esc(h.nombre||"")}"><b>${esc(h.nombre||"")}</b><span>${esc(h.ciudad||"")}${h.estado?(" · "+esc(h.estado)):""}</span></div>`).join("");
+  box.innerHTML=res.map(h=>`<div class="psug-it" data-n="${esc(h.nombre||"")}"><b>${esc(h.nombre||"")}</b><span>${h.off?("✓ oficial · "+esc(h.cat)+" · "):""}${esc(h.ciudad||"")}${h.estado?(" · "+esc(h.estado)):""}</span></div>`).join("");
   box.hidden=false;
 }
 (function(){
