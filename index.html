@@ -922,6 +922,7 @@ function pintarResultadoPersona(res){
 $("p-send").addEventListener("click",async ()=>{
   const nombre=$("p-nombre").value.trim(),centro=$("p-centro").value.trim();
   if(nombre.length<3){toast("Escribe el nombre y apellido","err");return;}
+  if(nombre.split(/\s+/).filter(function(w){return w.replace(/[^A-Za-zÀ-ÿñÑ]/g,'').length>=2;}).length<2){toast("Escribe nombre y apellido completos (sin números)","err");$("p-nombre").focus();return;}
   if(!centro){toast("Escribe y elige el centro. Si no aparece, usa “Agrégalo”.","err");$("p-centro").focus();return;}
   if(soloDig($("p-cedula").value).length<6){
     if(!$("p-resp").checked){toast("Sin cédula: marca la casilla de responsabilidad","err");$("p-resp").focus();return;}
@@ -1014,6 +1015,7 @@ $("result-p").addEventListener("click",e=>{const b=e.target.closest("[data-flagp
 /* ---------- autocompletar nombre en el registro (avisa si ya existe) ---------- */
 let pSugTimer=null;
 function onSugNombre(){
+  var _el=$("p-nombre"); if(_el){var _c=_el.value.replace(/[0-9]/g,'');if(_c!==_el.value){var _p=_el.selectionStart;_el.value=_c;try{_el.setSelectionRange(_p>0?_p-1:0,_p>0?_p-1:0);}catch(e){}}}
   clearTimeout(pSugTimer);
   pSugTimer=setTimeout(async ()=>{
     const v=$("p-nombre").value.trim(), box=$("p-sug");
