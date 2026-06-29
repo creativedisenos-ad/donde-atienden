@@ -1063,14 +1063,21 @@ $("p-send").addEventListener("click",async ()=>{
   const insta=$("p-insta").value.trim();const foto=$("p-foto").files[0];
   if(!foto && insta.length<8){toast("Adjunta una foto de la lista o pega el enlace de Instagram (obligatorio)","err");$("p-insta").focus();return;}
   const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null,area:($("p-area").value||"").trim()||null,vol_nombre:($("p-vol-nombre").value||"").trim()||null,vol_telefono:($("p-vol-tel").value||"").trim()||null,zona:($("p-zona").value||"").trim()||null,contactado:($("p-contactado").value||"")||null};
-  // Antes de registrar: revisar si ya hay personas con nombres y apellidos similares
+  // Antes de registrar: revisar nombres/apellidos similares Y cédula casi idéntica (error de tipeo)
   const _btn=$("p-send");_btn.disabled=true;_btn.textContent="Revisando…";
   let _sim=null; try{ _sim=await buscarPaciente(nombre); }catch(e){}
+  let _simc=null; const _cedDig=soloDig($("p-cedula").value);
+  if(_cedDig.length>=6){ try{ _simc=await callRPC("buscar_cedula_similar",{p_ced:_cedDig}); }catch(e){} }
   _btn.disabled=false;_btn.textContent="Registrar persona";
-  if(_sim && _sim.length){
+  var _lst=[]; if(Array.isArray(_sim))_lst=_lst.concat(_sim);
+  var _hayCed=Array.isArray(_simc)&&_simc.length>0;
+  if(_hayCed){_simc.forEach(function(r){if(!_lst.some(function(x){return (x.nombre||"")===(r.nombre||"")&&(x.cedula||"")===(r.cedula||"");}))_lst.push(r);});}
+  if(_lst.length){
     _pendingReg=d;
-    $("dup-msg").textContent="Hay "+_sim.length+" persona(s) registrada(s) con nombres y apellidos similares. Revisa que tu persona NO sea ninguna de estas:";
-    $("dup-list").innerHTML=_sim.slice(0,8).map(function(r){return '<div class="psug-it"><b>'+esc(r.nombre||"")+'</b><span>'+esc(r.centro||"")+(r.detalle?(" · "+esc(r.detalle)):"")+(r.cedula?(" · C.I. "+esc(r.cedula)):"")+'</span></div>';}).join("");
+    $("dup-msg").textContent=_hayCed
+      ? "⚠️ Hay registro(s) con una CÉDULA CASI IDÉNTICA (posible error de tipeo) o con nombres parecidos. Verifica que tu persona NO sea ninguna de estas:"
+      : "Hay "+_lst.length+" persona(s) registrada(s) con nombres y apellidos similares. Revisa que tu persona NO sea ninguna de estas:";
+    $("dup-list").innerHTML=_lst.slice(0,10).map(function(r){return '<div class="psug-it"><b>'+esc(r.nombre||"")+'</b><span>'+esc(r.centro||"")+(r.detalle?(" · "+esc(r.detalle)):"")+(r.cedula?(" · C.I. "+esc(r.cedula)):"")+'</span></div>';}).join("");
     abrir("sheet-dupcheck");
     return;
   }
