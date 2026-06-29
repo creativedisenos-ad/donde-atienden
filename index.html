@@ -687,21 +687,8 @@
     <button class="cancel" data-close>Cancelar</button>
   </div>
 </div>
-<div id="chat-tip" class="chat-tip"><span class="tx">👋 ¡Hola! Soy tu asistente, te ayudo a buscar</span><button id="chat-tip-x" aria-label="Cerrar saludo">✕</button></div>
-<button id="chat-fab" class="chat-fab" aria-label="Abrir asistente de ayuda">
-  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
-</button>
-<div id="chat" class="chat">
-  <div class="chat-h">
-    <div class="chat-ht"><span class="chat-dot"></span><div><b>Asistente</b><span>Hospitales en Venezuela</span></div></div>
-    <button id="chat-x" class="chat-x" aria-label="Cerrar asistente">✕</button>
-  </div>
-  <div id="chat-body" class="chat-body" aria-live="polite"></div>
-  <div class="chat-in">
-    <input id="chat-text" type="text" placeholder="Escribe tu pregunta…" maxlength="500" autocomplete="off" aria-label="Mensaje para el asistente">
-    <button id="chat-send" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
-  </div>
-</div>
+<!-- asistente IA retirado -->
+
 
 <div id="sheet-bulk" class="scrim" role="dialog" aria-modal="true" aria-label="Carga masiva">
   <div class="sheet">
@@ -837,10 +824,7 @@ async function reportarAbuso(tipo,referencia,motivo){
   if(DEMO){await new Promise(r=>setTimeout(r,200));return;}
   await callRPC("reportar_abuso",{p_tipo:tipo,p_referencia:referencia||null,p_motivo:motivo||null,p_device:getDeviceId()});
 }
-async function chatSend(message,history){
-  const r=await fetch(SUPABASE_URL+"/functions/v1/chat",{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({message,history:history||[]})});
-  const d=await r.json().catch(()=>({}));return d.reply||"No pude responder ahora. Intenta de nuevo.";
-}
+/* asistente IA retirado */
 
 function demoCentros(){const now=Date.now(),iso=m=>new Date(now-m*60000).toISOString();return [
  {id:"1",nombre:"Ciudad Hospitalaria Dr. Enrique Tejera (CHET)",tipo:"hospital",estado:"Carabobo",ciudad:"Valencia",telefono:"0241-8675000",lat:10.162,lng:-68.0078,estado_operativo:"abierto",capacidad:"limitada",nota:"Atendiendo emergencias",confirmaciones:7,personal_salud:true,ultima_actualizacion:iso(8),verificado:true},
@@ -1381,27 +1365,9 @@ $("bulk-send").addEventListener("click",async ()=>{
   finally{btn.textContent="Cargar lista";refrescarBulkBtn();}
 });
 
-/* ---------- asistente IA ---------- */
-let chatHist=[], chatBusy=false, chatGreeted=false;
-function chatAdd(role,text,cls){const b=$("chat-body");const d=document.createElement("div");d.className="msg "+(cls||(role==="user"?"user":"bot"));d.textContent=text;b.appendChild(d);b.scrollTop=b.scrollHeight;return d;}
-const TIP_KEY="ve_salud_tip";
-function ocultarTip(){$("chat-tip").classList.remove("show");$("chat-fab").classList.remove("alert");try{localStorage.setItem(TIP_KEY,"1");}catch(e){}}
-function mostrarTip(){try{if(localStorage.getItem(TIP_KEY))return;}catch(e){}if($("chat").classList.contains("open"))return;$("chat-tip").classList.add("show");$("chat-fab").classList.add("alert");clearTimeout(window._tipT);window._tipT=setTimeout(()=>$("chat-tip").classList.remove("show"),12000);}
-function abrirChat(){ocultarTip();$("chat").classList.add("open");$("chat-fab").classList.add("hide");if(!chatGreeted){chatGreeted=true;chatAdd("bot","¡Hola! Soy el asistente de Hospitales en Venezuela. Te ayudo a buscar a un familiar, registrar a alguien o ver centros cercanos. ¿En qué te ayudo?");}setTimeout(()=>$("chat-text").focus(),200);}
-function cerrarChat(){$("chat").classList.remove("open");$("chat-fab").classList.remove("hide");}
-async function enviarChat(){
-  if(chatBusy)return;const inp=$("chat-text");const msg=inp.value.trim();if(!msg)return;
-  inp.value="";chatAdd("user",msg);chatHist.push({role:"user",text:msg});
-  chatBusy=true;$("chat-send").disabled=true;const t=chatAdd("bot","Escribiendo…","bot typing");
-  try{const reply=await chatSend(msg,chatHist);t.remove();chatAdd("bot",reply);chatHist.push({role:"model",text:reply});if(chatHist.length>16)chatHist=chatHist.slice(-16);}
-  catch(err){t.remove();chatAdd("bot","No pude responder ahora. Revisa tu conexión e intenta de nuevo.");}
-  finally{chatBusy=false;$("chat-send").disabled=false;$("chat-text").focus();}
-}
-$("chat-fab").addEventListener("click",abrirChat);
-$("chat-tip").addEventListener("click",e=>{if(e.target.id==="chat-tip-x"){ocultarTip();return;}abrirChat();});
-$("chat-x").addEventListener("click",cerrarChat);
-$("chat-send").addEventListener("click",enviarChat);
-$("chat-text").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();enviarChat();}});
+/* ---------- asistente IA retirado ---------- */
+function mostrarTip(){}
+function ocultarTip(){}
 
 /* ---------- filtros / mapa / geo ---------- */
 $("q").addEventListener("input",render);
