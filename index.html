@@ -111,6 +111,14 @@
   .corr-box .c-tit{color:#5b21b6}.corr-it{margin-top:.2rem}.corr-it span{color:var(--muted);font-size:.8rem}
   .act-corr{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;margin-top:.5rem;font-weight:700;border-radius:.7rem;padding:.6rem;cursor:pointer;font-size:.85rem;border:1.5px dashed #c4b5fd;background:#faf5ff;color:#6d28d9}
   .act-corr svg{width:1rem;height:1rem}
+  /* botón flotante Compartir */
+  .share-fab{position:fixed;right:1rem;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));display:inline-flex;align-items:center;gap:.45rem;padding:.7rem 1rem;border-radius:2rem;border:none;cursor:pointer;background:linear-gradient(150deg,#13b6b7,#086e70);color:#fff;font-weight:800;font-size:.92rem;box-shadow:0 8px 22px rgba(8,110,112,.4);z-index:95}
+  .share-fab:active{transform:scale(.95)}.share-fab svg{width:1.2rem;height:1.2rem}
+  .statclick{cursor:pointer;transition:transform .1s}.statclick:active{transform:scale(.98)}
+  .vsub{font-size:.95rem;font-weight:800;margin:1rem 0 .25rem;color:var(--ink)}
+  .vtxt{font-size:.9rem;line-height:1.5;color:var(--ink-2);margin:.3rem 0}
+  .vlist{font-size:.9rem;line-height:1.55;margin:.3rem 0;padding-left:1.15rem;color:var(--ink-2)}
+  .vlist li{margin:.3rem 0}
   .regdate{font-size:.78rem;color:var(--muted);margin-top:.5rem}
 
   .searchbox{position:relative;margin-top:.85rem}
@@ -400,9 +408,9 @@
         <span class="num" id="stat-pac">—</span>
         <span class="lbl">personas registradas</span>
       </div>
-      <div class="stat">
+      <div class="stat statclick" id="vol-card" role="button" tabindex="0" aria-label="Abrir el Centro del voluntario">
         <span class="num" id="stat-vol">—</span>
-        <span class="lbl">voluntarios activos</span>
+        <span class="lbl">voluntarios activos ›</span>
       </div>
     </div>
     <div class="stats" id="stats2" aria-live="polite">
@@ -687,7 +695,40 @@
     <button class="cancel" data-close>Cancelar</button>
   </div>
 </div>
-<!-- asistente IA retirado -->
+
+<div id="sheet-voluntario" class="scrim" role="dialog" aria-modal="true" aria-label="Centro del voluntario">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>🙌 Centro del voluntario</h2>
+    <p class="hint">Esta app la construye la gente, como tú. Cada dato que cargas o corriges ayuda a una familia a encontrar a los suyos.</p>
+    <h3 class="vsub">¿Cómo ayudas?</h3>
+    <p class="vtxt">Subiendo y verificando datos de personas <b>ingresadas en hospitales</b> tras el sismo. No necesitas nada técnico: si tienes una lista o sabes dónde está alguien, lo registras aquí.</p>
+    <h3 class="vsub">Tipos de voluntario</h3>
+    <ul class="vlist">
+      <li>📋 <b>Cargador de listas</b> — sube las listas de un hospital (foto, Excel/CSV o una por una).</li>
+      <li>✅ <b>Verificador</b> — confirma datos, reporta lo incorrecto y publica correcciones.</li>
+      <li>📣 <b>Difusor</b> — comparte la app y ayuda a las familias a buscar.</li>
+      <li>🏥 <b>Enlace de hospital / personal de salud</b> — carga desde adentro del centro.</li>
+    </ul>
+    <h3 class="vsub">Cómo empezar (3 pasos)</h3>
+    <ol class="vlist">
+      <li>Toca <b>Registrar a una persona</b> o <b>súbela masivamente</b> si tienes una lista.</li>
+      <li>Indica el <b>origen</b> del dato (foto de la lista o enlace) y, si no hay cédula, <b>tu nombre y teléfono</b> como responsable.</li>
+      <li>Vuelve cuando quieras para <b>corregir</b> o marcar si la persona ya fue <b>encontrada</b> o <b>dada de alta</b>.</li>
+    </ol>
+    <h3 class="vsub">Preguntas frecuentes</h3>
+    <p class="vtxt"><b>¿Necesito cédula?</b> Es muy recomendada para evitar duplicados. Si no la tienes, puedes cargar igual asumiendo la responsabilidad (con tu nombre y teléfono).</p>
+    <p class="vtxt"><b>¿Y si no sé el centro exacto?</b> Escríbelo y elige de la lista; el sistema lo asocia al hospital más parecido.</p>
+    <p class="vtxt"><b>¿Esto es para desaparecidos?</b> No. Es <b>solo para ingresados en hospitales</b>. Los desaparecidos van a redayudavenezuela.com.</p>
+    <p class="vtxt"><b>¿Quién ve mis datos?</b> Tu teléfono <b>no</b> se muestra al público, solo tu nombre como responsable. La cédula siempre va enmascarada.</p>
+    <button class="send" id="vol-registrar">➕ Empezar a registrar</button>
+    <button class="cancel" data-close>Cerrar</button>
+  </div>
+</div>
+<button id="share-fab" class="share-fab" aria-label="Compartir la app">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+  Compartir
+</button>
 
 
 <div id="sheet-bulk" class="scrim" role="dialog" aria-modal="true" aria-label="Carga masiva">
@@ -985,7 +1026,7 @@ function pintarResultadoPersona(res){
       <div class="pnote">Verifica que sea tu familiar por el <b>nombre, la edad y el sector</b>. Por privacidad no mostramos su estado de salud: llama al centro para confirmar y recibir información.</div>
       ${r.registrado?`<div class="regdate">🕒 Registrado: <b>${esc(r.registrado)}</b> · hora Caracas</div>`:""}
       ${r.estado==='encontrada'?`<div class="estb enc">✓ <b>Encontrada por su familia</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='alta'?`<div class="estb alta">🏥 <b>Dado de alta</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='fallecido'?`<div class="estb fall">🕊️ <b>Falleció</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:`<button class="act-found" data-estado="encontrada" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ya fue encontrada por su familia</button><button class="act-alta" data-estado="alta" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Ya fue dado de alta</button><button class="act-fall" data-estado="fallecido" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}">🕊️ Falleció</button>`}
-      ${(r.vol_nombre||r.vol_tel||r.contacto)?`<div class="contact-box"><div class="c-tit">📇 Contacto ante cualquier incidencia</div>${(r.vol_nombre||r.vol_tel)?`<div>🙋 Cargado por: <b>${esc(r.vol_nombre||"voluntario")}</b>${r.vol_tel?` · <a href="tel:${esc(r.vol_tel)}">${esc(r.vol_tel)}</a> · <a href="https://wa.me/${esc((r.vol_tel||"").replace(/[^0-9]/g,''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>`:""}</div>`:""}${r.contacto?`<div>📞 Contacto del registro: <a href="tel:${esc(r.contacto)}">${esc(r.contacto)}</a> · <a href="https://wa.me/${esc((r.contacto||"").replace(/[^0-9]/g,''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>`:""}</div>`:""}
+      ${r.vol_nombre?`<div class="contact-box"><div class="c-tit">🙋 Quién cargó este dato</div><div><b>${esc(r.vol_nombre)}</b> · voluntario responsable</div></div>`:""}
       ${(Array.isArray(r.correcciones)&&r.correcciones.length)?`<div class="corr-box"><div class="c-tit">✏️ Correcciones publicadas</div>${r.correcciones.map(c=>`<div class="corr-it">“${esc(c.texto||"")}”<span> — ${esc(c.por||"anónimo")}${c.tel?(" · "+esc(c.tel)):""}${c.fecha?(" · "+esc(c.fecha)):""}</span></div>`).join("")}</div>`:""}
       <button class="act-corr" data-corr="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>✏️ Corregir o agregar un dato</button>
       <button class="flag" data-flagp="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button></div>`;
@@ -1079,6 +1120,9 @@ document.querySelectorAll(".seg").forEach(s=>s.addEventListener("click",()=>setV
 function abrir(id){$(id).classList.add("open");document.body.style.overflow="hidden";}
 function cerrarSheets(){document.querySelectorAll(".scrim.open").forEach(s=>s.classList.remove("open"));document.body.style.overflow="";}
 $("cta-persona").addEventListener("click",()=>abrir("sheet-persona"));
+$("vol-card")&&$("vol-card").addEventListener("click",()=>abrir("sheet-voluntario"));
+$("vol-card")&&$("vol-card").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();abrir("sheet-voluntario");}});
+$("vol-registrar")&&$("vol-registrar").addEventListener("click",()=>{cerrarSheets();abrir("sheet-persona");});
 $("cta-centro").addEventListener("click",()=>abrir("sheet-centro"));
 $("cta-bulk").addEventListener("click",()=>abrir("sheet-bulk"));
 $("btn-guia").addEventListener("click",()=>abrir("sheet-guia"));
@@ -1368,6 +1412,17 @@ $("bulk-send").addEventListener("click",async ()=>{
 /* ---------- asistente IA retirado ---------- */
 function mostrarTip(){}
 function ocultarTip(){}
+/* ---------- botón flotante Compartir ---------- */
+(function(){
+  var b=document.getElementById('share-fab'); if(!b) return;
+  var url="https://hospitalesenvenezuela.com";
+  var txt="Hospitales en Venezuela — Encuentra a tu familiar ingresado en un hospital tras el sismo. Busca o registra aquí:";
+  b.addEventListener('click', async function(){
+    try{ if(navigator.share){ await navigator.share({title:"Hospitales en Venezuela", text:txt, url:url}); return; } }
+    catch(e){ if(e&&e.name==='AbortError') return; }
+    window.open("https://wa.me/?text="+encodeURIComponent(txt+" "+url),"_blank","noopener");
+  });
+})();
 
 /* ---------- filtros / mapa / geo ---------- */
 $("q").addEventListener("input",render);
