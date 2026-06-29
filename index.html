@@ -562,6 +562,14 @@
     <p class="help">Escribe el nombre y elige una opción de la lista de abajo. ¿No aparece? <a href="#" id="p-add-centro" data-open="sheet-centro">➕ Agrégalo</a>.</p>
     <label for="p-area">Parte del centro (opcional)</label>
     <input id="p-area" class="fld" maxlength="60" placeholder="Ej: pediatría, politrauma, trauma-shock">
+    <label for="p-zona">Zona de donde fue rescatado (opcional)</label>
+    <input id="p-zona" class="fld" maxlength="120" placeholder="Ej: Las Tejerías, sector La Esperanza">
+    <label for="p-contactado">¿Ya fue contactado por un familiar? (opcional)</label>
+    <select id="p-contactado" class="fld">
+      <option value="">No sé / sin dato</option>
+      <option value="si">Sí, ya lo contactó un familiar</option>
+      <option value="no">No, todavía no</option>
+    </select>
     <label for="p-quien">¿Quién registra? *</label>
     <select id="p-quien" class="fld">
       <option value="familiar">Soy familiar o allegado</option>
@@ -742,7 +750,7 @@
       <p class="sh"><b>Indispensable:</b> usa esta plantilla y <b>no cambies los títulos de las columnas</b>. Una persona por fila. Si subes otro formato, dará error.</p>
       <button id="bulk-template" class="send dark">Descargar plantilla (.csv)</button>
     </div>
-    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> es muy recomendada. <b>edad_sector</b> es opcional.<br>Si tu lista trae personas <b>sin cédula</b>, abajo debes <b>identificarte como responsable</b>. Lo que no sepas, déjalo vacío — no inventes. No se cargan duplicados.</div>
+    <div class="bulk-req"><b>Obligatorio en cada fila:</b> nombre, apellido y centro de salud. La <b>cédula</b> es muy recomendada. <b>edad_sector</b>, <b>zona_rescate</b> y <b>contactado_familiar</b> (sí/no) son opcionales.<br>Si tu lista trae personas <b>sin cédula</b>, abajo debes <b>identificarte como responsable</b>. Lo que no sepas, déjalo vacío — no inventes. No se cargan duplicados.</div>
     <div class="seccard" id="bulk-resp-card">
       <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Si tu lista trae personas SIN cédula</h3>
       <p class="sh">Para cargar personas sin cédula, <b>identifícate como responsable</b> (si todas tienen cédula, ignora esto):</p>
@@ -904,7 +912,7 @@ async function registrarPaciente(d){
     const dig=soloDig(d.cedula);
     if(dig.length>=5){const ex=PAC.find(p=>soloDig(p.cedula)===dig);if(ex)return {ok:false,duplicado:true,existente:{nombre:ex.nombre,detalle:ex.detalle||null,centro:ex.hospital,ciudad:ex.ciudad,telefono:ex.telefono,cedula:"••••"+dig.slice(-4)}};}
     const c=DATA.find(h=>norm(h.nombre)===norm(d.centro));PAC.push({nombre:d.nombre,cedula:d.cedula||"",detalle:d.detalle||null,hospital:d.centro,ciudad:c?c.ciudad:"",telefono:c?c.telefono:null});return {ok:true};}
-  const res=await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null,p_origen:d.origen||null,p_foto_url:d.foto_url||null,p_instagram:d.instagram||null,p_vol_nombre:d.vol_nombre||null,p_vol_telefono:d.vol_telefono||null,p_area:d.area||null});
+  const res=await callRPC("registrar_paciente",{p_nombre:d.nombre,p_centro:d.centro,p_cedula:d.cedula||null,p_registrado_por:d.registrado_por||"familiar",p_contacto:d.contacto||null,p_cargo:d.cargo||null,p_device:getDeviceId(),p_detalle:d.detalle||null,p_origen:d.origen||null,p_foto_url:d.foto_url||null,p_instagram:d.instagram||null,p_vol_nombre:d.vol_nombre||null,p_vol_telefono:d.vol_telefono||null,p_area:d.area||null,p_zona:d.zona||null,p_contactado:(d.contactado==="si"?true:(d.contactado==="no"?false:null))});
   if(res&&res.ok){recordAct();cargarStats();}
   return res;
 }
@@ -1025,6 +1033,8 @@ function pintarResultadoPersona(res){
       ${tel}
       <div class="pnote">Verifica que sea tu familiar por el <b>nombre, la edad y el sector</b>. Por privacidad no mostramos su estado de salud: llama al centro para confirmar y recibir información.</div>
       ${r.registrado?`<div class="regdate">🕒 Registrado: <b>${esc(r.registrado)}</b> · hora Caracas</div>`:""}
+      ${r.zona_rescate?`<div class="regdate">📍 Rescatado en: <b>${esc(r.zona_rescate)}</b></div>`:""}
+      ${(r.contactado_familiar===true||r.contactado_familiar===false)?`<div class="regdate">📞 ¿Contactado por familiar?: <b>${r.contactado_familiar?"Sí":"Todavía no"}</b></div>`:""}
       ${r.estado==='encontrada'?`<div class="estb enc">✓ <b>Encontrada por su familia</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='alta'?`<div class="estb alta">🏥 <b>Dado de alta</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:r.estado==='fallecido'?`<div class="estb fall">🕊️ <b>Falleció</b>${r.estado_fecha?(" · "+esc(r.estado_fecha)):""}${r.estado_por?(" · por "+esc(r.estado_por)):""}</div>`:`<button class="act-found" data-estado="encontrada" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ya fue encontrada por su familia</button><button class="act-alta" data-estado="alta" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Ya fue dado de alta</button><button class="act-fall" data-estado="fallecido" data-ref="${esc((r.nombre||"")+" · "+(r.centro||""))}">🕊️ Falleció</button>`}
       ${r.vol_nombre?`<div class="contact-box"><div class="c-tit">🙋 Quién cargó este dato</div><div><b>${esc(r.vol_nombre)}</b> · voluntario responsable</div></div>`:""}
       ${(Array.isArray(r.correcciones)&&r.correcciones.length)?`<div class="corr-box"><div class="c-tit">✏️ Correcciones publicadas</div>${r.correcciones.map(c=>`<div class="corr-it">“${esc(c.texto||"")}”<span> — ${esc(c.por||"anónimo")}${c.tel?(" · "+esc(c.tel)):""}${c.fecha?(" · "+esc(c.fecha)):""}</span></div>`).join("")}</div>`:""}
@@ -1052,7 +1062,7 @@ $("p-send").addEventListener("click",async ()=>{
   const cargo=$("p-cargo").value;
   const insta=$("p-insta").value.trim();const foto=$("p-foto").files[0];
   if(!foto && insta.length<8){toast("Adjunta una foto de la lista o pega el enlace de Instagram (obligatorio)","err");$("p-insta").focus();return;}
-  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null,area:($("p-area").value||"").trim()||null,vol_nombre:($("p-vol-nombre").value||"").trim()||null,vol_telefono:($("p-vol-tel").value||"").trim()||null};
+  const d={nombre,cedula:$("p-cedula").value.trim()||null,centro,registrado_por:$("p-quien").value,contacto:$("p-contacto").value.trim()||null,cargo:cargo||null,detalle:$("p-detalle").value.trim()||null,origen,instagram:insta||null,area:($("p-area").value||"").trim()||null,vol_nombre:($("p-vol-nombre").value||"").trim()||null,vol_telefono:($("p-vol-tel").value||"").trim()||null,zona:($("p-zona").value||"").trim()||null,contactado:($("p-contactado").value||"")||null};
   // Antes de registrar: revisar si ya hay personas con nombres y apellidos similares
   const _btn=$("p-send");_btn.disabled=true;_btn.textContent="Revisando…";
   let _sim=null; try{ _sim=await buscarPaciente(nombre); }catch(e){}
@@ -1079,7 +1089,7 @@ async function ejecutarRegistroPersona(d){
     const existe=DATA.some(h=>{const a=norm(h.nombre),b=norm(centro);return a===b||(b.length>=4&&a.includes(b))||(a.length>=4&&b.includes(a));});
     if(!existe){const nc={nombre:centro,tipo:"otro",estado:"Por confirmar",ciudad:"Por confirmar",estado_operativo:"desconocido"};if(userPos){nc.lat=userPos.lat;nc.lng=userPos.lng;}try{await registrarCentro(nc);}catch(e){}}
     toast(existe?"Persona registrada. ¡Gracias!":"Persona registrada y centro agregado. ¡Gracias!","ok");
-    cerrarSheets();["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta","p-area","p-vol-nombre","p-vol-tel"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;if($("p-resp"))$("p-resp").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";if(typeof toggleSinCedula==="function")toggleSinCedula();
+    cerrarSheets();["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto","p-origen","p-insta","p-area","p-vol-nombre","p-vol-tel","p-zona","p-contactado"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;if($("p-resp"))$("p-resp").checked=false;if($("p-foto"))$("p-foto").value="";if($("p-foto-name"))$("p-foto-name").textContent="📷 Adjuntar foto de la lista";if(typeof toggleSinCedula==="function")toggleSinCedula();
     if(!existe){poblarEstados();poblarCiudades();poblarCentrosDL();render();}
   }catch(err){toast(motivoRegistro(err),"err");}
   finally{btn.disabled=false;btn.textContent="Registrar persona";}
@@ -1282,15 +1292,15 @@ function mostrarDuplicado(ex, esCedula){
   $("dup-card").innerHTML=_ban+`<div class="hd"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Ya está registrada</h3></div><div class="where">${esc(ex.nombre||"Persona")}</div>${meta?`<div class="city">${esc(meta)}</div>`:""}<div class="ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><div>Ingresado en <b>${esc(ex.centro||"un centro")}</b>${ex.ciudad?(" · "+esc(ex.ciudad)):""}</div></div>${tel}`;
   cerrarSheets();setTimeout(()=>abrir("sheet-dup"),140);
 }
-function limpiarFormPersona(){["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;const _s=$("p-sug");if(_s){_s.hidden=true;_s.innerHTML="";}}
+function limpiarFormPersona(){["p-nombres","p-apellidos","p-cedula","p-detalle","p-centro","p-contacto","p-area","p-zona","p-contactado"].forEach(i=>{if($(i))$(i).value="";});$("p-cargo").value="";$("p-consent").checked=false;const _s=$("p-sug");if(_s){_s.hidden=true;_s.innerHTML="";}}
 $("dup-ok").addEventListener("click",()=>{cerrarSheets();limpiarFormPersona();toast("Listo, esa persona ya estaba registrada","ok");});
 $("dup-report").addEventListener("click",()=>{const c=dupCtx||{};const ref=(c.nombre||"")+" · "+(c.centro||"");const pre=_prefillCorreccion(_regIntento);_regIntento=null;limpiarFormPersona();cerrarSheets();setTimeout(()=>abrirCorreccion(ref,pre),160);});
 
 /* ---------- carga masiva (CSV / Excel) ---------- */
 function descargarPlantilla(){
-  const csv="nombre,apellido,cedula,centro,edad_sector\n"+
-    "José Antonio,Pérez García,V-12345678,Hospital Universitario de Caracas,40 años · Petare\n"+
-    ",,,,\n";
+  const csv="nombre,apellido,cedula,centro,edad_sector,zona_rescate,contactado_familiar\n"+
+    "José Antonio,Pérez García,V-12345678,Hospital Universitario de Caracas,40 años · Petare,Las Tejerías sector La Esperanza,no\n"+
+    ",,,,,,\n";
   const blob=new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"});
   const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="plantilla_pacientes.csv";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
@@ -1314,7 +1324,9 @@ function normFila(r){const m={};for(const k in r){m[norm(k)]=String(r[k]==null?"
   return {nombre:m["nombre"]||m["nombres"]||"",apellido:m["apellido"]||m["apellidos"]||"",
     cedula:m["cedula"]||m["ci"]||m["cedula de identidad"]||"",
     centro:m["centro"]||m["centro de salud"]||m["hospital"]||m["centro hospitalario"]||"",
-    detalle:m["edad sector"]||m["edad"]||m["sector"]||m["detalle"]||m["observaciones"]||m["observacion"]||""};}
+    detalle:m["edad sector"]||m["edad"]||m["sector"]||m["detalle"]||m["observaciones"]||m["observacion"]||"",
+    zona:m["zona rescate"]||m["zona de rescate"]||m["zona"]||m["zona rescatado"]||m["zona del rescate"]||"",
+    contactado:m["contactado familiar"]||m["contactado"]||m["contacto familiar"]||m["contactado por familiar"]||m["ya contactado"]||""};}
 function ensureXLSX(){return new Promise((res,rej)=>{if(window.XLSX){res();return;}const s=document.createElement("script");s.src="./xlsx.min.js";s.onload=()=>res();s.onerror=()=>rej(new Error("xlsx"));document.head.appendChild(s);});}
 async function parsearArchivo(file){
   const name=(file.name||"").toLowerCase();
@@ -1373,7 +1385,7 @@ $("bulk-send").addEventListener("click",async ()=>{
     }
     const valid=[];let omit=0;
     raw.forEach(r=>{const o=normFila(r);const nom=((o.nombre||"")+" "+(o.apellido||"")).trim();
-      if(nom.length>=3&&o.centro)valid.push({nombre:nom,cedula:o.cedula||null,centro:o.centro,detalle:o.detalle||null});else omit++;});
+      if(nom.length>=3&&o.centro)valid.push({nombre:nom,cedula:o.cedula||null,centro:o.centro,detalle:o.detalle||null,zona_rescate:o.zona||null,contactado_familiar:o.contactado||null});else omit++;});
     if(!valid.length){$("bulk-status").innerHTML='<div class="bulk-err">No encontramos filas válidas. Cada fila necesita al menos <b>nombre y centro de salud</b> (la cédula es opcional). Descarga y usa la plantilla.</div>';btn.disabled=false;btn.textContent="Cargar lista";return;}
     const sinCedRows=valid.filter(v=>!v.cedula||soloDig(v.cedula).length<6).length;
     const volNom=($("bulk-vol-nombre").value||"").trim(), volTel=($("bulk-vol-tel").value||"").trim();
