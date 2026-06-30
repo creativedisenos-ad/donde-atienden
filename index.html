@@ -245,6 +245,9 @@
   .chip{font-size:.9rem;font-weight:700;padding:.55rem 1rem;border-radius:var(--r-pill);border:1.5px solid var(--line);
     background:var(--surface);color:var(--ink-2);cursor:pointer;box-shadow:var(--shadow-s);min-height:2.4rem}
   .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .livedot{display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:#16a34a;vertical-align:-1px;margin-right:.15rem;animation:lpulse 2.2s ease-out infinite}
+  @keyframes lpulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%{box-shadow:0 0 0 .5rem rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  @media (prefers-reduced-motion:reduce){.livedot{animation:none}}
   .count{font-size:.82rem;color:var(--muted);margin:.85rem .2rem .2rem;font-weight:700}
 
 
@@ -395,7 +398,7 @@
   <section id="view-personas">
     <div class="solo-banner">⚠️ Esto es <u>SOLO para personas INGRESADAS en un hospital o centro de salud</u> tras el sismo.</div>
     <div class="hero">
-      <h2>Encuentra a tu familiar ingresado</h2>
+      <h2>Encuentra a tu ser querido ingresado</h2>
       <p>Tras el sismo, miles de familias no saben en qué hospital quedó su gente. Aquí, <b>voluntarios de toda Venezuela</b> registran a quienes están <b>ingresados</b> para que puedas encontrarlos en segundos. Escribe su <b>nombre y apellido</b> o su <b>cédula</b> — la lista se actualiza a cada minuto.</p>
       <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -449,9 +452,13 @@
       </div>
     </footer>
 
-    <a class="ally-mini" href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:.7rem;margin-top:1rem;padding:.7rem .85rem;border:1px solid #c7d2fe;background:#eef2ff;border-radius:14px;text-decoration:none;color:#3730a3">
-      <span style="flex:1;font-size:.8rem;line-height:1.35"><b>¿Tu familiar no está ingresado, sino desaparecido?</b> Red de Ayuda Venezuela es <b>otra página, independiente de la nuestra</b> — no tiene relación con nosotros. Si quieres buscarlo en las listas de reportados, te la recomendamos.</span>
-      <span style="white-space:nowrap;font-weight:700;font-size:.8rem;background:#fff;border:1px solid #c7d2fe;padding:.45rem .7rem;border-radius:10px">Buscar ↗</span>
+    <a class="ally" href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">
+      <div class="at">
+        <span class="ai"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.4 2.3 5 5.5 5c2 0 3.4 1.1 4.5 2.6C11.1 6.1 12.5 5 14.5 5 17.7 5 19.4 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg></span>
+        <h3>¿No aparece en ningún hospital?</h3>
+      </div>
+      <p>Si tu familiar está <b>desaparecido</b> (no ingresado), en <b>Red de Ayuda Venezuela</b> puedes buscarlo en las listas de personas reportadas.</p>
+      <span class="go">Ir a redayudavenezuela.com <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
     </a>
   </section>
 
@@ -544,41 +551,45 @@
       <input id="p-vol-nombre" class="fld" maxlength="80" placeholder="Tu nombre y apellido (voluntario) *" style="margin-top:.55rem">
       <input id="p-vol-tel" class="fld" inputmode="tel" maxlength="40" placeholder="Tu teléfono *" style="margin-top:.45rem">
     </div>
-    <label for="p-detalle">Edad y/o sector (opcional)</label>
-    <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
-    <p class="help">Solo si lo sabes con certeza — ayuda a la familia a verificar. No lo inventes; si no lo sabes, déjalo vacío.</p>
     <label for="p-centro">¿En qué centro está? *</label>
     <input id="p-centro" class="fld" autocomplete="off" placeholder="Escribe el hospital o centro…">
     <div id="p-centro-sug" class="psug" hidden></div>
     <p class="help">Escribe el nombre y elige una opción de la lista de abajo. ¿No aparece? <a href="#" id="p-add-centro" data-open="sheet-centro">➕ Agrégalo</a>.</p>
-    <label for="p-area">Parte del centro (opcional)</label>
-    <input id="p-area" class="fld" maxlength="60" placeholder="Ej: pediatría, politrauma, trauma-shock">
-    <label for="p-zona">Zona de donde fue rescatado (opcional)</label>
-    <input id="p-zona" class="fld" maxlength="120" placeholder="Ej: Las Tejerías, sector La Esperanza">
-    <label for="p-contactado">¿Ya fue contactado por un familiar? (opcional)</label>
-    <select id="p-contactado" class="fld">
-      <option value="">No sé / sin dato</option>
-      <option value="si">Sí, ya lo contactó un familiar</option>
-      <option value="no">No, todavía no</option>
-    </select>
     <label for="p-quien">¿Quién registra? *</label>
     <select id="p-quien" class="fld">
       <option value="familiar">Soy familiar o allegado</option>
       <option value="paciente">Soy la propia persona</option>
       <option value="voluntario">Solo quiero ayudar</option>
     </select>
-    <label for="p-cargo">¿Trabajas en este centro? (opcional)</label>
-    <select id="p-cargo" class="fld">
-      <option value="">No trabajo aquí</option>
-      <option value="Médico/a">Médico/a</option>
-      <option value="Enfermero/a">Enfermero/a</option>
-      <option value="Camillero/a">Camillero/a</option>
-      <option value="Administrativo/a">Administrativo/a</option>
-      <option value="Otro cargo">Otro cargo</option>
-    </select>
-    <p class="help">Si trabajas en el centro, tu registro se marca como verificado por personal.</p>
-    <label for="p-contacto">Teléfono de contacto familiar (opcional)</label>
-    <input id="p-contacto" class="fld" inputmode="tel" maxlength="40" placeholder="Para que el centro pueda ubicarte">
+    <details class="optblock" style="margin:.5rem 0;border:1px solid #e5e7eb;border-radius:.8rem;background:#fafafa">
+      <summary style="cursor:pointer;padding:.8rem .9rem;font-weight:700;color:#0f766e">➕ Agregar más datos <span style="font-weight:600;color:#64748b;font-size:.85rem">— opcional: edad, zona, contacto…</span></summary>
+      <div style="padding:0 .9rem .9rem">
+        <label for="p-detalle">Edad y/o sector</label>
+        <input id="p-detalle" class="fld" maxlength="60" placeholder="Ej: 40 años · Chacaíto">
+        <label for="p-area">Parte del centro</label>
+        <input id="p-area" class="fld" maxlength="60" placeholder="Ej: pediatría, politrauma, trauma-shock">
+        <label for="p-zona">Zona de donde fue rescatado</label>
+        <input id="p-zona" class="fld" maxlength="120" placeholder="Ej: Las Tejerías, sector La Esperanza">
+        <label for="p-contactado">¿Ya fue contactado por un familiar?</label>
+        <select id="p-contactado" class="fld">
+          <option value="">No sé / sin dato</option>
+          <option value="si">Sí, ya lo contactó un familiar</option>
+          <option value="no">No, todavía no</option>
+        </select>
+        <label for="p-cargo">¿Trabajas en este centro?</label>
+        <select id="p-cargo" class="fld">
+          <option value="">No trabajo aquí</option>
+          <option value="Médico/a">Médico/a</option>
+          <option value="Enfermero/a">Enfermero/a</option>
+          <option value="Camillero/a">Camillero/a</option>
+          <option value="Administrativo/a">Administrativo/a</option>
+          <option value="Otro cargo">Otro cargo</option>
+        </select>
+        <p class="help" style="margin-top:.3rem">Si trabajas en el centro, tu registro se marca como verificado por personal.</p>
+        <label for="p-contacto">Teléfono de contacto familiar</label>
+        <input id="p-contacto" class="fld" inputmode="tel" maxlength="40" placeholder="Para que el centro pueda ubicarte">
+      </div>
+    </details>
     <label for="p-origen">¿De dónde sacaste este dato? *</label>
     <input id="p-origen" class="fld" maxlength="200" placeholder="Ej.: Soy su familiar · Lista de IG @cuenta · Me lo dijo el centro">
     <p class="help"><b>Obligatorio:</b> adjunta la <b>foto</b> de la lista o pega el <b>enlace de Instagram</b> donde aparece (basta con uno de los dos).</p>
@@ -834,9 +845,12 @@ async function cargarStats(){
     let s;
     if(DEMO){s={pacientes:(typeof PAC!=="undefined"&&PAC.length)||0,voluntarios_activos:1};}
     else{const r=await api("rpc/estadisticas",{method:"POST",body:"{}"});if(!r.ok)return;s=await r.json();}
-    if(s&&typeof s==="object"){animarNum(document.getElementById("stat-pac"),s.pacientes||0);animarNum(document.getElementById("stat-vol"),s.voluntarios_activos||0);if(document.getElementById("stat-enc"))animarNum(document.getElementById("stat-enc"),s.encontradas||0);if(document.getElementById("stat-alta"))animarNum(document.getElementById("stat-alta"),s.altas||0);var _ur=document.getElementById("ultimo-reg");if(_ur)_ur.innerHTML=s.ultima_registrada?('🟢 Última persona registrada '+tiempoRelativo(s.ultima_registrada)):'';}
+    if(s&&typeof s==="object"){animarNum(document.getElementById("stat-pac"),s.pacientes||0);animarNum(document.getElementById("stat-vol"),s.voluntarios_activos||0);if(document.getElementById("stat-enc"))animarNum(document.getElementById("stat-enc"),s.encontradas||0);if(document.getElementById("stat-alta"))animarNum(document.getElementById("stat-alta"),s.altas||0);if(s.ultima_registrada){window._ultimaReg=s.ultima_registrada;pintarUltimoReg();}}
   }catch(e){}
 }
+function pintarUltimoReg(){var el=document.getElementById("ultimo-reg");if(el&&window._ultimaReg)el.innerHTML='<span class="livedot"></span> Última persona registrada '+tiempoRelativo(window._ultimaReg);}
+setInterval(pintarUltimoReg,25000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)cargarStats();});
 
 /* ---------- dispositivo + tope anti-spam (20 por hora) ---------- */
 const DEV_KEY="ve_salud_dev", ACT_KEY="ve_salud_acts", RATE_MAX=20, RATE_MIN=60;

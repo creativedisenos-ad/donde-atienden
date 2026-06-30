@@ -2,7 +2,7 @@
    la versión más reciente cuando hay internet (network-first para el HTML).
    Solo gestiona recursos de nuestro propio dominio: todo lo externo
    (mapas, API, tiles) va directo a la red, sin cachear errores. */
-const CACHE = "salud-ve-v44";
+const CACHE = "salud-ve-v45";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
