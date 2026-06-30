@@ -395,7 +395,7 @@
   <section id="view-personas">
     <div class="solo-banner">⚠️ Esto es <u>SOLO para personas INGRESADAS en un hospital o centro de salud</u> tras el sismo.</div>
     <div class="hero">
-      <h2>Encuentra a tu ser querido ingresado</h2>
+      <h2>Encuentra a tu familiar ingresado</h2>
       <p>Tras el sismo, miles de familias no saben en qué hospital quedó su gente. Aquí, <b>voluntarios de toda Venezuela</b> registran a quienes están <b>ingresados</b> para que puedas encontrarlos en segundos. Escribe su <b>nombre y apellido</b> o su <b>cédula</b> — la lista se actualiza a cada minuto.</p>
       <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -482,6 +482,7 @@
         <button class="chip on" data-fil="todos">Todos</button>
         <button class="chip" data-fil="abierto">Abiertos</button>
         <button class="chip" data-fil="sin">Sin reporte</button>
+        <button class="chip" data-fil="personas">👥 Con personas</button>
       </div>
       <div id="count" class="count"></div>
       <ul id="list" class="list" aria-live="polite"><li class="skel"></li><li class="skel"></li><li class="skel"></li></ul>
@@ -493,14 +494,6 @@
       Agregar un centro que no está en la lista
     </button>
 
-    <a class="ally" href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">
-      <div class="at">
-        <span class="ai"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.4 2.3 5 5.5 5c2 0 3.4 1.1 4.5 2.6C11.1 6.1 12.5 5 14.5 5 17.7 5 19.4 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg></span>
-        <h3>Más ayuda cerca de ti</h3>
-      </div>
-      <p>En <b>Red de Ayuda Venezuela</b> hay centros de ayuda cercanos, red de voluntariado y registro de personas desaparecidas: para pedir ayuda o sumarte a ayudar.</p>
-      <span class="go">Ir a redayudavenezuela.com <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
-    </a>
   </section>
 </div>
 
@@ -640,7 +633,7 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Cómo funciona</h2>
-    <p class="hint">App gratuita para encontrar a familiares <b>ingresados en hospitales o centros de salud</b> tras el sismo. Para personas <b>desaparecidas</b>, visita <a href="https://www.redayudavenezuela.com" target="_blank" rel="noopener noreferrer">redayudavenezuela.com</a>. Tres cosas que puedes hacer aquí:</p>
+    <p class="hint">App gratuita para encontrar a familiares <b>ingresados en hospitales o centros de salud</b> tras el sismo. Para personas <b>desaparecidas</b> existe otra plataforma especializada, independiente de la nuestra. Tres cosas que puedes hacer aquí:</p>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">1</span><div><b style="font-size:1rem">Buscar a tu familiar</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Buscar persona</b>, escribe nombre o cédula. La app confirma si está registrado y en qué centro, sin exponer datos sensibles.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">2</span><div><b style="font-size:1rem">Registrar a alguien</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">Cualquiera puede registrar a una persona ingresada. Si trabajas en el centro, indícalo y tu reporte queda verificado.</div></div></div>
     <div style="display:flex;gap:.8rem;margin-bottom:1rem"><span style="flex:none;width:2.1rem;height:2.1rem;border-radius:.7rem;background:var(--brand-soft);color:var(--brand-deep);font-weight:800;display:flex;align-items:center;justify-content:center">3</span><div><b style="font-size:1rem">Ver centros cerca</b><div style="font-size:.92rem;color:var(--ink-2);margin-top:.15rem">En <b>Centros</b> ves los hospitales en lista, ordenados por cercanía a tu ubicación, con su estado.</div></div></div>
@@ -890,7 +883,10 @@ function demoPacientes(){return [
 async function cargarCentros(){
   if(DEMO){await new Promise(r=>setTimeout(r,300));return demoCentros();}
   const r=await api("hospitales?select=id,nombre,tipo,estado,ciudad,telefono,lat,lng,estado_operativo,capacidad,nota,confirmaciones,ultima_actualizacion,verificado,personal_salud&activo=eq.true");
-  if(!r.ok)throw new Error("load");return await r.json();
+  if(!r.ok)throw new Error("load");
+  const arr=await r.json();
+  try{const rc=await api("rpc/conteo_por_centro",{method:"POST",body:"{}"});if(rc.ok){const cc=await rc.json(),mp={};(cc||[]).forEach(x=>{mp[x.hospital_id]=x.n;});arr.forEach(h=>{h._n=mp[h.id]||0;});}}catch(e){}
+  return arr;
 }
 async function enviarReporte(id,p){if(DEMO){await new Promise(r=>setTimeout(r,200));return;}const r=await api("reportes",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify(Object.assign({hospital_id:id},p))});if(!r.ok)throw new Error("rep");}
 async function registrarCentro(d){
@@ -936,8 +932,9 @@ function aplicarDistancias(){DATA.forEach(h=>{h._d=(userPos&&h.lat!=null&&h.lng!
 const PRIO={abierto:0,saturado:1,desconocido:2,cerrado:3};
 function aplicarFiltros(){
   const q=norm($("q").value),est=$("f-estado").value,ciu=$("f-ciudad").value;
-  let rows=DATA.filter(h=>{if(est&&h.estado!==est)return false;if(ciu&&h.ciudad!==ciu)return false;if(filtro==="abierto"&&h.estado_operativo!=="abierto")return false;if(filtro==="sin"&&h.estado_operativo!=="desconocido")return false;if(q){if(!norm(h.nombre+" "+h.ciudad+" "+h.estado).includes(q))return false;}return true;});
-  if(userPos){rows.sort((a,b)=>{const da=a._d==null?1e9:a._d,db=b._d==null?1e9:b._d;if(da!==db)return da-db;return (PRIO[a.estado_operativo]??2)-(PRIO[b.estado_operativo]??2);});}
+  let rows=DATA.filter(h=>{if(est&&h.estado!==est)return false;if(ciu&&h.ciudad!==ciu)return false;if(filtro==="abierto"&&h.estado_operativo!=="abierto")return false;if(filtro==="sin"&&h.estado_operativo!=="desconocido")return false;if(filtro==="personas"&&!(h._n>0))return false;if(q){if(!norm(h.nombre+" "+h.ciudad+" "+h.estado).includes(q))return false;}return true;});
+  if(filtro==="personas"){rows.sort((a,b)=>((b._n||0)-(a._n||0))||a.nombre.localeCompare(b.nombre,'es'));}
+  else if(userPos){rows.sort((a,b)=>{const da=a._d==null?1e9:a._d,db=b._d==null?1e9:b._d;if(da!==db)return da-db;return (PRIO[a.estado_operativo]??2)-(PRIO[b.estado_operativo]??2);});}
   else{rows.sort((a,b)=>{const pa=PRIO[a.estado_operativo]??2,pb=PRIO[b.estado_operativo]??2;if(pa!==pb)return pa-pb;return a.ciudad.localeCompare(b.ciudad,'es')||a.nombre.localeCompare(b.nombre,'es');});}
   return rows;
 }
@@ -961,6 +958,7 @@ function cardHTML(h){
       <p class="sub">${dist}<span class="tag">${esc(tipoLabel(h.tipo))}</span>${esc(h.ciudad)}, ${esc(h.estado)}</p>
     </div><span class="badge ${bc}"><span class="d"></span>${bl}</span></div>
     <div class="meta">${esc(hace(h.ultima_actualizacion))}${conf}${pro}</div>
+    ${h._n>0?`<div class="npac" style="display:inline-flex;align-items:center;gap:.3rem;margin-top:.45rem;font-size:.85rem;font-weight:800;color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;padding:.3rem .65rem;border-radius:999px">👥 ${h._n} ${h._n===1?"persona registrada aquí":"personas registradas aquí"}</div>`:""}
     ${cap}
     <div class="row-actions"><button class="act" data-toggle="${esc(h.id)}">Reportar estado</button>${tel}${go}</div>
     <button class="flag" data-flag="${esc(h.id)}" data-name="${esc(h.nombre)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h13l-1.5 4 1.5 4H4"/></svg>Reportar dato falso</button>
